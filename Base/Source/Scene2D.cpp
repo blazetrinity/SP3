@@ -338,11 +338,6 @@ void Scene2D::Update(double dt)
 		m_player->GetMesh()->Update(dt);
 	}
 
-	if(m_player->GetAnimation() == PlayerIn2D::WALK_RIGHT)
-	{
-		cout << "yea" << endl;
-	}
-
 	//Update the player velocity and position
 	m_player->Update(m_cBoundMap, dt, true);
 	//Update player's animation
