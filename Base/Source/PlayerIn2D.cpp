@@ -34,31 +34,25 @@ void PlayerIn2D::Update(CMap *map, double dt, bool topDown)
 	CharacterIn2D::Update(map, dt, topDown);
 	if(m_velocity.Length() == 0)
 	{
-		if(m_facingNormal.x == 0)
+		if(m_facingNormal.y > 0)
 		{
-			if(m_facingNormal.y > 0)
-			{
-				ChangeAnimation(IDLE_UP);
-				GetMesh()->Update(dt);
-			}
-			else
-			{
-				ChangeAnimation(IDLE_DOWN);
-				GetMesh()->Update(dt);
-			}
+			ChangeAnimation(IDLE_UP);
+			GetMesh()->Update(dt);
 		}
-		else if(m_facingNormal.y == 0)
+		else if(m_facingNormal.y < 0)
 		{
-			if(m_facingNormal.x > 0)
-			{
-				ChangeAnimation(IDLE_RIGHT);
-				GetMesh()->Update(dt);
-			}
-			else
-			{
-				ChangeAnimation(IDLE_LEFT);
-				GetMesh()->Update(dt);
-			}
+			ChangeAnimation(IDLE_DOWN);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.x > 0)
+		{
+			ChangeAnimation(IDLE_RIGHT);
+			GetMesh()->Update(dt);
+		}
+		else if((m_facingNormal.x < 0))
+		{
+			ChangeAnimation(IDLE_LEFT);
+			GetMesh()->Update(dt);
 		}
 	}
 }
