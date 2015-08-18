@@ -150,6 +150,8 @@ void Scene2D::Init()
 	meshList[GEO_BACKGROUNDPILLAR]->textureID[0] = LoadTGA("Image//RearMapPillar.tga");
 	meshList[GEO_CHARACTER] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER", 12, 16);
 	meshList[GEO_CHARACTER]->textureID[0] = LoadTGA("Image//CharacterAnimation.tga");
+	meshList[GEO_CHARACTER_TEST] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
+	meshList[GEO_CHARACTER_TEST]->textureID[0] = LoadTGA("Image//character_sprite.tga");
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 2, 3);
 	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//TileMap.tga");
 	meshList[GEO_GROUNDENEMYLEFT] = MeshBuilder::Generate2DMesh("GEO_GROUNDENEMYLEFT", Color(1, 1, 1), 0.0f, 0.0f, 1.0f, 1.0f);
@@ -260,23 +262,20 @@ void Scene2D::Init()
 	m_currentLevel = 1;
 	m_updateMap = false;
 
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]);
+	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
 
 	// Initialise the hero's position
 	m_player = new PlayerIn2D();
 	m_player->Init(Vector2(256, 96), Vector2(32, 32), 10, 1);
 	m_player->SetMesh(sa);
-	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 0, 0, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 16, 16, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::WALK_RIGHT, 32, 45, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::WALK_LEFT, 48, 61, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::JUMP_RIGHT, 64, 76, 0, 2);
-	m_player->SetAnimation(PlayerIn2D::JUMP_LEFT, 80, 92, 0, 2);
-	m_player->SetAnimation(PlayerIn2D::ATTACK_RIGHT, 96, 111, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::ATTACK_LEFT, 112, 127, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::JUMPATTACK_RIGHT, 128, 136, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::JUMPATTACK_LEFT, 144, 152, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::CLIMB, 160, 169, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 4, 4, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::IDLE_UP, 10, 10, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::IDLE_DOWN, 1, 1, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+	m_player->SetAnimation(PlayerIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+	m_player->SetAnimation(PlayerIn2D::WALK_UP, 9, 11, 0, 0.5);
+	m_player->SetAnimation(PlayerIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 	m_player->ChangeAnimation(PlayerIn2D::IDLE_RIGHT);
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
@@ -317,27 +316,34 @@ void Scene2D::Update(double dt)
 	if(Application::IsKeyPressed('W'))
 	{
 		m_player->MoveUpDown(true);
+		m_player->ChangeAnimation(PlayerIn2D::WALK_UP);
+		m_player->GetMesh()->Update(dt);
 	}
 	else if(Application::IsKeyPressed('S'))
 	{
 		m_player->MoveUpDown(false);
+		m_player->ChangeAnimation(PlayerIn2D::WALK_DOWN);
+		m_player->GetMesh()->Update(dt);
 	}
 	else if(Application::IsKeyPressed('A'))
 	{
 		m_player->MoveLeftRight(true);
+		m_player->ChangeAnimation(PlayerIn2D::WALK_LEFT);
+		m_player->GetMesh()->Update(dt);
 	}
 	else if(Application::IsKeyPressed('D'))
 	{
 		m_player->MoveLeftRight(false);
+		m_player->ChangeAnimation(PlayerIn2D::WALK_RIGHT);
+		m_player->GetMesh()->Update(dt);
 	}
 
 	//Update the player velocity and position
 	m_player->Update(m_cBoundMap, dt, true);
-
 	//Update player's animation
 	if(m_player->GetAnimation() != PlayerIn2D::CLIMB)
 	{
-		m_player->GetMesh()->Update(dt);
+		
 	}
 
 	//Ai Update and collision with character

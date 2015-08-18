@@ -32,6 +32,29 @@ void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSiz
 void PlayerIn2D::Update(CMap *map, double dt, bool topDown)
 {
 	CharacterIn2D::Update(map, dt, topDown);
+	if(m_velocity.Length() == 0)
+	{
+		if(m_facingNormal.y > 0)
+		{
+			ChangeAnimation(IDLE_UP);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.y < 0)
+		{
+			ChangeAnimation(IDLE_DOWN);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.x > 0)
+		{
+			ChangeAnimation(IDLE_RIGHT);
+			GetMesh()->Update(dt);
+		}
+		else if((m_facingNormal.x < 0))
+		{
+			ChangeAnimation(IDLE_LEFT);
+			GetMesh()->Update(dt);
+		}
+	}
 }
 
 // Set Mesh of the player
