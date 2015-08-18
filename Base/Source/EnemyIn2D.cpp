@@ -62,7 +62,7 @@ void EnemyIn2D::ChangeAnimation(ANIMATION_TYPE Animation)
 	}
 }
 
-//Set Animations
+// Set Animations
 void EnemyIn2D::SetAnimation(ANIMATION_TYPE Animation, int startFrame,int endFrame, int repeat, float time)
 {
 	this->m_animations[Animation]->Set(startFrame, endFrame, repeat, time);
@@ -98,11 +98,10 @@ int EnemyIn2D::GetCurrentLevel()
 	return m_currentLevel;
 }
 
-/********************************************************************************
-Enemy Update
-********************************************************************************/
+// Update enemy position based on enemy's velocity
 void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown)
 {
+	// Update enemy's velocity
 	if(m_strategy != NULL)
 	{
 		if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
@@ -116,12 +115,11 @@ void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown)
 		}
 	}
 
+	// Update enemy's position
 	CharacterIn2D::Update(m_cMap, dt, topDown);
 }
 
-/********************************************************************************
-Strategy
-********************************************************************************/
+// Update Enemy Ai's strategy
 void EnemyIn2D::ChangeStrategy(Strategy* theNewStrategy, bool bDelete)
 {
 	if (bDelete == true)

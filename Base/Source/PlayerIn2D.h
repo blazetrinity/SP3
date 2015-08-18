@@ -10,6 +10,7 @@ public:
 	PlayerIn2D(void);
 	~PlayerIn2D(void);
 
+	//Types of animations the player has
 	enum ANIMATION_TYPE
 	{
 		IDLE_RIGHT = 0,
@@ -40,15 +41,19 @@ public:
 	void SetMesh(SpriteAnimation* newMesh);
 	// Change Current Animation
 	void ChangeAnimation(ANIMATION_TYPE Animation);
-	//Set Animations
+	// Set Animations
 	void SetAnimation(ANIMATION_TYPE Animation, int startFrame,int endFrame, int repeat, float time);
+	// Set invunerablity
+	void SetInvunerable(bool invunerable);
 	
 	// Get Mesh of the player
 	SpriteAnimation* GetMesh();
 	// Get Current Animation of the player
 	ANIMATION_TYPE GetAnimation();
+	// Get bool to determine player render
+	bool GetRenderPlayer();
 
-	// Update Movements
+	// Update player velocity based on keypress
 	void MoveUpDown(const bool mode);
 	void MoveLeftRight(const bool mode);
 	void Jump();
@@ -61,6 +66,11 @@ protected:
 
 	SpriteAnimation* m_sprite;
 	Animation *m_animations[NUM_ANIMATION];
+
+	bool m_invunerable;
+	float m_invunerableTimer;
+	bool m_renderPlayer;
+	float m_renderPlayerTimer;
 };
 
 #endif

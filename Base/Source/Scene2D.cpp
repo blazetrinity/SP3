@@ -8,6 +8,8 @@
 #include "LoadTGA.h"
 #include <sstream>
 
+static const float MAXGHOSTQUEUETIMER = 15.0f;
+
 Scene2D::Scene2D()
 	: m_cMap(NULL)
 {
@@ -45,8 +47,6 @@ void Scene2D::Init()
 
 	// Get a handle for our uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
-	//m_parameters[U_MODEL] = glGetUniformLocation(m_programID, "M");
-	//m_parameters[U_VIEW] = glGetUniformLocation(m_programID, "V");
 	m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
 	m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE] = glGetUniformLocation(m_programID, "MV_inverse_transpose");
 	m_parameters[U_MATERIAL_AMBIENT] = glGetUniformLocation(m_programID, "material.kAmbient");
@@ -134,12 +134,15 @@ void Scene2D::Init()
 	glUniform1f(m_parameters[U_LIGHT1_COSINNER], lights[1].cosInner);
 	glUniform1f(m_parameters[U_LIGHT1_EXPONENT], lights[1].exponent);
 
+	// Init Camera
 	camera.Init(Vector3(0, 0, 10), Vector3(0, 0, 0), Vector3(0, 1, 0));
 
+	// Init meshes
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
 	}
+
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID[0] = LoadTGA("Image//calibri.tga");
 
@@ -174,11 +177,11 @@ void Scene2D::Init()
 	m_cDoorInteractionMap->Init(800, 1024, 25, 32, 800 ,1024);
 	m_cDoorInteractionMap->LoadMap( "Image//TestDoorInteraction.csv" );
 
-	//InitEnemyAi
+	//Init Enemy Ai position and animations
 	m_cEnemyAndItemMap = new CMap();
 	m_cEnemyAndItemMap->Init(800, 1024, 25, 32, 800, 1024);
 
-	for(int i = 1; i < LEVELS::NUM_LEVELS; ++i)
+	for(int i = 1; i < NUM_LEVELS; ++i)
 	{
 		switch(i)
 		{
@@ -190,7 +193,8 @@ void Scene2D::Init()
 			break;
 		}
 
-		SpriteAnimation *spriteAnimation;
+		SpriteAnimation *whiteGhostSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]));
+		SpriteAnimation *redGhostSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]));
 
 		for(int j = 0; j < m_cEnemyAndItemMap->GetNumOfTiles_MapHeight(); j ++)
 		{
@@ -198,10 +202,10 @@ void Scene2D::Init()
 			{
 				if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN)
 				{
-					spriteAnimation =  (dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]));
+					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, spriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1);
+					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 0, 0, 1);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
@@ -213,10 +217,10 @@ void Scene2D::Init()
 
 				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT)
 				{
-					spriteAnimation =  (dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]));
+					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, spriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1);
+					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 0, 0, 1);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
@@ -228,10 +232,10 @@ void Scene2D::Init()
 
 				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
 				{
-					spriteAnimation =  (dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]));
+					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, spriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1);
+					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 0, 0, 1);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
@@ -243,10 +247,10 @@ void Scene2D::Init()
 
 				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
 				{
-					spriteAnimation =  (dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]));
+					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, spriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1);
+					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 0, 0, 1);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
@@ -259,12 +263,9 @@ void Scene2D::Init()
 		}
 	}
 
-	m_currentLevel = 1;
-	m_updateMap = false;
-
+	// Init Player position and animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
-
-	// Initialise the hero's position
+	
 	m_player = new PlayerIn2D();
 	m_player->Init(Vector2(256, 96), Vector2(32, 32), 10, 1);
 	m_player->SetMesh(sa);
@@ -278,20 +279,35 @@ void Scene2D::Init()
 	m_player->SetAnimation(PlayerIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 	m_player->ChangeAnimation(PlayerIn2D::IDLE_RIGHT);
 
+	//Init Sounds
+	m_theSoundEngine = createIrrKlangDevice();
+	m_backgroundSound = NULL;
+	m_eventSound= NULL;
+	m_sounds[SND_BACKGROUND] = m_theSoundEngine->addSoundSourceFromFile("wav//background.wav");
+	m_sounds[SND_GHOST_QUEUE] = m_theSoundEngine->addSoundSourceFromFile("wav//ghost_queue.wav");
+	m_sounds[SND_FIRE] = m_theSoundEngine->addSoundSourceFromFile("wav//fire.wav");
+	m_sounds[SND_DAMAGE] = m_theSoundEngine->addSoundSourceFromFile("wav//damage.wav");
+	m_sounds[SND_BOSS] = m_theSoundEngine->addSoundSourceFromFile("wav//boss.wav");
+	//m_sounds[SND_BOSS_ATTACK] = m_theSoundEngine->addSoundSourceFromFile("wav//boss_attack.wav");
+
+	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
+	m_currentSound = SND_BACKGROUND;
+
+	// Init game element variables
+	m_levelCompleted = false;
+	m_currentLevel = 1;
+	m_updateMap = false; 
+	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+	m_spawnGhost = false;
+	m_ghostTriggered = false;
+
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
 	projectionStack.LoadMatrix(perspective);
 
-	rotateAngle = 0;
-
 	bLightEnabled = true;
-
-	m_invunerable = false;
-	m_invunerableTimer = 0;
-	m_renderCharacter = true;
-	m_renderCharacterTimer = 0;
 }
 
 void Scene2D::Update(double dt)
@@ -340,34 +356,56 @@ void Scene2D::Update(double dt)
 
 	//Update the player velocity and position
 	m_player->Update(m_cBoundMap, dt, true);
-	//Update player's animation
-	if(m_player->GetAnimation() != PlayerIn2D::CLIMB)
-	{
-		
-	}
 
 	//Ai Update and collision with character
 	UpdateEnemy(dt);
 
-	//Update player vunerablity
-	if(m_invunerable)
+	//Up ghost trigger
+	if(!m_ghostTriggered && !m_levelCompleted)
 	{
-		m_invunerableTimer -= dt;
-		m_renderCharacterTimer += dt;
-		if(m_invunerableTimer <= 0)
+		m_ghostQueueTimer -= dt;
+
+		if(m_ghostQueueTimer <= 0)
 		{
-			m_invunerable = false;
-			m_invunerableTimer = 0;
-			m_renderCharacter = true;
-			m_renderCharacterTimer = 0;
-		}
-		else
-		{
-			if(m_renderCharacterTimer >= 0.1f)
+			if(m_currentSound != SND_GHOST_QUEUE)
 			{
-				m_renderCharacter = !m_renderCharacter;
-				m_renderCharacterTimer = 0;
+				m_backgroundSound->stop();
+				m_backgroundSound->drop();
+				m_backgroundSound = NULL;
+				m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_GHOST_QUEUE], false, false, true);
+				m_currentSound = SND_GHOST_QUEUE;
 			}
+
+			if(m_backgroundSound->isFinished() == true)
+			{
+				// Check if player hiding
+				//if(playerhiding)
+				//{
+					m_spawnGhost = true;
+				//}
+				
+				//m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+				m_backgroundSound->stop();
+				m_backgroundSound->drop();
+				m_backgroundSound = NULL;
+				m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
+				m_currentSound = SND_BACKGROUND;
+			}
+		}
+
+		if(m_spawnGhost)
+		{
+			for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
+			{
+				EnemyIn2D* enemy = (EnemyIn2D*)*it;
+				if(enemy->GetActive() == false && enemy->GetCurrentLevel() == m_currentLevel)
+				{
+					enemy->SetActive(true);
+				}
+			}
+
+			m_spawnGhost = false;
+			m_ghostTriggered = true;
 		}
 	}
 
@@ -528,10 +566,7 @@ Update Weapon status
 ********************************************************************************/
 void Scene2D::UpdateWeaponStatus(const unsigned char key)
 {
-	if (key == WA_FIRE)
-	{
-		// Add a bullet object which starts at the camera position and moves in the camera's direction
-	}
+
 }
 
 void Scene2D::StartGame()
@@ -622,7 +657,7 @@ void Scene2D::RenderMeshIn2D(Mesh *mesh, const bool enableLight, const float siz
 	modelStack.Translate(x,y,0);
 	if(rotate)
 	{
-		modelStack.Rotate(rotateAngle,0,0,1);
+		modelStack.Rotate(0,0,0,1);
 	}
 
 	modelStack.Scale(size,size,size);
@@ -676,7 +711,7 @@ void Scene2D::Render2DMesh(Mesh *mesh, bool enableLight, float size, float x, fl
 	modelStack.Translate(x, y, 0);
 	modelStack.Scale(size, size, size);
 	if (rotate)
-		modelStack.Rotate(rotateAngle, 0, 0, 1);
+		modelStack.Rotate(0, 0, 0, 1);
 
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 
@@ -820,12 +855,14 @@ void Scene2D::Exit()
 		if(enemy != NULL)
 		{
 			delete enemy;
+			enemy = NULL;
 		}
 	}
 
 	if(m_player != NULL)
 	{
 		delete m_player;
+		m_player = NULL;
 	}
 
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -837,22 +874,46 @@ void Scene2D::Exit()
 	if(m_cMap != NULL)
 	{
 		delete m_cMap;
+		m_cMap = NULL;
 	}
 
 	if(m_cBoundMap != NULL)
 	{
 		delete m_cBoundMap;
+		m_cBoundMap = NULL;
 	}
 
 	if(m_cDoorInteractionMap != NULL)
 	{
 		delete m_cDoorInteractionMap;
+		m_cDoorInteractionMap = NULL;
 	}
 
 	if(m_cEnemyAndItemMap != NULL)
 	{
 		delete m_cEnemyAndItemMap;
+		m_cEnemyAndItemMap = NULL;
 	}
+
+	if(m_theSoundEngine != NULL)
+	{
+		m_theSoundEngine->drop();
+		m_theSoundEngine = NULL;
+	}
+
+	if(m_backgroundSound != NULL)
+	{
+		m_backgroundSound->drop();
+		m_backgroundSound = NULL;
+	}
+
+	if(m_eventSound != NULL)
+	{
+		m_eventSound->drop();
+		m_eventSound = NULL;
+	}
+
+	
 
 	glDeleteProgram(m_programID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
@@ -932,7 +993,7 @@ void Scene2D::RenderTileMap()
 		}
 	}
 
-	if(m_renderCharacter)
+	if(m_player->GetRenderPlayer())
 	{
 		Render2DMesh(m_player->GetMesh(), false, m_player->GetScale().x, 16.0f + m_player->GetPosition().x, 16.0f + m_player->GetPosition().y);
 	}

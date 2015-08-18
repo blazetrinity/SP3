@@ -26,12 +26,20 @@ void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSiz
 	{
 		this->m_animations[i] = new Animation(); 
 	}
+	
+	m_invunerable = false;
+	m_invunerableTimer = 0;
+	m_renderPlayer = true;
+	m_renderPlayerTimer = 0;
 }
 
-//Update Player
+// Update player position based on player's velocity
 void PlayerIn2D::Update(CMap *map, double dt, bool topDown)
 {
+	// Update position
 	CharacterIn2D::Update(map, dt, topDown);
+
+	// Update idle animation
 	if(m_velocity.Length() == 0)
 	{
 		if(m_facingNormal.y > 0)
@@ -55,6 +63,28 @@ void PlayerIn2D::Update(CMap *map, double dt, bool topDown)
 			GetMesh()->Update(dt);
 		}
 	}
+
+	//Update player vunerablity
+	if(m_invunerable)
+	{
+		m_invunerableTimer -= dt;
+		m_renderPlayerTimer += dt;
+		if(m_invunerableTimer <= 0)
+		{
+			m_invunerable = false;
+			m_invunerableTimer = 0;
+			m_renderPlayer = true;
+			m_renderPlayerTimer = 0;
+		}
+		else
+		{
+			if(m_renderPlayerTimer >= 0.1f)
+			{
+				m_renderPlayer = !m_renderPlayer;
+				m_renderPlayerTimer = 0;
+			}
+		}
+	}
 }
 
 // Set Mesh of the player
@@ -74,11 +104,18 @@ void PlayerIn2D::ChangeAnimation(ANIMATION_TYPE Animation)
 	}
 }
 
-//Set Animations
+// Set Animations
 void PlayerIn2D::SetAnimation(ANIMATION_TYPE Animation, int startFrame,int endFrame, int repeat, float time)
 {
 	this->m_animations[Animation]->Set(startFrame, endFrame, repeat, time);
 }
+
+// Set Player to be invunerable
+void PlayerIn2D::SetInvunerable(bool invunerable)
+{
+	this->m_invunerable = invunerable;
+}
+
 
 // Get Mesh of the player
 SpriteAnimation* PlayerIn2D::GetMesh()
@@ -92,8 +129,13 @@ PlayerIn2D::ANIMATION_TYPE PlayerIn2D::GetAnimation()
 	return m_currentAnimation;
 }
 
+// Get bool to determine player render
+bool PlayerIn2D::GetRenderPlayer()
+{
+	return m_renderPlayer;
+}
 
-// Update Movements
+// Update Velocity Up Down
 void PlayerIn2D::MoveUpDown(const bool mode)
 {
 	if (mode)
@@ -107,6 +149,7 @@ void PlayerIn2D::MoveUpDown(const bool mode)
 	m_velocity.x = 0;
 }
 
+// Update Velocity Left Right
 void PlayerIn2D::MoveLeftRight(const bool mode)
 {
 	if (mode)
@@ -120,6 +163,7 @@ void PlayerIn2D::MoveLeftRight(const bool mode)
 	m_velocity.y = 0;
 }
 
+// Update Velocity Jump
 void PlayerIn2D::Jump()
 {
 

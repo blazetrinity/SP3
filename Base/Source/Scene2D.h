@@ -13,8 +13,12 @@
 #include "PlayerIn2D.h"
 #include "EnemyIn2D.h"
 #include "Strategy_Patrol.h"
+#include <irrKlang.h>
 
+using namespace irrklang;
 using std::vector;
+
+#pragma comment(lib, "irrklang.lib")
 
 class Scene2D : public Scene
 {
@@ -120,13 +124,16 @@ public:
 
 		NUM_LEVELS,
 	};
-	enum WEAPON_ACTION
+	enum SND_SOUNDS
 	{
-		WA_NIL = 0,
-		WA_FIRE,
-		WA_RELOAD,
-		WA_CHANGEWEAPON,
-		WA_TOTAL,
+		SND_BACKGROUND = 0,
+		SND_GHOST_QUEUE,
+		SND_FIRE,
+		SND_DAMAGE,
+		SND_BOSS,
+		SND_BOSS_ATTACK,
+
+		TOTAL_SND,
 	};
 
 private:
@@ -136,8 +143,6 @@ private:
 	unsigned m_parameters[U_TOTAL];
 
 	Camera3 camera;
-
-	float rotateAngle;
 
 	MS modelStack;
 	MS viewStack;
@@ -149,13 +154,13 @@ private:
 
 	float fps;
 
+	// Game element variables
+	bool m_levelCompleted;
 	int m_currentLevel;
 	bool m_updateMap;
-
-	bool m_invunerable;
-	float m_invunerableTimer;
-	bool m_renderCharacter;
-	float m_renderCharacterTimer;
+	float m_ghostQueueTimer;
+	bool m_spawnGhost;
+	bool m_ghostTriggered;
 
 	// Handle to the tilemaps
 	CMap* m_cMap;
@@ -168,5 +173,13 @@ private:
 
 	// Enemey's handler
 	std::vector<EnemyIn2D*> m_enemyList;
+
+	//The sound engine
+	ISoundEngine* m_theSoundEngine;
+	ISound* m_backgroundSound;
+	ISound* m_eventSound;
+	ISoundSource* m_sounds[TOTAL_SND];
+
+	SND_SOUNDS m_currentSound;
 };
 #endif
