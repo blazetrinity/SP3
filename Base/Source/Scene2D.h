@@ -14,6 +14,8 @@
 #include "EnemyIn2D.h"
 #include "Strategy_Patrol.h"
 
+using std::vector;
+
 class Scene2D : public Scene
 {
 public:

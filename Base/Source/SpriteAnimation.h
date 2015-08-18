@@ -31,6 +31,9 @@ public:
 	SpriteAnimation(const SpriteAnimation &copy);
 	SpriteAnimation(const std::string & meshName, int row, int col);
 	~SpriteAnimation();
+	
+	SpriteAnimation& operator=(const SpriteAnimation &copy); //Assignment operator
+	
 	void Update(double dt);
 	bool IsFinish();
 	void Reset();

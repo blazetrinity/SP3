@@ -26,6 +26,18 @@ SpriteAnimation::~SpriteAnimation()
 	}
 }
 
+SpriteAnimation& SpriteAnimation::operator=(const SpriteAnimation &copy)
+{
+	Mesh(copy.name);
+	m_row = copy.m_row;
+	m_col = copy.m_col;
+	m_currentTime = copy.m_currentTime;
+	m_currentFrame = copy.m_currentFrame;
+	m_playCount = copy.m_playCount;
+	m_anim = NULL;
+	return *this;
+}
+
 void SpriteAnimation::Update(double dt)
 {
 	if(m_anim)

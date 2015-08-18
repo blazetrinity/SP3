@@ -458,11 +458,13 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 
 void Scene2D::UpdateEnemy(double dt)
 {
-	for(int i = 0; i < m_enemyList.size(); ++i)
+	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it !=  m_enemyList.end(); ++it)
 	{
-		if(m_enemyList[i]->GetActive() && m_enemyList[i]->GetCurrentLevel() == m_currentLevel)
+		EnemyIn2D *enemy = (EnemyIn2D *) *it;
+
+		if(enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel)
 		{
-			if(((m_enemyList[i]->GetPosition().x - m_cMap->GetmapOffset().x) >= 0) && ((m_enemyList[i]->GetPosition().x - m_cMap->GetmapOffset().x) < m_cMap->GetScreenWidth()) && ((m_enemyList[i]->GetPosition().y >= 0) && (m_enemyList[i]->GetPosition().y < m_cMap->GetScreenHeight())))
+			if(((enemy->GetPosition().x - m_cMap->GetmapOffset().x) >= 0) && ((enemy->GetPosition().x - m_cMap->GetmapOffset().x) < m_cMap->GetScreenWidth()) && ((enemy->GetPosition().y >= 0) && (enemy->GetPosition().y < m_cMap->GetScreenHeight())))
 			{
 				/*float distance = (m_player->GetPos() - (m_enemyList[i]->GetPos() - m_cMap->GetmapOffset().x)).Length();
 				Vector3 FacingNormal = ((m_enemyList[i]->GetPos() - m_cMap->GetmapOffset().x) - m_player->GetPos()).Normalize();
@@ -488,7 +490,7 @@ void Scene2D::UpdateEnemy(double dt)
 				}*/
 			}
 
-			m_enemyList[i]->Update(m_cBoundMap, dt, true);
+			enemy->Update(m_cBoundMap, dt, true);
 
 			//if(m_enemyList[i]->GetEnemyType() == CEnemyIn2D::ENEMY_GROUND)
 			//{
@@ -805,11 +807,13 @@ void Scene2D::Render()
 void Scene2D::Exit()
 {
 	// Cleanup VBO
-	for(int i = 0; i < m_enemyList.size(); ++i)
+	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
 	{
-		if(m_enemyList[i] != NULL)
+		EnemyIn2D* enemy = (EnemyIn2D*)*it;
+		
+		if(enemy != NULL)
 		{
-			delete m_enemyList[i];
+			delete enemy;
 		}
 	}
 
@@ -906,16 +910,18 @@ void Scene2D::RenderTileMap()
 		}
 	}
 
-	for(int i = 0; i < m_enemyList.size(); ++i)
+	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
 	{
-		if(m_enemyList[i]->GetActive() && m_enemyList[i]->GetCurrentLevel() == m_currentLevel)
+		EnemyIn2D* enemy = (EnemyIn2D*)*it;
+
+		if(enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel)
 		{
-			float theEnemy_x = m_enemyList[i]->GetPosition().x;
-			float theEnemy_y = m_enemyList[i]->GetPosition().y;
+			float theEnemy_x = enemy->GetPosition().x;
+			float theEnemy_y = enemy->GetPosition().y;
 
 			if(((theEnemy_x >= 0 + m_cMap->GetmapOffset().x) && (theEnemy_x < m_cMap->GetScreenWidth() + m_cMap->GetmapOffset().x)) && ((theEnemy_y >= 0) && (theEnemy_y < m_cMap->GetScreenHeight())))
 			{
-				Render2DMesh(m_enemyList[i]->GetMesh(), false, m_enemyList[i]->GetScale().x, (16.0f + theEnemy_x) - m_cMap->GetmapOffset().x, (16.0f + theEnemy_y) - m_cMap->GetmapOffset().y);
+				Render2DMesh(enemy->GetMesh(), false, enemy->GetScale().x, (16.0f + theEnemy_x) - m_cMap->GetmapOffset().x, (16.0f + theEnemy_y) - m_cMap->GetmapOffset().y);
 			}
 		}
 	}

@@ -58,7 +58,7 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 
 	if(m_facingNormal.x > 0)
 	{
-		if(map->theScreenMap[tilePos.y][tilePos.x+1] > 0)
+		if(map->theScreenMap[tilePos.y][tilePos.x+1] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
 		{
 			this->m_position.x = this->m_position.x + (m_velocity.x * dt);
 		}
@@ -70,7 +70,7 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 
 	else if(m_facingNormal.x < 0)
 	{
-		if(map->theScreenMap[tilePos.y][tilePos.x] > 0)
+		if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x] > 0)
 		{
 			this->m_position.x = this->m_position.x + (m_velocity.x * dt);
 		}
