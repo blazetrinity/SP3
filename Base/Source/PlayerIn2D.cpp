@@ -172,19 +172,19 @@ void PlayerIn2D::Jump()
 //Calculate Position after entering level
 void PlayerIn2D::CalPosition(const int leftBorder, const int rightBorder, const int topBorder, const int bottomBorder, const float tileSize)
 {
-	if(m_position.x < leftBorder)
+	if(m_position.x <= leftBorder)
 	{
 		m_position.x = rightBorder - tileSize;
 	}
-	else if(m_position.x > rightBorder)
+	else if(m_position.x >= rightBorder)
 	{
 		m_position.x = leftBorder + tileSize;
 	}
-	else if(m_position.y < topBorder)
+	else if(m_position.y <= topBorder)
 	{
 		m_position.y = bottomBorder - tileSize;
 	}
-	else if(m_position.y > bottomBorder)
+	else if(m_position.y >= bottomBorder)
 	{
 		m_position.y = topBorder + tileSize;
 	}

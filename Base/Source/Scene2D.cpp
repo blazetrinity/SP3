@@ -27,7 +27,7 @@ Scene2D::~Scene2D()
 void Scene2D::Init()
 {
 	// Blue background
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
 	// Accept fragment if it closer to the camera than the former one
@@ -167,15 +167,15 @@ void Scene2D::Init()
 	// Initialise and load the tile map
 	m_cMap = new CMap();
 	m_cMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cMap->LoadMap( "Image//TestVisual.csv" );
+	m_cMap->LoadMap( "Image//level1_visual.csv" );
 
 	m_cBoundMap = new CMap();
 	m_cBoundMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cBoundMap->LoadMap( "Image//TestBound.csv" );
+	m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
 
 	m_cDoorInteractionMap = new CMap();
 	m_cDoorInteractionMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cDoorInteractionMap->LoadMap( "Image//TestDoorInteraction.csv" );
+	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
 
 	//Init Enemy Ai position and animations
 	m_cEnemyAndItemMap = new CMap();
@@ -267,7 +267,7 @@ void Scene2D::Init()
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
 	
 	m_player = new PlayerIn2D();
-	m_player->Init(Vector2(256, 96), Vector2(32, 32), 10, 1);
+	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1);
 	m_player->SetMesh(sa);
 	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -478,21 +478,27 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 	{
 		if(m_currentLevel == LEVEL1)
 		{
-			m_cMap->LoadMap( "Image//Level1Visual.csv" );
-			m_cBoundMap->LoadMap( "Image//Level1Bound.csv" );
-			m_cDoorInteractionMap->LoadMap( "Image//Level1DoorInteraction.csv" );
+			m_cMap->LoadMap( "Image//level1_visual.csv" );
+			m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
+			m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
 		}
 		else if(m_currentLevel == LEVEL2)
 		{
-			m_cMap->LoadMap( "Image//Level2Visual.csv" );
-			m_cBoundMap->LoadMap( "Image//Level2Bound.csv" );
-			m_cDoorInteractionMap->LoadMap( "Image//Level2DoorInteraction.csv" );
+			m_cMap->LoadMap( "Image//level2_visual.csv" );
+			m_cBoundMap->LoadMap( "Image//level2_bound.csv" );
+			m_cDoorInteractionMap->LoadMap( "Image//level2_door.csv" );
 		}
 		else if(m_currentLevel == LEVEL3)
 		{
-			m_cMap->LoadMap( "Image//Level3Visual.csv" );
-			m_cBoundMap->LoadMap( "Image//Level3Bound.csv" );
-			m_cDoorInteractionMap->LoadMap( "Image//Level3DoorInteraction.csv" );
+			m_cMap->LoadMap( "Image//level3_visual.csv" );
+			m_cBoundMap->LoadMap( "Image//level3_bound.csv" );
+			m_cDoorInteractionMap->LoadMap( "Image//level3_door.csv" );
+		}
+		else if(m_currentLevel == LEVEL4)
+		{
+			m_cMap->LoadMap( "Image//level4_visual.csv" );
+			m_cBoundMap->LoadMap( "Image//level4_bound.csv" );
+			m_cDoorInteractionMap->LoadMap( "Image//level4_door.csv" );
 		}
 
 		m_player->CalPosition((m_cMap->GetTileSize()), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), (m_cMap->GetTileSize()), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), m_cMap->GetTileSize());
@@ -795,7 +801,7 @@ void Scene2D::RenderMesh(Mesh *mesh, bool enableLight)
 void Scene2D::RenderBackground()
 {
 	// Render the background
-	Render2DMesh(meshList[GEO_BACKGROUND], false, 1.0f);
+	//Render2DMesh(meshList[GEO_BACKGROUND], false, 1.0f);
 }
 
 void Scene2D::Render()
