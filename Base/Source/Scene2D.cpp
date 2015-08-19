@@ -147,22 +147,14 @@ void Scene2D::Init()
 	meshList[GEO_TEXT]->textureID[0] = LoadTGA("Image//calibri.tga");
 
 	// Load the ground mesh and texture
-	meshList[GEO_BACKGROUND] = MeshBuilder::Generate2DMesh("GEO_BACKGROUND", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_BACKGROUND] = MeshBuilder::Generate2DMesh("GEO_BACKGROUND", Color(1, 1, 1), 0, 0, 1024, 800);
 	meshList[GEO_BACKGROUND]->textureID[0] = LoadTGA("Image//2DBackGround.tga");
-	meshList[GEO_BACKGROUNDPILLAR] = MeshBuilder::Generate2DMesh("GEO_BACKGROUNDPILLAR", Color(1, 1, 1), 0.0f, 0.0f, 1.0f, 1.0f);
-	meshList[GEO_BACKGROUNDPILLAR]->textureID[0] = LoadTGA("Image//RearMapPillar.tga");
 	meshList[GEO_CHARACTER] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER", 4, 3);
 	meshList[GEO_CHARACTER]->textureID[0] = LoadTGA("Image//enemy1_sprite.tga");
 	meshList[GEO_CHARACTER_TEST] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
 	meshList[GEO_CHARACTER_TEST]->textureID[0] = LoadTGA("Image//character_sprite.tga");
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 2, 3);
 	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//TileMap.tga");
-	meshList[GEO_GROUNDENEMYLEFT] = MeshBuilder::Generate2DMesh("GEO_GROUNDENEMYLEFT", Color(1, 1, 1), 0.0f, 0.0f, 1.0f, 1.0f);
-	meshList[GEO_GROUNDENEMYLEFT]->textureID[0] = LoadTGA("Image//GroundEnemyLeft.tga");
-	meshList[GEO_GROUNDENEMYRIGHT] = MeshBuilder::Generate2DMesh("GEO_GROUNDENEMYRIGHT", Color(1, 1, 1), 0.0f, 0.0f, 1.0f, 1.0f);
-	meshList[GEO_GROUNDENEMYRIGHT]->textureID[0] = LoadTGA("Image//GroundEnemyRight.tga");
-	meshList[GEO_AIRENEMY] = MeshBuilder::Generate2DMesh("GEO_AIRENEMY", Color(1, 1, 1), 0.0f, 0.0f, 1.0f, 1.0f);
-	meshList[GEO_AIRENEMY]->textureID[0] = LoadTGA("Image//AirEnemy.tga");
 
 	// Initialise and load the tile map
 	m_cMap = new CMap();
@@ -205,9 +197,16 @@ void Scene2D::Init()
 					SpriteAnimation *newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1);
 
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 0, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
 
 					Strategy_Patrol* theStrategy = new Strategy_Patrol;
@@ -220,9 +219,16 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1);
 
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 0, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
 
 					Strategy_Patrol* theStrategy = new Strategy_Patrol;
@@ -235,9 +241,16 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1);
 
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 0, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
 
 					Strategy_Patrol* theStrategy = new Strategy_Patrol;
@@ -250,9 +263,16 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1);
 
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 0, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
 
 					Strategy_Patrol* theStrategy = new Strategy_Patrol;
@@ -265,7 +285,7 @@ void Scene2D::Init()
 
 	// Init Player position and animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
-	
+
 	m_player = new PlayerIn2D();
 	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1);
 	m_player->SetMesh(sa);
@@ -363,7 +383,7 @@ void Scene2D::Update(double dt)
 	//Up ghost trigger
 	if(!m_ghostTriggered && !m_levelCompleted)
 	{
-		m_ghostQueueTimer -= dt;
+		m_ghostQueueTimer -= (float)dt;
 
 		if(m_ghostQueueTimer <= 0)
 		{
@@ -381,9 +401,9 @@ void Scene2D::Update(double dt)
 				// Check if player hiding
 				//if(playerhiding)
 				//{
-					m_spawnGhost = true;
+				m_spawnGhost = true;
 				//}
-				
+
 				//m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
 				m_backgroundSound->stop();
 				m_backgroundSound->drop();
@@ -501,7 +521,7 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 			m_cDoorInteractionMap->LoadMap( "Image//level4_door.csv" );
 		}
 
-		m_player->CalPosition((m_cMap->GetTileSize()), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), (m_cMap->GetTileSize()), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), m_cMap->GetTileSize());
+		m_player->CalPosition((m_cMap->GetTileSize()), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), (m_cMap->GetTileSize()), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), (float)m_cMap->GetTileSize());
 		m_updateMap = false;
 	}
 }
@@ -521,22 +541,22 @@ void Scene2D::UpdateEnemy(double dt)
 
 				if((distance) < m_cMap->GetTileSize())
 				{
-					if(FacingNormal.x < 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_LEFT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_LEFT)))
-					{
-						m_enemyList[i]->SetActive(false);
-						continue;
-					}
-					else if(FacingNormal.x > 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_RIGHT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_RIGHT)))
-					{
-						m_enemyList[i]->SetActive(false);
-						continue;
-					}
-					else if(!m_invunerable)
-					{
-						m_invunerable = true;
-						m_invunerableTimer = 5;
-						m_renderCharacter = false;
-					}
+				if(FacingNormal.x < 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_LEFT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_LEFT)))
+				{
+				m_enemyList[i]->SetActive(false);
+				continue;
+				}
+				else if(FacingNormal.x > 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_RIGHT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_RIGHT)))
+				{
+				m_enemyList[i]->SetActive(false);
+				continue;
+				}
+				else if(!m_invunerable)
+				{
+				m_invunerable = true;
+				m_invunerableTimer = 5;
+				m_renderCharacter = false;
+				}
 				}*/
 			}
 
@@ -857,7 +877,7 @@ void Scene2D::Exit()
 	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
 	{
 		EnemyIn2D* enemy = (EnemyIn2D*)*it;
-		
+
 		if(enemy != NULL)
 		{
 			delete enemy;
@@ -919,7 +939,7 @@ void Scene2D::Exit()
 		m_eventSound = NULL;
 	}
 
-	
+
 
 	glDeleteProgram(m_programID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
@@ -931,13 +951,13 @@ Render the tile map. This is a private function for use in this class only
 void Scene2D::RenderTileMap()
 {
 	int m = 0;
-	m_cMap->SetmapFineOffset(Vector2((int)(m_cMap->GetmapOffset().x) % m_cMap->GetTileSize()));
+	m_cMap->SetmapFineOffset(Vector2((float)((int)(m_cMap->GetmapOffset().x) % m_cMap->GetTileSize())));
 
 	for(int i = 0; i < m_cMap->GetNumOfTiles_Height(); i ++)
 	{
 		for(int k = 0; k < m_cMap->GetNumOfTiles_Width() + 1; k ++)
 		{
-			m = m_cMap->GettileOffset().x + k;
+			m = (int)m_cMap->GettileOffset().x + k;
 			// If we have reached the right side of the Map, then do not display the extra column of tiles.
 			if(m >= m_cMap->GetNumOfTiles_MapWidth())
 			{

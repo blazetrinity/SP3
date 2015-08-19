@@ -28,9 +28,11 @@ void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel,
 {
 	CharacterIn2D::Init(position, scale, mass, tileSize);
 	this->m_currentLevel = gameLevel;
-	this->m_sprite = newSprite;
+	this->m_sprite = new SpriteAnimation;
+	*(this->m_sprite) = *newSprite;
 	this->m_enemyType = newType;
 	this->m_active = true;
+
 	if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
 	{
 		this->m_facingNormal.Set(0, 1);
@@ -115,36 +117,56 @@ void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown)
 		}
 	}
 
-	//HERE!!!!  set,change,etc
-	if(m_facingNormal.x < 0)
-	{
-		SetAnimation(WALK_LEFT, 3, 5, 0, 1);
-		ChangeAnimation(WALK_LEFT);
-		GetMesh()->Update(dt);
-	}
-	else if(m_facingNormal.y > 0)
-	{
-		SetAnimation(WALK_UP, 9, 11, 0, 1);
-		ChangeAnimation(WALK_UP);
-		GetMesh()->Update(dt);
-	}
-	else if(m_facingNormal.y < 0)
-	{
-		SetAnimation(WALK_DOWN, 0, 2, 0, 1);
-		ChangeAnimation(WALK_DOWN);
-		GetMesh()->Update(dt);
-	}
-	else if(m_facingNormal.x > 0)
-	{
-		SetAnimation(WALK_RIGHT, 6, 8, 0, 1);
-		ChangeAnimation(WALK_RIGHT);
-		GetMesh()->Update(dt);
-	}
-	
-	
-
 	// Update enemy's position
 	CharacterIn2D::Update(m_cMap, dt, topDown);
+
+	if(m_velocity.Length() != 0)
+	{
+		if(m_facingNormal.x < 0)
+		{
+			ChangeAnimation(WALK_LEFT);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.y > 0)
+		{
+			ChangeAnimation(WALK_UP);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.y < 0)
+		{
+			ChangeAnimation(WALK_DOWN);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.x > 0)
+		{
+			ChangeAnimation(WALK_RIGHT);
+			GetMesh()->Update(dt);
+		}
+	}
+	else
+	{
+		//HERE!!!!  set,change,etc
+		if(m_facingNormal.x < 0)
+		{
+			ChangeAnimation(IDLE_LEFT);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.y > 0)
+		{
+			ChangeAnimation(IDLE_UP);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.y < 0)
+		{
+			ChangeAnimation(IDLE_DOWN);
+			GetMesh()->Update(dt);
+		}
+		else if(m_facingNormal.x > 0)
+		{
+			ChangeAnimation(IDLE_RIGHT);
+			GetMesh()->Update(dt);
+		}
+	}
 }
 
 // Update Enemy Ai's strategy

@@ -4,7 +4,6 @@
 
 SpriteAnimation::SpriteAnimation()
 {
-
 }
 
 SpriteAnimation::SpriteAnimation(const std::string &meshName, int row, int col) : Mesh(meshName), m_row(row), m_col(col), m_currentTime(0), m_currentFrame(0), m_playCount(0)
@@ -28,12 +27,17 @@ SpriteAnimation::~SpriteAnimation()
 
 SpriteAnimation& SpriteAnimation::operator=(const SpriteAnimation &copy)
 {
-	Mesh(copy.name);
-	m_row = copy.m_row;
-	m_col = copy.m_col;
-	m_currentTime = copy.m_currentTime;
-	m_currentFrame = copy.m_currentFrame;
-	m_playCount = copy.m_playCount;
+	this->textureID[0] = copy.textureID[0];
+	this->vertexBuffer = copy.vertexBuffer;
+	this->indexBuffer = copy.indexBuffer;
+	this->indexSize = copy.indexSize;
+	this->material = copy.material;
+
+	this->m_row = copy.m_row;
+	this->m_col = copy.m_col;
+	this->m_currentTime = copy.m_currentTime;
+	this->m_currentFrame = copy.m_currentFrame;
+	this->m_playCount = copy.m_playCount;
 	m_anim = NULL;
 	return *this;
 }
