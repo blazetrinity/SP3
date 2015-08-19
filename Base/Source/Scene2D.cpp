@@ -151,8 +151,8 @@ void Scene2D::Init()
 	meshList[GEO_BACKGROUND]->textureID[0] = LoadTGA("Image//2DBackGround.tga");
 	meshList[GEO_BACKGROUNDPILLAR] = MeshBuilder::Generate2DMesh("GEO_BACKGROUNDPILLAR", Color(1, 1, 1), 0.0f, 0.0f, 1.0f, 1.0f);
 	meshList[GEO_BACKGROUNDPILLAR]->textureID[0] = LoadTGA("Image//RearMapPillar.tga");
-	meshList[GEO_CHARACTER] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER", 12, 16);
-	meshList[GEO_CHARACTER]->textureID[0] = LoadTGA("Image//CharacterAnimation.tga");
+	meshList[GEO_CHARACTER] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER", 4, 3);
+	meshList[GEO_CHARACTER]->textureID[0] = LoadTGA("Image//enemy1_sprite.tga");
 	meshList[GEO_CHARACTER_TEST] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
 	meshList[GEO_CHARACTER_TEST]->textureID[0] = LoadTGA("Image//character_sprite.tga");
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 2, 3);
@@ -202,7 +202,7 @@ void Scene2D::Init()
 			{
 				if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN)
 				{
-					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
+					SpriteAnimation *newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 					theEnemy->Init(Vector2(k * m_cEnemyAndItemMap->GetTileSize(), (m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1);

@@ -115,6 +115,34 @@ void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown)
 		}
 	}
 
+	//HERE!!!!  set,change,etc
+	if(m_facingNormal.x < 0)
+	{
+		SetAnimation(WALK_LEFT, 3, 5, 0, 1);
+		ChangeAnimation(WALK_LEFT);
+		GetMesh()->Update(dt);
+	}
+	else if(m_facingNormal.y > 0)
+	{
+		SetAnimation(WALK_UP, 9, 11, 0, 1);
+		ChangeAnimation(WALK_UP);
+		GetMesh()->Update(dt);
+	}
+	else if(m_facingNormal.y < 0)
+	{
+		SetAnimation(WALK_DOWN, 0, 2, 0, 1);
+		ChangeAnimation(WALK_DOWN);
+		GetMesh()->Update(dt);
+	}
+	else if(m_facingNormal.x > 0)
+	{
+		SetAnimation(WALK_RIGHT, 6, 8, 0, 1);
+		ChangeAnimation(WALK_RIGHT);
+		GetMesh()->Update(dt);
+	}
+	
+	
+
 	// Update enemy's position
 	CharacterIn2D::Update(m_cMap, dt, topDown);
 }
