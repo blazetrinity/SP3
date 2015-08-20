@@ -120,6 +120,7 @@ void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown)
 	// Update enemy's position
 	CharacterIn2D::Update(m_cMap, dt, topDown);
 
+	// Update enemy's moving animation
 	if(m_velocity.Length() != 0)
 	{
 		if(m_facingNormal.x < 0)
