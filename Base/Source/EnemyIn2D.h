@@ -37,7 +37,7 @@ public:
 	};
 
 	//Init Enemy
-	void Init(Vector2 position, Vector2 scale, float mass, int gameLevel, SpriteAnimation *newSprite, ENEMY_TYPE newType, float tileSize);
+	void Init(Vector2 position, Vector2 scale, float mass, int gameLevel, SpriteAnimation *newSprite, ENEMY_TYPE newType, float tileSize, Skill* skill);
 
 	//Update Enemy
 	void Update(CMap *map, double dt, bool topDown);
@@ -73,6 +73,9 @@ public:
 	// Get Active
 	bool GetActive();
 	
+	// Attack
+	virtual bool Attack();
+
 	// Get Enemy type
 	ENEMY_TYPE GetEnemyType();
 

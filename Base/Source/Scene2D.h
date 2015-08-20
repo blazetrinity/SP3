@@ -13,6 +13,7 @@
 #include "PlayerIn2D.h"
 #include "EnemyIn2D.h"
 #include "Strategy_Patrol.h"
+#include "Projectile.h"
 #include <irrKlang.h>
 
 using namespace irrklang;
@@ -44,8 +45,13 @@ public:
 	void Render2DMesh(Mesh *mesh, const bool enableLight, const float size=1.0f, const float x=0.0f, const float y=0.0f, const bool rotate=false);
 
 	void RenderTileMap();
-	void UpdateLevel(int checkPosition_X, int checkPosition_Y);
+
+	void UpdatePlayer(double dt);
 	void UpdateEnemy(double dt);
+	void UpdateLevel(int checkPosition_X, int checkPosition_Y);
+	
+
+	Projectile* FetchProjectile();
 
 	enum UNIFORM_TYPE
 	{
@@ -169,7 +175,10 @@ private:
 	PlayerIn2D* m_player;
 
 	// Enemey's handler
-	std::vector<EnemyIn2D*> m_enemyList;
+	vector<EnemyIn2D*> m_enemyList;
+
+	// Projectile's handler
+	vector<Projectile*> m_projectileList;
 
 	//The sound engine
 	ISoundEngine* m_theSoundEngine;

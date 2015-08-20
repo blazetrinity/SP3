@@ -197,7 +197,7 @@ void Scene2D::Init()
 					SpriteAnimation *newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, NULL);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -219,7 +219,7 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1, NULL);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -241,7 +241,7 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, NULL);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -263,7 +263,7 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, NULL);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -287,7 +287,7 @@ void Scene2D::Init()
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
 
 	m_player = new PlayerIn2D();
-	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1);
+	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1, NULL);
 	m_player->SetMesh(sa);
 	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -348,34 +348,7 @@ void Scene2D::Update(double dt)
 	//Check if player is going into the next level
 	UpdateLevel(checkPosition_X, checkPosition_Y);
 
-	//Player Movement
-	if(Application::IsKeyPressed('W'))
-	{
-		m_player->MoveUpDown(true);
-		m_player->ChangeAnimation(PlayerIn2D::WALK_UP);
-		m_player->GetMesh()->Update(dt);
-	}
-	else if(Application::IsKeyPressed('S'))
-	{
-		m_player->MoveUpDown(false);
-		m_player->ChangeAnimation(PlayerIn2D::WALK_DOWN);
-		m_player->GetMesh()->Update(dt);
-	}
-	else if(Application::IsKeyPressed('A'))
-	{
-		m_player->MoveLeftRight(true);
-		m_player->ChangeAnimation(PlayerIn2D::WALK_LEFT);
-		m_player->GetMesh()->Update(dt);
-	}
-	else if(Application::IsKeyPressed('D'))
-	{
-		m_player->MoveLeftRight(false);
-		m_player->ChangeAnimation(PlayerIn2D::WALK_RIGHT);
-		m_player->GetMesh()->Update(dt);
-	}
-
-	//Update the player velocity and position
-	m_player->Update(m_cBoundMap, dt, true);
+	UpdatePlayer(dt);
 
 	//Ai Update and collision with character
 	UpdateEnemy(dt);
@@ -436,6 +409,85 @@ void Scene2D::Update(double dt)
 	//Scroll the Visual Map and update player position to scroll box's edge
 	m_player->SetPosition(m_cMap->Update(m_cMap->GetTileSize(), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), m_cMap->GetTileSize(), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), m_player->GetPosition()));
 	fps = (float)(1.f / dt);
+}
+
+void Scene2D::UpdatePlayer(double dt)
+{
+	//Player Movement
+	if(Application::IsKeyPressed('W'))
+	{
+		m_player->MoveUpDown(true);
+		m_player->ChangeAnimation(PlayerIn2D::WALK_UP);
+		m_player->GetMesh()->Update(dt);
+	}
+	else if(Application::IsKeyPressed('S'))
+	{
+		m_player->MoveUpDown(false);
+		m_player->ChangeAnimation(PlayerIn2D::WALK_DOWN);
+		m_player->GetMesh()->Update(dt);
+	}
+	else if(Application::IsKeyPressed('A'))
+	{
+		m_player->MoveLeftRight(true);
+		m_player->ChangeAnimation(PlayerIn2D::WALK_LEFT);
+		m_player->GetMesh()->Update(dt);
+	}
+	else if(Application::IsKeyPressed('D'))
+	{
+		m_player->MoveLeftRight(false);
+		m_player->ChangeAnimation(PlayerIn2D::WALK_RIGHT);
+		m_player->GetMesh()->Update(dt);
+	}
+	if(Application::IsKeyPressed(VK_SPACE))
+	{
+		if(m_player->Attack())
+		{
+			Projectile* projectile = FetchProjectile();
+			projectile->Init(m_player->GetSkill(), m_player->GetFacingNormal());
+		}
+	}
+
+	//Update the player velocity and position
+	m_player->Update(m_cBoundMap, dt, true);
+}
+
+void Scene2D::UpdateEnemy(double dt)
+{
+	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it !=  m_enemyList.end(); ++it)
+	{
+		EnemyIn2D *enemy = (EnemyIn2D *) *it;
+
+		if(enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel)
+		{
+			if(((enemy->GetPosition().x - m_cMap->GetmapOffset().x) >= 0) && ((enemy->GetPosition().x - m_cMap->GetmapOffset().x) < m_cMap->GetScreenWidth()) && ((enemy->GetPosition().y >= 0) && (enemy->GetPosition().y < m_cMap->GetScreenHeight())))
+			{
+				/*float distance = (m_player->GetPos() - (m_enemyList[i]->GetPos() - m_cMap->GetmapOffset().x)).Length();
+				Vector3 FacingNormal = ((m_enemyList[i]->GetPos() - m_cMap->GetmapOffset().x) - m_player->GetPos()).Normalize();
+
+				if((distance) < m_cMap->GetTileSize())
+				{
+				if(FacingNormal.x < 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_LEFT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_LEFT)))
+				{
+				m_enemyList[i]->SetActive(false);
+				continue;
+				}
+				else if(FacingNormal.x > 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_RIGHT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_RIGHT)))
+				{
+				m_enemyList[i]->SetActive(false);
+				continue;
+				}
+				else if(!m_invunerable)
+				{
+				m_invunerable = true;
+				m_invunerableTimer = 5;
+				m_renderCharacter = false;
+				}
+				}*/
+			}
+
+			enemy->Update(m_cBoundMap, dt, true);
+		}
+	}
 }
 
 void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
@@ -526,55 +578,27 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 	}
 }
 
-void Scene2D::UpdateEnemy(double dt)
+Projectile* Scene2D::FetchProjectile()
 {
-	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it !=  m_enemyList.end(); ++it)
+	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
 	{
-		EnemyIn2D *enemy = (EnemyIn2D *) *it;
-
-		if(enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel)
+		Projectile* projectile = (Projectile*)*it;
+		if(!projectile->GetActive())
 		{
-			if(((enemy->GetPosition().x - m_cMap->GetmapOffset().x) >= 0) && ((enemy->GetPosition().x - m_cMap->GetmapOffset().x) < m_cMap->GetScreenWidth()) && ((enemy->GetPosition().y >= 0) && (enemy->GetPosition().y < m_cMap->GetScreenHeight())))
-			{
-				/*float distance = (m_player->GetPos() - (m_enemyList[i]->GetPos() - m_cMap->GetmapOffset().x)).Length();
-				Vector3 FacingNormal = ((m_enemyList[i]->GetPos() - m_cMap->GetmapOffset().x) - m_player->GetPos()).Normalize();
-
-				if((distance) < m_cMap->GetTileSize())
-				{
-				if(FacingNormal.x < 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_LEFT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_LEFT)))
-				{
-				m_enemyList[i]->SetActive(false);
-				continue;
-				}
-				else if(FacingNormal.x > 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_RIGHT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_RIGHT)))
-				{
-				m_enemyList[i]->SetActive(false);
-				continue;
-				}
-				else if(!m_invunerable)
-				{
-				m_invunerable = true;
-				m_invunerableTimer = 5;
-				m_renderCharacter = false;
-				}
-				}*/
-			}
-
-			enemy->Update(m_cBoundMap, dt, true);
-
-			//if(m_enemyList[i]->GetEnemyType() == CEnemyIn2D::ENEMY_GROUND)
-			//{
-			//	if(m_enemyList[i]->GetFacing())
-			//	{
-			//		m_enemyList[i]->SetMesh(meshList[GEO_GROUNDENEMYRIGHT]);
-			//	}
-			//	else
-			//	{
-			//		m_enemyList[i]->SetMesh(meshList[GEO_GROUNDENEMYLEFT]);
-			//	}
-			//}
+			projectile->SetActive(true);
+			return projectile;
 		}
 	}
+
+	for(int i = 0; i < 10; ++i)
+	{
+		Projectile* projectile = new Projectile;
+		m_projectileList.push_back(projectile);
+	}
+
+	Projectile* projectile = m_projectileList.back();
+	projectile->SetActive(true);
+	return projectile;
 }
 
 /********************************************************************************

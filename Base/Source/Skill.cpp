@@ -10,13 +10,14 @@ Skill::~Skill(void)
 {
 }
 
-void Skill::Init(float lifeTime, float damage, float coolDown, bool ranged)
+void Skill::Init(float lifeTime, float damage, float coolDown, bool ranged, Tag::ENTITIES_TAGS entity)
 {
 	this->m_lifeTime = lifeTime;
 	this->m_damage = damage;
 	this->m_coolDown = coolDown;
 	this->m_ranged = ranged;
 	this->m_lastUse = 0;
+	this->m_tag.SetEntity(entity);
 }
 	
 void Skill::Update(double dt)
@@ -48,4 +49,9 @@ float Skill::GetDamage()
 bool Skill::GetRanged()
 {
 	return m_ranged;
+}
+
+Tag Skill::GetTag()
+{
+	return m_tag;
 }

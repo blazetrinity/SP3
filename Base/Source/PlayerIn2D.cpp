@@ -19,9 +19,9 @@ PlayerIn2D::~PlayerIn2D(void)
 }
 
 //Init Player
-void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize)
+void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill)
 {
-	CharacterIn2D::Init(position, scale, mass, tileSize);
+	CharacterIn2D::Init(position, scale, mass, tileSize, skill);
 	for(int i = 0; i < NUM_ANIMATION; ++i)
 	{
 		this->m_animations[i] = new Animation(); 
@@ -85,6 +85,15 @@ void PlayerIn2D::Update(CMap *map, double dt, bool topDown)
 			}
 		}
 	}
+}
+
+bool PlayerIn2D::Attack()
+{
+	if(m_skill != NULL)
+	{
+		return m_skill->Use();
+	}
+	return false;
 }
 
 // Set Mesh of the player
