@@ -48,6 +48,7 @@ public:
 
 	void UpdatePlayer(double dt);
 	void UpdateEnemy(double dt);
+	void UpdateProjectile(double dt);
 	void UpdateLevel(int checkPosition_X, int checkPosition_Y);
 	
 
@@ -106,6 +107,7 @@ public:
 		GEO_ENEMY1,
 		GEO_ENEMY2,
 		GEO_TEXT,
+		GEO_BULLET,
 		NUM_GEOMETRY,
 	};
 	enum TILE_ID

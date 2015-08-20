@@ -3,7 +3,8 @@
 GameObjectIn2D::GameObjectIn2D(void)
 {
 	this->m_position.Set(0,0);
-	this->m_scale.Set(0,0);
+	this->m_scale.Set(32,32);
+	this->m_mass = 0;
 }
 
 GameObjectIn2D::~GameObjectIn2D(void)

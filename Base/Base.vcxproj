@@ -39,16 +39,20 @@
     <ClCompile Include="Source\ObjectClass.cpp" />
     <ClCompile Include="Source\Particle.cpp" />
     <ClCompile Include="Source\PlayerIn2D.cpp" />
+    <ClCompile Include="Source\Projectile.cpp" />
     <ClCompile Include="Source\Scene2D.cpp" />
     <ClCompile Include="Source\shader.cpp" />
+    <ClCompile Include="Source\Skill.cpp" />
     <ClCompile Include="Source\SpriteAnimation.cpp" />
     <ClCompile Include="Source\Strategy.cpp" />
     <ClCompile Include="Source\Strategy_Patrol.cpp" />
+    <ClCompile Include="Source\Tag.cpp" />
     <ClCompile Include="Source\TileMap.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Source\CollisionIn2D.h" />
     <ClInclude Include="Source\EnemyIn3D.h" />
     <ClInclude Include="Source\Application.h" />
@@ -79,16 +83,22 @@
     <ClInclude Include="Source\ObjectClass.h" />
     <ClInclude Include="Source\Particle.h" />
     <ClInclude Include="Source\PlayerIn2D.h" />
+    <ClInclude Include="Source\Projectile.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\Scene2D.h" />
     <ClInclude Include="Source\shader.hpp" />
+    <ClInclude Include="Source\Skill.h" />
     <ClInclude Include="Source\SpriteAnimation.h" />
     <ClInclude Include="Source\Strategy.h" />
     <ClInclude Include="Source\Strategy_Patrol.h" />
+    <ClInclude Include="Source\Tag.h" />
     <ClInclude Include="Source\TileMap.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\Weapon.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Base.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B172635-4E2B-46F1-A403-08F4194D00F5}</ProjectGuid>

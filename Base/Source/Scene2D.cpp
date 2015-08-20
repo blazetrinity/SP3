@@ -160,6 +160,9 @@ void Scene2D::Init()
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 2, 3);
 	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//TileMap.tga");
 
+	meshList[GEO_BULLET] = MeshBuilder::Generate2DMesh("GEO_BULLET", Color(1, 1, 1), 0, 0, 1, 1);
+	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
+
 	// Initialise and load the tile map
 	m_cMap = new CMap();
 	m_cMap->Init(800, 1024, 25, 32, 800 ,1024);
@@ -289,9 +292,11 @@ void Scene2D::Init()
 
 	// Init Player position and animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
+	Skill* skill = new Skill();
+	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
 
 	m_player = new PlayerIn2D();
-	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1, NULL);
+	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1, skill);
 	m_player->SetMesh(sa);
 	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -352,10 +357,14 @@ void Scene2D::Update(double dt)
 	//Check if player is going into the next level
 	UpdateLevel(checkPosition_X, checkPosition_Y);
 
+	//Player update
 	UpdatePlayer(dt);
 
 	//Ai Update and collision with character
 	UpdateEnemy(dt);
+
+	//Projectile Update
+	UpdateProjectile(dt);
 
 	//Up ghost trigger
 	if(!m_ghostTriggered && !m_levelCompleted)
@@ -447,7 +456,7 @@ void Scene2D::UpdatePlayer(double dt)
 		if(m_player->Attack())
 		{
 			Projectile* projectile = FetchProjectile();
-			projectile->Init(m_player->GetSkill(), m_player->GetFacingNormal());
+			projectile->Init(m_player->GetSkill(),m_player->GetPosition(), m_player->GetFacingNormal(), meshList[GEO_BULLET], m_currentLevel);
 		}
 	}
 
@@ -490,6 +499,24 @@ void Scene2D::UpdateEnemy(double dt)
 			}
 
 			enemy->Update(m_cBoundMap, dt, true);
+		}
+	}
+}
+
+void Scene2D::UpdateProjectile(double dt)
+{
+	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
+	{
+		Projectile* projectile = (Projectile*)*it;
+
+		if(projectile->GetActive() && projectile->GetLevel() != m_currentLevel)
+		{
+			projectile->SetActive(false);
+		}
+
+		if(projectile->GetActive())
+		{
+			projectile->Update(m_cBoundMap, dt);
 		}
 	}
 }
@@ -913,6 +940,17 @@ void Scene2D::Exit()
 		}
 	}
 
+	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
+	{
+		Projectile* projectile = (Projectile*)*it;
+
+		if(projectile != NULL)
+		{
+			delete projectile;
+			projectile = NULL;
+		}
+	}
+
 	if(m_player != NULL)
 	{
 		delete m_player;
@@ -966,8 +1004,6 @@ void Scene2D::Exit()
 		m_eventSound->drop();
 		m_eventSound = NULL;
 	}
-
-
 
 	glDeleteProgram(m_programID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
@@ -1044,6 +1080,16 @@ void Scene2D::RenderTileMap()
 			{
 				Render2DMesh(enemy->GetMesh(), false, enemy->GetScale().x, (16.0f + theEnemy_x) - m_cMap->GetmapOffset().x, (16.0f + theEnemy_y) - m_cMap->GetmapOffset().y);
 			}
+		}
+	}
+
+	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
+	{
+		Projectile* projectile = (Projectile*)*it;
+
+		if(projectile->GetActive())
+		{
+			Render2DMesh(projectile->GetMesh(),false, projectile->GetScale().x, 0.0f + projectile->GetPosition().x, 0.0f + projectile->GetPosition().y);
 		}
 	}
 

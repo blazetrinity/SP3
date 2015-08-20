@@ -64,6 +64,10 @@ void PlayerIn2D::Update(CMap *map, double dt, bool topDown)
 		}
 	}
 
+	if(m_skill != NULL)
+	{
+		m_skill->Update(dt);
+	}
 	//Update player vunerablity
 	if(m_invunerable)
 	{
