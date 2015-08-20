@@ -146,7 +146,6 @@ void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown)
 	}
 	else
 	{
-		//HERE!!!!  set,change,etc
 		if(m_facingNormal.x < 0)
 		{
 			ChangeAnimation(IDLE_LEFT);
