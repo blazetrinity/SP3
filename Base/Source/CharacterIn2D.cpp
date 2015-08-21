@@ -12,10 +12,11 @@ CharacterIn2D::~CharacterIn2D(void)
 {
 }
 
-void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill)
+void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill, int health)
 {
 	GameObjectIn2D::Init(position, scale, mass, tileSize);
 	this->m_skill = skill;
+	this->m_health = health;
 }
 
 void CharacterIn2D::Update(CMap *map,double dt, bool topDown)
@@ -129,4 +130,16 @@ Skill* CharacterIn2D::GetSkill()
 Vector2 CharacterIn2D::GetFacingNormal()
 {
 	return m_facingNormal;
+}
+
+bool CharacterIn2D::TakeDamage(float damage)
+{
+	m_health -= damage;
+
+	if(m_health <= 0)
+	{
+		return true;
+	}
+
+	return false;
 }

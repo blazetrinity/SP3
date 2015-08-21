@@ -12,15 +12,15 @@ Projectile::~Projectile(void)
 {
 }
 
-void Projectile::Init(Skill* skill,Vector2 position, Vector2 direction, Mesh* mesh, int level)
+void Projectile::Init(Skill* skill,Vector2 position, Vector2 scale, Vector2 direction, Mesh* mesh, int level, float tileSize)
 {
 	this->m_lifeTime = skill->GetLifeTime();
 	this->m_damage = skill->GetDamage();
 	this->m_tag = skill->GetTag();
-	this->m_position = position;
 	this->m_mesh = mesh;
 	this->m_level = level;
 	this->m_velocity = (direction * PROJECTILE_SPEED);
+	GameObjectIn2D::Init(position, scale, 1, tileSize);
 }
 	
 void Projectile::Update(CMap* map, double dt)
@@ -81,7 +81,8 @@ void Projectile::Update(CMap* map, double dt)
 	}
 
 	m_lifeTime -= dt;
-	this->CalcBound(m_velocity, m_scale);
+
+	this->CalcBound(m_position, m_scale);
 
 	if(m_lifeTime <= 0)
 	{
@@ -99,6 +100,11 @@ void Projectile::SetActive(bool active)
 	this->m_active = active;
 }
 
+float Projectile::GetDamage()
+{
+	return m_damage;
+}
+
 bool Projectile::GetActive()
 {
 	return m_active;
@@ -112,4 +118,9 @@ Mesh* Projectile::GetMesh()
 int Projectile::GetLevel()
 {
 	return m_level;
+}
+
+Tag Projectile::GetTag()
+{
+	return m_tag;
 }

@@ -19,9 +19,9 @@ PlayerIn2D::~PlayerIn2D(void)
 }
 
 //Init Player
-void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill)
+void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill, int health)
 {
-	CharacterIn2D::Init(position, scale, mass, tileSize, skill);
+	CharacterIn2D::Init(position, scale, mass, tileSize, skill, health);
 	for(int i = 0; i < NUM_ANIMATION; ++i)
 	{
 		this->m_animations[i] = new Animation(); 
@@ -68,6 +68,7 @@ void PlayerIn2D::Update(CMap *map, double dt, bool topDown)
 	{
 		m_skill->Update(dt);
 	}
+
 	//Update player vunerablity
 	if(m_invunerable)
 	{
@@ -97,6 +98,20 @@ bool PlayerIn2D::Attack()
 	{
 		return m_skill->Use();
 	}
+	return false;
+}
+
+
+bool PlayerIn2D::TakeDamage(float damage)
+{
+	if(!m_invunerable)
+	{
+		m_invunerable = true;
+		m_invunerableTimer = 5;
+		m_renderPlayer = false;
+		return CharacterIn2D::TakeDamage(damage);
+	}
+
 	return false;
 }
 

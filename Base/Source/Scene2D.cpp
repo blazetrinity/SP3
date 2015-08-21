@@ -9,6 +9,9 @@
 #include <sstream>
 
 static const float MAXGHOSTQUEUETIMER = 15.0f;
+static const int WHITEGHOSTHEALTH = 30;
+static const int REDGHOSTHEALTH = 60;
+static const int PLAYERHEALTH = 100;
 
 Scene2D::Scene2D()
 	: m_cMap(NULL)
@@ -204,7 +207,7 @@ void Scene2D::Init()
 					SpriteAnimation *newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, NULL);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, NULL, WHITEGHOSTHEALTH);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -226,7 +229,7 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1, NULL);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1, NULL, WHITEGHOSTHEALTH);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -248,7 +251,7 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, NULL);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, NULL, REDGHOSTHEALTH);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -270,7 +273,7 @@ void Scene2D::Init()
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, NULL);
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, NULL, REDGHOSTHEALTH);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -296,7 +299,7 @@ void Scene2D::Init()
 	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
 
 	m_player = new PlayerIn2D();
-	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1, skill);
+	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
 	m_player->SetMesh(sa);
 	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -455,7 +458,7 @@ void Scene2D::UpdatePlayer(double dt)
 		if(m_player->Attack())
 		{
 			Projectile* projectile = FetchProjectile();
-			projectile->Init(m_player->GetSkill(),m_player->GetPosition(), m_player->GetFacingNormal(), meshList[GEO_BULLET], m_currentLevel);
+			projectile->Init(m_player->GetSkill(),m_player->GetPosition(), m_player->GetScale(), m_player->GetFacingNormal(), meshList[GEO_BULLET], m_currentLevel, 1);
 		}
 	}
 
@@ -465,38 +468,25 @@ void Scene2D::UpdatePlayer(double dt)
 
 void Scene2D::UpdateEnemy(double dt)
 {
+	static int i = 0;
 	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it !=  m_enemyList.end(); ++it)
 	{
 		EnemyIn2D *enemy = (EnemyIn2D *) *it;
 
+		// If enemy is in current level
 		if(enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel)
 		{
 			if(((enemy->GetPosition().x - m_cMap->GetmapOffset().x) >= 0) && ((enemy->GetPosition().x - m_cMap->GetmapOffset().x) < m_cMap->GetScreenWidth()) && ((enemy->GetPosition().y >= 0) && (enemy->GetPosition().y < m_cMap->GetScreenHeight())))
 			{
-				/*float distance = (m_player->GetPos() - (m_enemyList[i]->GetPos() - m_cMap->GetmapOffset().x)).Length();
-				Vector3 FacingNormal = ((m_enemyList[i]->GetPos() - m_cMap->GetmapOffset().x) - m_player->GetPos()).Normalize();
-
-				if((distance) < m_cMap->GetTileSize())
+				// Check if play collide with enemy
+				if(m_player->CollideWith(enemy))
 				{
-				if(FacingNormal.x < 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_LEFT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_LEFT)))
-				{
-				m_enemyList[i]->SetActive(false);
-				continue;
+					// Player takes damage
+					//m_player->TakeDamage();
 				}
-				else if(FacingNormal.x > 0 && ((m_player->GetAnimation() == CCharacterIn2D::ATTACK_RIGHT) || (m_player->GetAnimation() == CCharacterIn2D::JUMPATTACK_RIGHT)))
-				{
-				m_enemyList[i]->SetActive(false);
-				continue;
-				}
-				else if(!m_invunerable)
-				{
-				m_invunerable = true;
-				m_invunerableTimer = 5;
-				m_renderCharacter = false;
-				}
-				}*/
 			}
 
+			// Update enemy
 			enemy->Update(m_cBoundMap, dt, true);
 		}
 	}
@@ -508,6 +498,7 @@ void Scene2D::UpdateProjectile(double dt)
 	{
 		Projectile* projectile = (Projectile*)*it;
 
+		// If projectile is on the same level
 		if(projectile->GetActive() && projectile->GetLevel() != m_currentLevel)
 		{
 			projectile->SetActive(false);
@@ -515,7 +506,32 @@ void Scene2D::UpdateProjectile(double dt)
 
 		if(projectile->GetActive())
 		{
+			// Update projectile
 			projectile->Update(m_cBoundMap, dt);
+
+			// Check if projectile is fired by player
+			if(projectile->GetTag().GetEntity() == Tag::PLAYER)
+			{
+				for(vector<EnemyIn2D*>::iterator it2 = m_enemyList.begin(); it2 !=  m_enemyList.end(); ++it2)
+				{
+					EnemyIn2D *enemy = (EnemyIn2D *) *it2;
+
+					// Check if projectile collide with enemy
+					if(enemy->CollideWith(projectile) && enemy->GetCurrentLevel() == m_currentLevel)
+					{
+						// Enemy takes damage
+						enemy->TakeDamage(projectile->GetDamage());
+
+						// Projectile hit so turn projectile off
+						projectile->SetActive(false);
+					}
+				}
+			}
+
+			else if(projectile->GetTag().GetEntity() == Tag::BOSS)
+			{
+
+			}
 		}
 	}
 }

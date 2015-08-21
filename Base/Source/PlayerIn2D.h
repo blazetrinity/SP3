@@ -26,7 +26,7 @@ public:
 	};
 
 	//Init Player
-	void Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill);
+	void Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill, int health);
 
 	//UpdatePlayer
 	void Update(CMap *map, double dt, bool topDown);
@@ -54,6 +54,9 @@ public:
 
 	// Attack
 	virtual bool Attack();
+
+	// Take Damage
+	virtual bool TakeDamage(float damage);
 
 	//Calculate Position after entering level
 	void CalPosition(const int leftBorder, const int rightBorder, const int topBorder, const int bottomBorder, float tileSize);

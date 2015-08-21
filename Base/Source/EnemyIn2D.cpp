@@ -24,9 +24,9 @@ EnemyIn2D::~EnemyIn2D(void)
 }
 
 // Initialise this class instance
-void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel, SpriteAnimation *newSprite, EnemyIn2D::ENEMY_TYPE newType, float tileSize, Skill* skill)
+void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel, SpriteAnimation *newSprite, EnemyIn2D::ENEMY_TYPE newType, float tileSize, Skill* skill, int health)
 {
-	CharacterIn2D::Init(position, scale, mass, tileSize, skill);
+	CharacterIn2D::Init(position, scale, mass, tileSize, skill, health);
 	this->m_currentLevel = gameLevel;
 	this->m_sprite = new SpriteAnimation;
 	*(this->m_sprite) = *newSprite;
@@ -209,5 +209,16 @@ bool EnemyIn2D::Attack()
 		return m_skill->Use();
 	}
 	
+	return false;
+}
+
+bool EnemyIn2D::TakeDamage(float damage)
+{
+	if(CharacterIn2D::TakeDamage(damage))
+	{
+		m_active = false;
+		return true;
+	}
+
 	return false;
 }
