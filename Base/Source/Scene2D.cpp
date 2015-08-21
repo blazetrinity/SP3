@@ -387,10 +387,9 @@ void Scene2D::Update(double dt)
 				// Check if player hiding
 				//if(playerhiding)
 				//{
-				m_spawnGhost = true;
+					m_spawnGhost = true;
 				//}
 
-				//m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
 				m_backgroundSound->stop();
 				m_backgroundSound->drop();
 				m_backgroundSound = NULL;
@@ -579,6 +578,9 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 
 	if(m_updateMap)
 	{
+		m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+		m_ghostTriggered = false;
+		m_levelCompleted = false;
 		if(m_currentLevel == LEVEL1)
 		{
 			m_cMap->LoadMap( "Image//level1_visual.csv" );

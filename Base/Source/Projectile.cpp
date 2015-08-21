@@ -25,7 +25,61 @@ void Projectile::Init(Skill* skill,Vector2 position, Vector2 direction, Mesh* me
 	
 void Projectile::Update(CMap* map, double dt)
 {
-	m_position = m_position + (m_velocity * dt);
+	// New position next frame
+	Vector2 tilePos( (map->GetmapOffset().x + (this->GetPosition().x - (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)(this->GetPosition().y + map->GetTileSize()) / map->GetTileSize())) );
+
+	if(m_velocity.x > 0)
+	{
+		if(map->theScreenMap[tilePos.y][tilePos.x+1] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
+		{
+			
+			m_position = m_position + (m_velocity * dt);
+		}
+		else
+		{
+			m_active = false;
+		}
+	}
+
+	else if(m_velocity.x < 0)
+	{
+		if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x] > 0)
+		{
+			
+			m_position = m_position + (m_velocity * dt);
+		}
+		else
+		{
+			m_active = false;
+		}
+	}
+
+	if(m_velocity.y > 0)
+	{
+		if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y][tilePos.x+1] > 0)
+		{
+			
+			m_position = m_position + (m_velocity * dt);
+		}
+		else
+		{
+			m_active = false;
+		}
+	}
+
+	else if(m_velocity.y < 0)
+	{
+		if(map->theScreenMap[tilePos.y+1][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
+		{
+			
+			m_position = m_position + (m_velocity * dt);
+		}
+		else
+		{
+			m_active = false;
+		}
+	}
+
 	m_lifeTime -= dt;
 	this->CalcBound(m_velocity, m_scale);
 

@@ -257,19 +257,11 @@
     <ClInclude Include="Source\Skill.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Projectile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Tag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Base.rc">
-      <Filter>Shader</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

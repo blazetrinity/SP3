@@ -52,7 +52,6 @@
     <ClCompile Include="Source\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Source\CollisionIn2D.h" />
     <ClInclude Include="Source\EnemyIn3D.h" />
     <ClInclude Include="Source\Application.h" />
@@ -96,9 +95,6 @@
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\Weapon.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Base.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B172635-4E2B-46F1-A403-08F4194D00F5}</ProjectGuid>
