@@ -1,6 +1,6 @@
 #pragma once
 #include "Strategy.h"
-#include "Mesh.h"
+#include "Map.h"
 
 class Strategy_Patrol : public Strategy
 {
@@ -8,7 +8,7 @@ public:
 	Strategy_Patrol(void);
 	~Strategy_Patrol(void);
 
-	void Update(CMap *m_cMap, Vector2* Position, Vector2* Velocity, Vector2* Direction, double* dt);
+	virtual void Update(CMap *m_cMap, Vector2* Position, Vector2* Velocity, Vector2* Direction, double* dt);
 
 private:
 	

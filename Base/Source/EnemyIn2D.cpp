@@ -101,19 +101,38 @@ int EnemyIn2D::GetCurrentLevel()
 }
 
 // Update enemy position based on enemy's velocity
-void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown)
+void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown, Vector2 m_playerPosition)
 {
 	// Update enemy's velocity
 	if(m_strategy != NULL)
 	{
-		if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
+		if(dynamic_cast<Strategy_Patrol*>(m_strategy) != NULL)
 		{
-			m_strategy->Update(m_cMap, &m_position, &m_velocity, &m_facingNormal, &dt);
-		}
+			Strategy_Patrol* patrol = dynamic_cast<Strategy_Patrol*>(m_strategy);
 
-		else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
+			if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
+			{
+				patrol->Update(m_cMap, &m_position, &m_velocity, &m_facingNormal, &dt);
+			}
+
+			else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
+			{
+				patrol->Update(m_cMap, &m_position, &m_velocity, &m_facingNormal, &dt);
+			}
+		}
+		else
 		{
-			m_strategy->Update(m_cMap, &m_position, &m_velocity, &m_facingNormal, &dt);
+			Strategy_Chase* chase = dynamic_cast<Strategy_Chase*>(m_strategy);
+
+			if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
+			{
+				chase->Update(&m_playerPosition, &m_position, &m_velocity, &dt);
+			}
+
+			else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
+			{
+				chase->Update(&m_playerPosition, &m_position, &m_velocity, &dt);
+			}
 		}
 	}
 
@@ -208,7 +227,7 @@ bool EnemyIn2D::Attack()
 	{
 		return m_skill->Use();
 	}
-	
+
 	return false;
 }
 

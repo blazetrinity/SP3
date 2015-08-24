@@ -333,6 +333,9 @@ void Scene2D::Init()
 	m_spawnGhost = false;
 	m_ghostTriggered = false;
 
+	m_path = new AstarPathfind;
+	m_path->GenerateGrid(m_cBoundMap);
+
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
@@ -487,7 +490,7 @@ void Scene2D::UpdateEnemy(double dt)
 			}
 
 			// Update enemy
-			enemy->Update(m_cBoundMap, dt, true);
+			enemy->Update(m_cBoundMap, dt, true, m_player->GetPosition());
 		}
 	}
 }
@@ -1021,6 +1024,12 @@ void Scene2D::Exit()
 	{
 		m_eventSound->drop();
 		m_eventSound = NULL;
+	}
+
+	if(m_path != NULL)
+	{
+		delete m_path;
+		m_path = NULL;
 	}
 
 	glDeleteProgram(m_programID);

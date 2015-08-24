@@ -1,7 +1,8 @@
 #ifndef ENEMYIN2D_H
 #define ENEMYIN2D_H
 
-#include "Strategy.h"
+#include "Strategy_Patrol.h"
+#include "Strategy_Chase.h"
 #include "CharacterIn2D.h"
 #include "SpriteAnimation.h"
 
@@ -40,7 +41,7 @@ public:
 	void Init(Vector2 position, Vector2 scale, float mass, int gameLevel, SpriteAnimation *newSprite, ENEMY_TYPE newType, float tileSize, Skill* skill, int health);
 
 	//Update Enemy
-	void Update(CMap *map, double dt, bool topDown);
+	void Update(CMap *map, double dt, bool topDown, Vector2 m_playerPosition);
 
 	// Set Mesh of the Enemy
 	void SetMesh(SpriteAnimation* newSprite);

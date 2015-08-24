@@ -14,6 +14,7 @@
 #include "EnemyIn2D.h"
 #include "Strategy_Patrol.h"
 #include "Projectile.h"
+#include "AstarPathfind.h"
 #include <irrKlang.h>
 
 using namespace irrklang;
@@ -190,5 +191,7 @@ private:
 	ISoundSource* m_sounds[TOTAL_SND];
 
 	SND_SOUNDS m_currentSound;
+
+	AstarPathfind* m_path;
 };
 #endif
