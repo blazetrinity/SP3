@@ -483,8 +483,8 @@ void Scene2D::Update(double dt)
 			//Ai Update and collision with character
 			UpdateEnemy(dt);
 
-	//Projectile Update
-	UpdateProjectile(dt);
+			//Projectile Update
+			UpdateProjectile(dt);
 
 			//Up ghost trigger
 			if(!m_ghostTriggered && !m_levelCompleted)
@@ -717,6 +717,7 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 		m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
 		m_ghostTriggered = false;
 		m_levelCompleted = false;
+
 		if(m_currentLevel == LEVEL1)
 		{
 			m_cMap->LoadMap( "Image//level1_visual.csv" );
