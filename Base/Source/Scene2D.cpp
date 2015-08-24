@@ -20,11 +20,11 @@ Scene2D::Scene2D()
 
 Scene2D::~Scene2D()
 {
-	if (m_cMap)
+	/*if (m_cMap)
 	{
 		delete m_cMap;
 		m_cMap = NULL;
-	}
+	}*/
 }
 
 void Scene2D::Init()
@@ -149,10 +149,21 @@ void Scene2D::Init()
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID[0] = LoadTGA("Image//calibri.tga");
 
-	// Load the ground mesh and texture
-	meshList[GEO_BACKGROUND] = MeshBuilder::Generate2DMesh("GEO_BACKGROUND", Color(1, 1, 1), 0, 0, 1024, 800);
-	meshList[GEO_BACKGROUND]->textureID[0] = LoadTGA("Image//2DBackGround.tga");
+	//UI
+	meshListUI[MAIN_MENU] = MeshBuilder::Generate2DMesh("MAIN_MENU", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshListUI[MAIN_MENU]->textureID[0] = LoadTGA("Image//menu_main.tga");
+	meshListUI[PAUSED] = MeshBuilder::Generate2DMesh("PAUSED", Color(1, 1, 1), 0.0f, 0.0f,1024.0f, 800.0f);
+	meshListUI[PAUSED]->textureID[0] = LoadTGA("Image//menu_paused.tga");
+	meshListUI[WIN] = MeshBuilder::Generate2DMesh("WIN", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshListUI[WIN]->textureID[0] = LoadTGA("Image//menu_win.tga");
+	meshListUI[LOSE] = MeshBuilder::Generate2DMesh("LOSE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshListUI[LOSE]->textureID[0] = LoadTGA("Image//menu_lose.tga");
+	meshListUI[CREDITS] = MeshBuilder::Generate2DMesh("CREDITS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshListUI[CREDITS]->textureID[0] = LoadTGA("Image//menu_credits.tga");
+	meshListUI[INSTRUCTIONS] = MeshBuilder::Generate2DMesh("INSTRUCTIONS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshListUI[INSTRUCTIONS]->textureID[0] = LoadTGA("Image//menu_instructions.tga");
 
+	// Load the ground mesh and texture
 	meshList[GEO_ENEMY1] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY1", 4, 3);
 	meshList[GEO_ENEMY1]->textureID[0] = LoadTGA("Image//enemy1_sprite.tga");
 	meshList[GEO_ENEMY2] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY2", 4, 3);
@@ -160,8 +171,8 @@ void Scene2D::Init()
 
 	meshList[GEO_CHARACTER_TEST] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
 	meshList[GEO_CHARACTER_TEST]->textureID[0] = LoadTGA("Image//character_sprite.tga");
-	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 2, 3);
-	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//TileMap.tga");
+	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 4, 6);
+	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//map_tileset.tga");
 
 	meshList[GEO_BULLET] = MeshBuilder::Generate2DMesh("GEO_BULLET", Color(1, 1, 1), 0, 0, 1, 1);
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
@@ -204,7 +215,7 @@ void Scene2D::Init()
 			{
 				if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN)
 				{
-					SpriteAnimation *newSpriteAnimation = whiteGhostSpriteAnimation;
+					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, NULL, WHITEGHOSTHEALTH);
@@ -218,6 +229,7 @@ void Scene2D::Init()
 					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
 					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
+
 
 					Strategy_Patrol* theStrategy = new Strategy_Patrol;
 					theEnemy->ChangeStrategy(theStrategy);
@@ -332,6 +344,9 @@ void Scene2D::Init()
 	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
 	m_spawnGhost = false;
 	m_ghostTriggered = false;
+	m_isPaused = false;
+	m_menu_status = 0;
+	m_menu_choice = 1;
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
@@ -344,88 +359,189 @@ void Scene2D::Init()
 
 void Scene2D::Update(double dt)
 {
-	if(Application::IsKeyPressed('1'))
-		glEnable(GL_CULL_FACE);
-	if(Application::IsKeyPressed('2'))
-		glDisable(GL_CULL_FACE);
-	if(Application::IsKeyPressed('3'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if(Application::IsKeyPressed('4'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if(m_menu_status == MAIN_MENU)
+	{
+		
+		int oldChoice = m_menu_choice;
+		if (Application::IsKeyPressed(VK_DOWN))
+			if (m_menu_choice < 4 )
+			{
+				m_menu_choice++;
+				Sleep(150);
+			
+			}
+		if (Application::IsKeyPressed(VK_UP)) 
+			if (m_menu_choice > 1)
+			{
+				m_menu_choice--;
+				Sleep(150);
+			}
 
-	// Update the hero
-	int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
-	int checkPosition_Y = m_cMap->GetNumOfTiles_Height() - (int) ceil( (float)(m_player->GetPosition().y + m_cMap->GetTileSize()) / m_cMap->GetTileSize());
+			if (Application::IsKeyPressed(VK_RETURN)) 
+				{
+					if (m_menu_choice == 1) 
+					{
+						m_menu_status = GAME;
+					}
+					if (m_menu_choice == 2) 
+					{
+						m_menu_status = INSTRUCTIONS;		
+					}
+					if (m_menu_choice == 3) 
+					{
+						m_menu_status = CREDITS;	
+					}
+					if (m_menu_choice == 4) 
+					{
+						m_menu_status = EXIT;
+						Exit();
+					}
+				}		
+	}
+	if(m_menu_status == CREDITS)
+	{
+		Sleep(150);
+		if (Application::IsKeyPressed(VK_RETURN)) 
+		{
+			m_menu_status = MAIN_MENU;
+			Sleep(150);
+		}
+	}
+	if(m_menu_status == INSTRUCTIONS)
+	{
+		Sleep(150);
+		if (Application::IsKeyPressed(VK_RETURN)) 
+		{
+			m_menu_status = MAIN_MENU;
+			Sleep(150);
+		}
+	}
+	if(m_menu_status == GAME)
+	{
+		if(Application::IsKeyPressed('P') && m_isPaused == false) 
+		{
+			m_isPaused = true;
+			m_menu_status = PAUSED;
+		}
+	}
 
-	//Check if player is going into the next level
-	UpdateLevel(checkPosition_X, checkPosition_Y);
+	if(m_menu_status == PAUSED)
+	{
+		int oldChoice = m_menu_choice;
+		if (Application::IsKeyPressed(VK_DOWN))
+			if (m_menu_choice < 2 )
+			{
+				m_menu_choice++;
+			}
+			if (Application::IsKeyPressed(VK_UP)) 
+				if (m_menu_choice > 1)
+				{
+					m_menu_choice--;
+				}
 
-	//Player update
-	UpdatePlayer(dt);
+				if (Application::IsKeyPressed(VK_RETURN)) 
+				{
+					if (m_menu_choice == 1) 
+					{
+						m_menu_status = GAME;
+						m_isPaused = false;
+					}
+					if (m_menu_status == 2) 
+					{
+						m_menu_status = MAIN_MENU;
+						m_menu_choice = 1;
+						Sleep(150);
+					}
+				}		
+	}
+	if( m_menu_status == GAME)
+	{
+		if(m_isPaused == false)
+		{
+			if(Application::IsKeyPressed('1'))
+				glEnable(GL_CULL_FACE);
+			if(Application::IsKeyPressed('2'))
+				glDisable(GL_CULL_FACE);
+			if(Application::IsKeyPressed('3'))
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			if(Application::IsKeyPressed('4'))
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	//Ai Update and collision with character
-	UpdateEnemy(dt);
+			// Update the hero
+			int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
+			int checkPosition_Y = m_cMap->GetNumOfTiles_Height() - (int) ceil( (float)(m_player->GetPosition().y + m_cMap->GetTileSize()) / m_cMap->GetTileSize());
+
+			//Check if player is going into the next level
+			UpdateLevel(checkPosition_X, checkPosition_Y);
+
+			//Player Movement
+			UpdatePlayer(dt);
+
+			//Ai Update and collision with character
+			UpdateEnemy(dt);
 
 	//Projectile Update
 	UpdateProjectile(dt);
 
-	//Up ghost trigger
-	if(!m_ghostTriggered && !m_levelCompleted)
-	{
-		m_ghostQueueTimer -= (float)dt;
-
-		if(m_ghostQueueTimer <= 0)
-		{
-			if(m_currentSound != SND_GHOST_QUEUE)
+			//Up ghost trigger
+			if(!m_ghostTriggered && !m_levelCompleted)
 			{
-				m_backgroundSound->stop();
-				m_backgroundSound->drop();
-				m_backgroundSound = NULL;
-				m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_GHOST_QUEUE], false, false, true);
-				m_currentSound = SND_GHOST_QUEUE;
-			}
+				m_ghostQueueTimer -= (float)dt;
 
-			if(m_backgroundSound->isFinished() == true)
-			{
-				// Check if player hiding
-				//if(playerhiding)
-				//{
-					m_spawnGhost = true;
-				//}
-
-				m_backgroundSound->stop();
-				m_backgroundSound->drop();
-				m_backgroundSound = NULL;
-				m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
-				m_currentSound = SND_BACKGROUND;
-			}
-		}
-
-		if(m_spawnGhost)
-		{
-			for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
-			{
-				EnemyIn2D* enemy = (EnemyIn2D*)*it;
-				if(enemy->GetActive() == false && enemy->GetCurrentLevel() == m_currentLevel)
+				if(m_ghostQueueTimer <= 0)
 				{
-					enemy->SetActive(true);
+					if(m_currentSound != SND_GHOST_QUEUE)
+					{
+						m_backgroundSound->stop();
+						m_backgroundSound->drop();
+						m_backgroundSound = NULL;
+						m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_GHOST_QUEUE], false, false, true);
+						m_currentSound = SND_GHOST_QUEUE;
+					}
+
+					if(m_backgroundSound->isFinished() == true)
+					{
+						// Check if player hiding
+						//if(playerhiding)
+						//{
+						m_spawnGhost = true;
+						//}
+
+						//m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+						m_backgroundSound->stop();
+						m_backgroundSound->drop();
+						m_backgroundSound = NULL;
+						m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
+						m_currentSound = SND_BACKGROUND;
+					}
+				}
+
+				if(m_spawnGhost)
+				{
+					for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
+					{
+						EnemyIn2D* enemy = (EnemyIn2D*)*it;
+						if(enemy->GetActive() == false && enemy->GetCurrentLevel() == m_currentLevel)
+						{
+							enemy->SetActive(true);
+						}
+					}
+
+					m_spawnGhost = false;
+					m_ghostTriggered = true;
 				}
 			}
 
-			m_spawnGhost = false;
-			m_ghostTriggered = true;
+			//Scroll the Door Interaction Map
+			m_cDoorInteractionMap->Update(m_cDoorInteractionMap->GetTileSize(), (m_cDoorInteractionMap->GetScreenWidth() - (2 * m_cDoorInteractionMap->GetTileSize())), m_cDoorInteractionMap->GetTileSize(), (m_cDoorInteractionMap->GetScreenHeight() -(2 * m_cDoorInteractionMap->GetTileSize())), m_player->GetPosition());
+			//Scroll the Bound Map 
+			m_cBoundMap->Update(m_cBoundMap->GetTileSize(), (m_cBoundMap->GetScreenWidth() - (2 * m_cBoundMap->GetTileSize())), m_cBoundMap->GetTileSize(), (m_cBoundMap->GetScreenHeight() -(2 * m_cBoundMap->GetTileSize())), m_player->GetPosition());
+			//Scroll the Visual Map and update player position to scroll box's edge
+			m_player->SetPosition(m_cMap->Update(m_cMap->GetTileSize(), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), m_cMap->GetTileSize(), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), m_player->GetPosition()));
+			fps = (float)(1.f / dt);
 		}
 	}
-
-	//Scroll the Door Interaction Map
-	m_cDoorInteractionMap->Update(m_cDoorInteractionMap->GetTileSize(), (m_cDoorInteractionMap->GetScreenWidth() - (2 * m_cDoorInteractionMap->GetTileSize())), m_cDoorInteractionMap->GetTileSize(), (m_cDoorInteractionMap->GetScreenHeight() -(2 * m_cDoorInteractionMap->GetTileSize())), m_player->GetPosition());
-	//Scroll the Bound Map 
-	m_cBoundMap->Update(m_cBoundMap->GetTileSize(), (m_cBoundMap->GetScreenWidth() - (2 * m_cBoundMap->GetTileSize())), m_cBoundMap->GetTileSize(), (m_cBoundMap->GetScreenHeight() -(2 * m_cBoundMap->GetTileSize())), m_player->GetPosition());
-	//Scroll the Visual Map and update player position to scroll box's edge
-	m_player->SetPosition(m_cMap->Update(m_cMap->GetTileSize(), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), m_cMap->GetTileSize(), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), m_player->GetPosition()));
-	fps = (float)(1.f / dt);
 }
-
 void Scene2D::UpdatePlayer(double dt)
 {
 	//Player Movement
@@ -464,6 +580,7 @@ void Scene2D::UpdatePlayer(double dt)
 
 	//Update the player velocity and position
 	m_player->Update(m_cBoundMap, dt, true);
+
 }
 
 void Scene2D::UpdateEnemy(double dt)
@@ -897,6 +1014,26 @@ void Scene2D::RenderBackground()
 	//Render2DMesh(meshList[GEO_BACKGROUND], false, 1.0f);
 }
 
+void Scene2D::RenderUI()
+{
+	if(m_menu_status == MAIN_MENU )
+	{
+		Render2DMesh(meshListUI[MAIN_MENU], false,1.0f);
+	}
+	if(m_menu_status == INSTRUCTIONS)
+	{
+		Render2DMesh(meshListUI[INSTRUCTIONS], false, 1.0f);
+	}
+	if(m_menu_status == CREDITS)
+	{
+		Render2DMesh(meshListUI[CREDITS], false, 1.0f);
+	}
+	if(m_menu_status == PAUSED)
+	{
+		Render2DMesh(meshListUI[PAUSED], false, 1.0f);
+	}
+}
+
 void Scene2D::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -917,31 +1054,27 @@ void Scene2D::Render()
 
 	glDisable(GL_DEPTH_TEST);
 
-	// Render the background image
-	RenderBackground();
+	if(m_menu_status != EXIT)
+	{
+		if(m_menu_status != GAME)
+		{
+			//Render UI
+			RenderUI();
+		}
+	
+		if(m_menu_status == GAME)
+		{
+			// Render the tile map
+			RenderTileMap();
 
-	// Render the tile map
-	RenderTileMap();
-
+			//On screen text
+			std::ostringstream ss;
+			ss.precision(3);
+			ss << "FPS: " << fps;
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
+		}
+	}
 	glEnable(GL_DEPTH_TEST);
-
-	//On screen text
-	std::ostringstream ss;
-	ss.precision(5);
-	ss << "FPS: " << fps;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
-
-	std::ostringstream ss1;
-	ss1.precision(5);
-	ss1 << "tileOffset_x: " << m_cMap->GettileOffset().x;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 35, 6);
-
-	std::ostringstream ss2;
-	ss2.precision(5);
-	ss2 << "mapOffset_x: " << m_cMap->GetmapOffset().x;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 3, 35, 3);
-
-	RenderTextOnScreen(meshList[GEO_TEXT], "Hello Screen", Color(0, 1, 0), 3, 0, 0);
 }
 
 void Scene2D::Exit()
@@ -1045,42 +1178,71 @@ void Scene2D::RenderTileMap()
 			{
 				break;
 			}
-
-			if (m_cMap->theScreenMap[i][m] == TILE_GROUND)
+			if (m_cMap->theScreenMap[i][m] == TILE_TOPLEFT)
 			{
 				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
-				tm->SetTileID(TILE_GROUND - 1);
-				Render2DMesh(tm, false, 30.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+				tm->SetTileID(TILE_TOPLEFT - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
 			}
-			else if(m_cMap->theScreenMap[i][m] == TILE_ROOF)
+			else if(m_cMap->theScreenMap[i][m] == TILE_TOPRIGHT)
 			{
 				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
-				tm->SetTileID(TILE_ROOF - 1);
-				Render2DMesh(tm, false, 30.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+				tm->SetTileID(TILE_TOPRIGHT - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
 			}
-			else if(m_cMap->theScreenMap[i][m] == TILE_LEFTWALL)
+			else if(m_cMap->theScreenMap[i][m] == TILE_BOTTOMLEFT)
 			{
 				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
-				tm->SetTileID(TILE_LEFTWALL - 1);
-				Render2DMesh(tm, false, 30.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+				tm->SetTileID(TILE_BOTTOMLEFT - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
 			}
-			else if(m_cMap->theScreenMap[i][m] == TILE_RIGHTWALL)
+			else if(m_cMap->theScreenMap[i][m] == TILE_BOTTOMRIGHT)
 			{
 				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
-				tm->SetTileID(TILE_RIGHTWALL - 1);
-				Render2DMesh(tm, false, 30.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+				tm->SetTileID(TILE_BOTTOMRIGHT - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
 			}
-			else if(m_cMap->theScreenMap[i][m] == TILE_LADDER)
+			else if(m_cMap->theScreenMap[i][m] == TILE_LEFT)
 			{
 				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
-				tm->SetTileID(TILE_LADDER - 1);
-				Render2DMesh(tm, false, 30.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+				tm->SetTileID(TILE_LEFT - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+			}
+			else if(m_cMap->theScreenMap[i][m] == TILE_RIGHT)
+			{
+				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
+				tm->SetTileID(TILE_RIGHT - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+			}
+			else if(m_cMap->theScreenMap[i][m] == TILE_TOP)
+			{
+				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
+				tm->SetTileID(TILE_TOP - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+			}
+			else if(m_cMap->theScreenMap[i][m] == TILE_BOTTOM)
+			{
+				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
+				tm->SetTileID(TILE_BOTTOM - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+			}
+			else if(m_cMap->theScreenMap[i][m] == TILE_MIDDLE)
+			{
+				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
+				tm->SetTileID(TILE_MIDDLE - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+			}
+			else if(m_cMap->theScreenMap[i][m] == TILE_EDGE)
+			{
+				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
+				tm->SetTileID(TILE_EDGE - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
 			}
 			else if(m_cMap->theScreenMap[i][m] == TILE_DOOR)
 			{
 				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
 				tm->SetTileID(TILE_DOOR - 1);
-				Render2DMesh(tm, false, 30.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
 			}
 		}
 	}
