@@ -44,7 +44,7 @@ public:
 	void RenderMesh(Mesh *mesh, bool enableLight);
 	void RenderBackground();
 	void Render2DMesh(Mesh *mesh, const bool enableLight, const float size=1.0f, const float x=0.0f, const float y=0.0f, const bool rotate=false);
-
+	void RenderUI();
 	void RenderTileMap();
 
 	void UpdatePlayer(double dt);
@@ -52,7 +52,7 @@ public:
 	void UpdateProjectile(double dt);
 	void UpdateLevel(int checkPosition_X, int checkPosition_Y);
 	
-
+	static bool bReset;
 	Projectile* FetchProjectile();
 
 	enum UNIFORM_TYPE
@@ -113,13 +113,18 @@ public:
 	};
 	enum TILE_ID
 	{
-		TILE_BLANK = 0,
-		TILE_GROUND,
-		TILE_ROOF,
-		TILE_LEFTWALL,
-		TILE_RIGHTWALL,
-		TILE_LADDER,
-		TILE_DOOR,
+		TILE_BLANK = 0,	
+		TILE_TOPLEFT,
+		TILE_TOPRIGHT,
+		TILE_BOTTOMLEFT,
+		TILE_BOTTOMRIGHT,
+		TILE_TOP,
+		TILE_BOTTOM,
+		TILE_LEFT,
+		TILE_RIGHT,
+		TILE_MIDDLE,
+		TILE_DOOR = 19,
+		TILE_EDGE,
 		NUM_TILE,
 	};
 	enum LEVELS
@@ -142,10 +147,23 @@ public:
 
 		TOTAL_SND,
 	};
+	enum UI
+	{
+		MAIN_MENU = 0,
+		CREDITS,
+		PAUSED,
+		WIN,
+		LOSE,
+		INSTRUCTIONS,
+		GAME,
+		EXIT,
+		NUM_UI,
+	};
 
 private:
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
+	Mesh* meshListUI[NUM_UI];
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
 
@@ -168,7 +186,9 @@ private:
 	float m_ghostQueueTimer;
 	bool m_spawnGhost;
 	bool m_ghostTriggered;
-
+	bool  m_isPaused;
+	int  m_menu_status;
+	int  m_menu_choice;
 	// Handle to the tilemaps
 	CMap* m_cMap;
 	CMap* m_cBoundMap;
