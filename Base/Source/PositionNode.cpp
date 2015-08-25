@@ -80,9 +80,9 @@ bool PositionNode::operator==( const PositionNode& Node ) const
 	return this->m_worldPosition == Node.m_worldPosition;
 }
 
-PositionNode PositionNode::GetParentNode()
+PositionNode* PositionNode::GetParentNode()
 {
-	return *m_parentNode;
+	return m_parentNode;
 }
 
 Vector2 PositionNode::GetWorldPosition()

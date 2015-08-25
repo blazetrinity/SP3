@@ -21,7 +21,7 @@ public:
 	int GethCost();
 	int GetfCost();
 	bool GetWalkable();
-	PositionNode GetParentNode();
+	PositionNode* GetParentNode();
 	Vector2 GetWorldPosition();
 
 	bool operator==( const PositionNode& Node ) const; //Equality check

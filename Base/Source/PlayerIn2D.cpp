@@ -3,6 +3,10 @@
 
 PlayerIn2D::PlayerIn2D(void)
 {
+	for(int i = 0; i < NUM_ANIMATION; ++i)
+	{
+		m_animations[i] = NULL;
+	}
 }
 
 
@@ -24,7 +28,10 @@ void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSiz
 	CharacterIn2D::Init(position, scale, mass, tileSize, skill, health);
 	for(int i = 0; i < NUM_ANIMATION; ++i)
 	{
-		this->m_animations[i] = new Animation(); 
+		if(m_animations[i] == NULL)
+		{
+			this->m_animations[i] = new Animation();
+		}
 	}
 	
 	m_invunerable = false;
@@ -144,6 +151,11 @@ void PlayerIn2D::SetInvunerable(bool invunerable)
 	this->m_invunerable = invunerable;
 }
 
+// Set Enemy Health
+void PlayerIn2D::SetHealth(int health)
+{
+	CharacterIn2D::SetHealth(health);
+}
 
 // Get Mesh of the player
 SpriteAnimation* PlayerIn2D::GetMesh()

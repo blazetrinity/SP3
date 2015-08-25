@@ -5,6 +5,7 @@ static const float FRICTIONCOEFFICENT = 4.0f;
 
 CharacterIn2D::CharacterIn2D(void)
 {
+	m_skill = NULL;
 }
 
 
@@ -15,8 +16,14 @@ CharacterIn2D::~CharacterIn2D(void)
 void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill, int health)
 {
 	GameObjectIn2D::Init(position, scale, mass, tileSize);
+	if(m_skill)
+	{
+		delete m_skill;
+	}
+
 	this->m_skill = skill;
 	this->m_health = health;
+	this->m_velocity.Set(0, 0);
 }
 
 void CharacterIn2D::Update(CMap *map,double dt, bool topDown)
@@ -56,8 +63,8 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 	m_velocity = m_velocity + (frictionInOppositeDirection * dt);
 
 	// New position next frame
-	Vector2 tilePos( (map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())) );
-
+	Vector2 tilePos((map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())));
+	Vector2 viewPos((map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())));
 	if(m_facingNormal.x > 0)
 	{
 		if(map->theScreenMap[tilePos.y][tilePos.x+1] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
@@ -142,4 +149,9 @@ bool CharacterIn2D::TakeDamage(float damage)
 	}
 
 	return false;
+}
+
+void CharacterIn2D::SetHealth(int health)
+{
+	this->m_health = health;
 }

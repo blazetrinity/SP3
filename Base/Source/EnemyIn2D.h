@@ -54,13 +54,16 @@ public:
 	SpriteAnimation* GetMesh();
 	// Get Current Animation of the player
 	ANIMATION_TYPE GetAnimation();
-
 	
 	// Set Active
 	void SetActive(bool newActive);
+
 	// Set Enemy type
 	void SetEnemyType(ENEMY_TYPE newtype);
 	
+	// Set Enemy Health
+	virtual void SetHealth(int health);
+
 	// Get gamelevel of the enemy
 	int GetCurrentLevel();
 	
@@ -74,6 +77,9 @@ public:
 	// Get Active
 	bool GetActive();
 	
+	// Get Spawn Location
+	Vector2 GetSpawnLocation();
+
 	// Attack
 	virtual bool Attack();
 
@@ -98,6 +104,8 @@ private:
 	bool m_active;
 	// Enemy type
 	ENEMY_TYPE m_enemyType;
+	// Spawn Position
+	Vector2 m_spawnPosition;
 };
 
 #endif

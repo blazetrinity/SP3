@@ -8,9 +8,19 @@ AstarPathfind::AstarPathfind(void)
 
 AstarPathfind::~AstarPathfind(void)
 {
+	for(int i = 0; i < grid.size(); ++i)
+	{
+		for(int j = 0; j < grid[i].size(); ++j)
+		{
+			if(grid[i][j])
+			{
+				delete grid[i][j];
+			}
+		}
+	}
 }
 
-PositionNode AstarPathfind::NodeFromWorldPoint(Vector2 worldPosition)
+PositionNode* AstarPathfind::NodeFromWorldPoint(Vector2 worldPosition)
 {
 	int checkPosition_X = (int) ((m_map->GetmapOffset().x + worldPosition.x) / m_map->GetTileSize());
 	int checkPosition_Y = m_map->GetNumOfTiles_Height() - (int) ceil( (float)(worldPosition.y + m_map->GetTileSize()) / m_map->GetTileSize());
@@ -18,23 +28,24 @@ PositionNode AstarPathfind::NodeFromWorldPoint(Vector2 worldPosition)
 	return grid[checkPosition_Y][checkPosition_X];
 }
 
-vector<PositionNode> AstarPathfind::FindPath(Vector2 startPos, Vector2 targetPos)
-{
-	PositionNode startNode = NodeFromWorldPoint(startPos);
-	PositionNode targetNode = NodeFromWorldPoint(targetPos);
 
-	vector<PositionNode> openSet;
-	vector<PositionNode> closeSet;
+vector<PositionNode*> AstarPathfind::FindPath(Vector2 startPos, Vector2 targetPos)
+{
+	PositionNode* startNode = NodeFromWorldPoint(startPos);
+	PositionNode* targetNode = NodeFromWorldPoint(targetPos);
+
+	vector<PositionNode*> openSet;
+	vector<PositionNode*> closeSet;
 
 	openSet.push_back(startNode);
 
 	while(openSet.size() > 0)
 	{
-		PositionNode currentNode = openSet[0];
+		PositionNode* currentNode = openSet[0];
 		
 		for(int i = 1; i < openSet.size(); ++i)
 		{
-			if(openSet[i].GetfCost() < currentNode.GetfCost() || (openSet[i].GetfCost() == currentNode.GetfCost() && openSet[i].GethCost() < currentNode.GethCost()))
+			if(openSet[i]->GetfCost() < currentNode->GetfCost() || (openSet[i]->GetfCost() == currentNode->GetfCost() && openSet[i]->GethCost() < currentNode->GethCost()))
 			{
 				currentNode = openSet[i];
 			}
@@ -48,22 +59,22 @@ vector<PositionNode> AstarPathfind::FindPath(Vector2 startPos, Vector2 targetPos
 			return RetracePath(startNode, targetNode);
 		}
 
-		vector<PositionNode> neighbours = GetNeighbours(currentNode);
+		vector<PositionNode*> neighbours = GetNeighbours(currentNode);
 
 		for(int i = 0; i < neighbours.size(); ++i)
 		{
-			if(!neighbours[i].GetWalkable() || (std::find(closeSet.begin(), closeSet.end(), neighbours[i]) != closeSet.end()))
+			if(!neighbours[i]->GetWalkable() || (std::find(closeSet.begin(), closeSet.end(), neighbours[i]) != closeSet.end()))
 			{
 				continue;
 			}
 
-			int newMovementCostToNeighbour = currentNode.GetgCost() + GetDistance(currentNode, neighbours[i]);
+			int newMovementCostToNeighbour = currentNode->GetgCost() + GetDistance(currentNode, neighbours[i]);
 
-			if(newMovementCostToNeighbour < neighbours[i].GetgCost() || !(std::find(openSet.begin(), openSet.end(), neighbours[i]) != openSet.end()))
+			if(newMovementCostToNeighbour < neighbours[i]->GetgCost() || !(std::find(openSet.begin(), openSet.end(), neighbours[i]) != openSet.end()))
 			{
-				neighbours[i].SetgCost(newMovementCostToNeighbour);
-				neighbours[i].SethCost(GetDistance(neighbours[i], targetNode));
-				neighbours[i].SetParentNode(&currentNode);
+				neighbours[i]->SetgCost(newMovementCostToNeighbour);
+				neighbours[i]->SethCost(GetDistance(neighbours[i], targetNode));
+				neighbours[i]->SetParentNode(currentNode);
 
 				if(!(std::find(openSet.begin(), openSet.end(), neighbours[i]) != openSet.end()))
 				{
@@ -74,14 +85,14 @@ vector<PositionNode> AstarPathfind::FindPath(Vector2 startPos, Vector2 targetPos
 	}
 }
 
-vector<PositionNode> AstarPathfind::RetracePath(PositionNode startNode, PositionNode endNode)
+vector<PositionNode*> AstarPathfind::RetracePath(PositionNode* startNode, PositionNode* endNode)
 {
-	vector<PositionNode> path;
-	PositionNode currentNode = endNode;
+	vector<PositionNode*> path;
+	PositionNode* currentNode = endNode;
 	while(!(currentNode == startNode))
 	{
 		path.push_back(currentNode);
-		currentNode = currentNode.GetParentNode();
+		currentNode = currentNode->GetParentNode();
 	}
 
 	std::reverse(path.begin(), path.end());
@@ -98,6 +109,12 @@ void AstarPathfind::GenerateGrid(CMap* map)
 	for(int i = 0; i < m_map->GetNumOfTiles_MapHeight(); ++i)
 	{
 		grid[i].resize(m_map->GetNumOfTiles_MapWidth());
+
+		for(int j = 0; j < m_map->GetNumOfTiles_MapWidth(); ++j)
+		{
+			PositionNode* positionNode = new PositionNode;
+			grid[i][j] = positionNode;
+		}
 	}
 
 	for(int i = 0; i < m_map->GetNumOfTiles_MapHeight(); ++i)
@@ -106,31 +123,31 @@ void AstarPathfind::GenerateGrid(CMap* map)
 		{
 			if(m_map->theScreenMap[i][j] == 0)
 			{
-				grid[i][j].Init(Vector2(j * m_map->GetTileSize(), (m_map->GetScreenHeight() -  (i * m_map->GetTileSize()))), false, i, j);
+				grid[i][j]->Init(Vector2(j * m_map->GetTileSize(), ((m_map->GetScreenHeight() - m_map->GetTileSize()) -  (i * m_map->GetTileSize()))), false, i, j);
 			}
 			else
 			{
-				grid[i][j].Init(Vector2(j * m_map->GetTileSize(), (m_map->GetScreenHeight() -  (i * m_map->GetTileSize()))), true, i, j);
+				grid[i][j]->Init(Vector2(j* m_map->GetTileSize(), ((m_map->GetScreenHeight() - m_map->GetTileSize()) -  (i * m_map->GetTileSize()))), true, i, j);
 			}
 		}
 	}
 }
 
-vector<PositionNode> AstarPathfind::GetNeighbours(PositionNode node)
+vector<PositionNode*> AstarPathfind::GetNeighbours(PositionNode* node)
 {
-	vector<PositionNode> neighbours;
+	vector<PositionNode*> neighbours;
 
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
 		{
-			if(x == 0 && y == 0)
+			if((x == 0 && y == 0) || (x == -1 && y == -1) || (x == -1 && y == 1) || (x == 1 && y == -1) || (x == 1 && y == 1))
 			{
 				continue;
 			}
 
-			int checkX = node.GetGridX() + x;
-			int checkY = node.GetGridY() + y;
+			int checkX = node->GetGridX() + x;
+			int checkY = node->GetGridY() + y;
 
 			if((checkX >= 0 && checkX < m_map->GetNumOfTiles_MapHeight()) && (checkY >= 0 && checkY < m_map->GetNumOfTiles_MapWidth()))
 			{
@@ -142,10 +159,10 @@ vector<PositionNode> AstarPathfind::GetNeighbours(PositionNode node)
 	return neighbours;
 }
 
-int AstarPathfind::GetDistance(PositionNode nodeA, PositionNode nodeB)
+int AstarPathfind::GetDistance(PositionNode* nodeA, PositionNode* nodeB)
 {
-	int dstX = abs(nodeA.GetGridX() - nodeB.GetGridX());
-	int dstY = abs(nodeA.GetGridY() - nodeB.GetGridY());
+	int dstX = abs(nodeA->GetGridX() - nodeB->GetGridX());
+	int dstY = abs(nodeA->GetGridY() - nodeB->GetGridY());
 	
 	if(dstX < dstY)
 	{

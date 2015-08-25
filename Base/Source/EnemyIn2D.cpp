@@ -27,6 +27,7 @@ EnemyIn2D::~EnemyIn2D(void)
 void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel, SpriteAnimation *newSprite, EnemyIn2D::ENEMY_TYPE newType, float tileSize, Skill* skill, int health)
 {
 	CharacterIn2D::Init(position, scale, mass, tileSize, skill, health);
+	this->m_spawnPosition = position;
 	this->m_currentLevel = gameLevel;
 	this->m_sprite = new SpriteAnimation;
 	*(this->m_sprite) = *newSprite;
@@ -92,6 +93,12 @@ void EnemyIn2D::SetActive(bool newActive)
 void EnemyIn2D::SetEnemyType(ENEMY_TYPE newType)
 {
 	this->m_enemyType = newType;
+}
+
+// Set Enemy Health
+void EnemyIn2D::SetHealth(int health)
+{
+	CharacterIn2D::SetHealth(health);
 }
 
 // Get gamelevel of the enemy	
@@ -219,6 +226,12 @@ bool EnemyIn2D::GetActive()
 EnemyIn2D::ENEMY_TYPE EnemyIn2D::GetEnemyType()
 {
 	return m_enemyType;
+}
+
+// Get Spawn Location
+Vector2 EnemyIn2D::GetSpawnLocation()
+{
+	return m_spawnPosition;
 }
 
 bool EnemyIn2D::Attack()

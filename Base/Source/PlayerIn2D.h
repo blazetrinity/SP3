@@ -39,7 +39,9 @@ public:
 	void SetAnimation(ANIMATION_TYPE Animation, int startFrame,int endFrame, int repeat, float time);
 	// Set invunerablity
 	void SetInvunerable(bool invunerable);
-	
+	// Set Player Health
+	void SetHealth(int health);
+
 	// Get Mesh of the player
 	SpriteAnimation* GetMesh();
 	// Get Current Animation of the player

@@ -13,8 +13,8 @@
 #include "PlayerIn2D.h"
 #include "EnemyIn2D.h"
 #include "Strategy_Patrol.h"
+#include "Strategy_Chase.h"
 #include "Projectile.h"
-#include "AstarPathfind.h"
 #include <irrKlang.h>
 
 using namespace irrklang;
@@ -52,7 +52,9 @@ public:
 	void UpdateProjectile(double dt);
 	void UpdateLevel(int checkPosition_X, int checkPosition_Y);
 	
-	static bool bReset;
+	void InitGame();
+	void ResetGame();
+
 	Projectile* FetchProjectile();
 
 	enum UNIFORM_TYPE
@@ -180,6 +182,7 @@ private:
 	float fps;
 
 	// Game element variables
+	bool m_resetInit;
 	bool m_levelCompleted;
 	int m_currentLevel;
 	bool m_updateMap;
@@ -187,8 +190,12 @@ private:
 	bool m_spawnGhost;
 	bool m_ghostTriggered;
 	bool  m_isPaused;
+	
+
+	// Menu variables
 	int  m_menu_status;
 	int  m_menu_choice;
+
 	// Handle to the tilemaps
 	CMap* m_cMap;
 	CMap* m_cBoundMap;

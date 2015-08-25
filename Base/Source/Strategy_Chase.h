@@ -14,8 +14,8 @@ public:
 
 protected:
 	AstarPathfind* m_path;
-	vector<PositionNode> m_pathFound;
-	PositionNode m_currentNode;
+	vector<PositionNode*> m_pathFound;
+	PositionNode* m_currentNode;
 	float m_updatePathTimer;
 	bool m_updatePath;
 	int m_nodeIndex;

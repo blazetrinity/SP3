@@ -19,12 +19,14 @@ public:
 	virtual Skill* GetSkill();
 	virtual Vector2 GetFacingNormal();
 	virtual bool TakeDamage(float damage);
+	virtual void SetHealth(int health);
 
 protected:
 	Vector2 m_velocity;
 	Vector2 m_facingNormal;
 	Skill* m_skill;
 	int m_health;
+	Vector2 m_viewPostion;
 };
 
 #endif
