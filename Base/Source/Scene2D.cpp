@@ -20,11 +20,6 @@ Scene2D::Scene2D()
 
 Scene2D::~Scene2D()
 {
-	/*if (m_cMap)
-	{
-	delete m_cMap;
-	m_cMap = NULL;
-	}*/
 }
 
 void Scene2D::Init()
@@ -184,7 +179,23 @@ void Scene2D::Init()
 	meshList[GEO_BULLET] = MeshBuilder::Generate2DMesh("GEO_BULLET", Color(1, 1, 1), 0, 0, 1, 1);
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
 
+	InitGame();
+	
+	m_isPaused = false;
+	m_menu_status = 0;
+	m_menu_choice = 1;
 
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
+	Mtx44 perspective;
+	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
+	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
+	projectionStack.LoadMatrix(perspective);
+
+	bLightEnabled = true;
+}
+
+void Scene2D::InitGame()
+{
 	// Initialise and load the tile map
 	m_cMap = new CMap();
 	m_cMap->Init(800, 1024, 25, 32, 800 ,1024);
@@ -354,17 +365,54 @@ void Scene2D::Init()
 	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
 	m_spawnGhost = false;
 	m_ghostTriggered = false;
-	m_isPaused = false;
-	m_menu_status = 0;
-	m_menu_choice = 1;
+	m_resetGame = false;
+}
+	
+void Scene2D::ResetGame()
+{
+	m_cMap->LoadMap( "Image//level1_visual.csv" );
+	m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
+	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
 
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
-	Mtx44 perspective;
-	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
-	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
-	projectionStack.LoadMatrix(perspective);
+	m_path->GenerateGrid(m_cBoundMap);
 
-	bLightEnabled = true;
+	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
+	{
+		Strategy_Patrol* theStrategy = new Strategy_Patrol;
+
+		EnemyIn2D* enemy = (EnemyIn2D*)*it;
+
+		enemy->SetActive(false);
+		enemy->SetPosition(enemy->GetSpawnLocation());
+		enemy->ChangeStrategy(theStrategy);
+
+		if(enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT || enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
+		{
+			enemy->SetHealth(REDGHOSTHEALTH);
+		}
+		else
+		{
+			enemy->SetHealth(WHITEGHOSTHEALTH);
+		}
+	}
+
+	Skill* skill = new Skill();
+	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
+
+	m_player->Init(Vector2(64, 64), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
+	m_player->ChangeAnimation(PlayerIn2D::IDLE_RIGHT);
+
+	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
+	m_currentSound = SND_BACKGROUND;
+
+	// Init game element variables
+	m_levelCompleted = false;
+	m_currentLevel = 1;
+	m_updateMap = false; 
+	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+	m_spawnGhost = false;
+	m_ghostTriggered = false;
+	m_resetGame = false;
 }
 
 void Scene2D::Update(double dt)
@@ -394,6 +442,10 @@ void Scene2D::Update(double dt)
 			if (m_menu_choice == 1) 
 			{
 				m_menu_status = GAME;
+				if(m_resetGame)
+				{
+					ResetGame();
+				}
 			}
 			if (m_menu_choice == 2) 
 			{
@@ -481,6 +533,7 @@ void Scene2D::Update(double dt)
 				m_menu_choice = 1;
 				Sleep(150);
 				m_isPaused = false;
+				m_resetGame = true;
 			}
 		}
 	}

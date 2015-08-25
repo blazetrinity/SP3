@@ -194,8 +194,9 @@ private:
 	float m_ghostQueueTimer;
 	bool m_spawnGhost;
 	bool m_ghostTriggered;
+	bool m_resetGame;
+
 	bool  m_isPaused;
-	
 
 	// Menu variables
 	int  m_menu_status;
