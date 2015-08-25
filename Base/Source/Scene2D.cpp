@@ -183,7 +183,7 @@ void Scene2D::Init()
 
 	meshList[GEO_BULLET] = MeshBuilder::Generate2DMesh("GEO_BULLET", Color(1, 1, 1), 0, 0, 1, 1);
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
-	
+
 
 	// Initialise and load the tile map
 	m_cMap = new CMap();
@@ -197,6 +197,9 @@ void Scene2D::Init()
 	m_cDoorInteractionMap = new CMap();
 	m_cDoorInteractionMap->Init(800, 1024, 25, 32, 800 ,1024);
 	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
+	
+	m_path = new AstarPathfind;
+	m_path->GenerateGrid(m_cBoundMap);
 
 	//Init Enemy Ai position and animations
 	m_cEnemyAndItemMap = new CMap();
@@ -237,7 +240,6 @@ void Scene2D::Init()
 					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
 					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
-
 
 					Strategy_Patrol* theStrategy = new Strategy_Patrol;
 					theEnemy->ChangeStrategy(theStrategy);
@@ -319,7 +321,7 @@ void Scene2D::Init()
 	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
 
 	m_player = new PlayerIn2D();
-	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
+	m_player->Init(Vector2(64, 64), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
 	m_player->SetMesh(sa);
 	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -356,9 +358,6 @@ void Scene2D::Init()
 	m_menu_status = 0;
 	m_menu_choice = 1;
 
-	m_path = new AstarPathfind;
-	m_path->GenerateGrid(m_cBoundMap);
-
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
@@ -372,42 +371,45 @@ void Scene2D::Update(double dt)
 {
 	if(m_menu_status == MAIN_MENU)
 	{
-
 		int oldChoice = m_menu_choice;
 		if (Application::IsKeyPressed(VK_DOWN))
+		{
 			if (m_menu_choice < 4 )
 			{
 				m_menu_choice++;
 				Sleep(150);
 
 			}
-			if (Application::IsKeyPressed(VK_UP)) 
-				if (m_menu_choice > 1)
-				{
-					m_menu_choice--;
-					Sleep(150);
-				}
-
-				if (Application::IsKeyPressed(VK_RETURN)) 
-				{
-					if (m_menu_choice == 1) 
-					{
-						m_menu_status = GAME;
-					}
-					if (m_menu_choice == 2) 
-					{
-						m_menu_status = INSTRUCTIONS;		
-					}
-					if (m_menu_choice == 3) 
-					{
-						m_menu_status = CREDITS;	
-					}
-					if (m_menu_choice == 4) 
-					{
-						m_menu_status = SCORE;						
-					}
-				}		
+		}
+		if (Application::IsKeyPressed(VK_UP)) 
+		{
+			if (m_menu_choice > 1)
+			{
+				m_menu_choice--;
+				Sleep(150);
+			}
+		}
+		if (Application::IsKeyPressed(VK_RETURN)) 
+		{
+			if (m_menu_choice == 1) 
+			{
+				m_menu_status = GAME;
+			}
+			if (m_menu_choice == 2) 
+			{
+				m_menu_status = INSTRUCTIONS;		
+			}
+			if (m_menu_choice == 3) 
+			{
+				m_menu_status = CREDITS;	
+			}
+			if (m_menu_choice == 4) 
+			{
+				m_menu_status = SCORE;						
+			}
+		}		
 	}
+
 	if(m_menu_status == SCORE)
 	{
 		Sleep(150);
@@ -417,6 +419,7 @@ void Scene2D::Update(double dt)
 			Sleep(150);
 		}
 	}
+
 	if(m_menu_status == CREDITS)
 	{
 		Sleep(150);
@@ -426,6 +429,7 @@ void Scene2D::Update(double dt)
 			Sleep(150);
 		}
 	}
+
 	if(m_menu_status == INSTRUCTIONS)
 	{
 		Sleep(150);
@@ -435,6 +439,7 @@ void Scene2D::Update(double dt)
 			Sleep(150);
 		}
 	}
+
 	if(m_menu_status == GAME)
 	{
 		if(Application::IsKeyPressed('P') && m_isPaused == false) 
@@ -448,31 +453,38 @@ void Scene2D::Update(double dt)
 	{
 		int oldChoice = m_menu_choice;
 		if (Application::IsKeyPressed(VK_DOWN))
+		{
 			if (m_menu_choice < 2 )
 			{
 				m_menu_choice++;
 			}
-			if (Application::IsKeyPressed(VK_UP)) 
-				if (m_menu_choice > 1)
-				{
-					m_menu_choice--;
-				}
+		}
 
-				if (Application::IsKeyPressed(VK_RETURN)) 
-				{
-					if (m_menu_choice == 1) 
-					{
-						m_menu_status = GAME;
-						m_isPaused = false;
-					}
-					if (m_menu_choice == 2) 
-					{
-						m_menu_status = MAIN_MENU;
-						m_menu_choice = 1;
-						Sleep(150);
-					}
-				}		
+		if (Application::IsKeyPressed(VK_UP)) 
+		{	
+			if (m_menu_choice > 1)
+			{
+				m_menu_choice--;
+			}
+		}
+
+		if (Application::IsKeyPressed(VK_RETURN)) 
+		{
+			if (m_menu_choice == 1) 
+			{
+				m_menu_status = GAME;
+				m_isPaused = false;
+			}
+			if (m_menu_choice == 2) 
+			{
+				m_menu_status = MAIN_MENU;
+				m_menu_choice = 1;
+				Sleep(150);
+				m_isPaused = false;
+			}
+		}
 	}
+
 	if( m_menu_status == GAME)
 	{
 		if(m_isPaused == false)
@@ -525,7 +537,7 @@ void Scene2D::Update(double dt)
 						{
 							m_spawnGhost = true;
 						}
-						
+
 						m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
 						m_backgroundSound->stop();
 						m_backgroundSound->drop();
@@ -534,7 +546,7 @@ void Scene2D::Update(double dt)
 						m_currentSound = SND_BACKGROUND;
 					}
 				}
-				
+
 				if(m_spawnGhost)
 				{
 					for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
@@ -768,7 +780,7 @@ bool Scene2D::CheckPlayerHiding()
 {
 	int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
 	int checkPosition_Y = m_cMap->GetNumOfTiles_Height() - (int) ceil( (float)(m_player->GetPosition().y + m_cMap->GetTileSize()) / m_cMap->GetTileSize());
-	
+
 	if(m_cBoundMap->theScreenMap[checkPosition_Y][checkPosition_X] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y][checkPosition_X+1] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y+1][checkPosition_X] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y+1][checkPosition_X+1] == 2)		
 	{
 		return true;
@@ -1117,24 +1129,24 @@ void Scene2D::Render()
 	modelStack.LoadIdentity();
 
 	glDisable(GL_DEPTH_TEST);
-		if(m_menu_status != GAME)
-		{
-			//Render UI
-			RenderUI();
-		}
+	if(m_menu_status != GAME)
+	{
+		//Render UI
+		RenderUI();
+	}
 
-		if(m_menu_status == GAME)
-		{
-			// Render the tile map
-			RenderTileMap();
+	if(m_menu_status == GAME)
+	{
+		// Render the tile map
+		RenderTileMap();
 
-			//On screen text
-			std::ostringstream ss;
-			ss.precision(3);
-			ss << "FPS: " << fps;
-			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
-		}
-	
+		//On screen text
+		std::ostringstream ss;
+		ss.precision(3);
+		ss << "FPS: " << fps;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
+	}
+
 	glEnable(GL_DEPTH_TEST);
 }
 

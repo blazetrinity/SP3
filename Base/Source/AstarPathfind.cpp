@@ -56,6 +56,8 @@ vector<PositionNode*> AstarPathfind::FindPath(Vector2 startPos, Vector2 targetPo
 
 		if(currentNode == targetNode)
 		{
+			openSet.clear();
+			closeSet.clear();
 			return RetracePath(startNode, targetNode);
 		}
 
