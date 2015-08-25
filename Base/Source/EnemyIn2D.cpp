@@ -31,7 +31,7 @@ void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel,
 	this->m_sprite = new SpriteAnimation;
 	*(this->m_sprite) = *newSprite;
 	this->m_enemyType = newType;
-	this->m_active = true;
+	this->m_active = false;
 
 	if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
 	{

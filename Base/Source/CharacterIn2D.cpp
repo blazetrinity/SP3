@@ -56,10 +56,11 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 	m_velocity = m_velocity + (frictionInOppositeDirection * dt);
 
 	// New position next frame
-	Vector2 tilePos( (map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())) );
+	Vector2 tilePos( (map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + (this->m_velocity.y * dt)) + map->GetTileSize()) / map->GetTileSize())) );
 
 	if(m_facingNormal.x > 0)
 	{
+		
 		if(map->theScreenMap[tilePos.y][tilePos.x+1] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
 		{
 			this->m_position.x = this->m_position.x + (m_velocity.x * dt);

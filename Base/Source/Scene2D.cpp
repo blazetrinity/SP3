@@ -22,8 +22,8 @@ Scene2D::~Scene2D()
 {
 	/*if (m_cMap)
 	{
-		delete m_cMap;
-		m_cMap = NULL;
+	delete m_cMap;
+	m_cMap = NULL;
 	}*/
 }
 
@@ -162,6 +162,13 @@ void Scene2D::Init()
 	meshListUI[CREDITS]->textureID[0] = LoadTGA("Image//menu_credits.tga");
 	meshListUI[INSTRUCTIONS] = MeshBuilder::Generate2DMesh("INSTRUCTIONS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
 	meshListUI[INSTRUCTIONS]->textureID[0] = LoadTGA("Image//menu_instructions.tga");
+	meshListUI[SCORE] = MeshBuilder::Generate2DMesh("SCORE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshListUI[SCORE]->textureID[0] = LoadTGA("Image//menu_highscore.tga");
+
+	meshListUI[GEO_ARROW] = MeshBuilder::Generate2DMesh("GEO_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
+	meshListUI[GEO_ARROW]->textureID[0] = LoadTGA("Image//arrow.tga");
+	meshListUI[GEO_PAUSED_ARROW] = MeshBuilder::Generate2DMesh("GEO_PAUSED_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
+	meshListUI[GEO_PAUSED_ARROW]->textureID[0] = LoadTGA("Image//paused_arrow.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_ENEMY1] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY1", 4, 3);
@@ -176,6 +183,7 @@ void Scene2D::Init()
 
 	meshList[GEO_BULLET] = MeshBuilder::Generate2DMesh("GEO_BULLET", Color(1, 1, 1), 0, 0, 1, 1);
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
+	
 
 	// Initialise and load the tile map
 	m_cMap = new CMap();
@@ -364,23 +372,23 @@ void Scene2D::Update(double dt)
 {
 	if(m_menu_status == MAIN_MENU)
 	{
-		
+
 		int oldChoice = m_menu_choice;
 		if (Application::IsKeyPressed(VK_DOWN))
 			if (m_menu_choice < 4 )
 			{
 				m_menu_choice++;
 				Sleep(150);
-			
-			}
-		if (Application::IsKeyPressed(VK_UP)) 
-			if (m_menu_choice > 1)
-			{
-				m_menu_choice--;
-				Sleep(150);
-			}
 
-			if (Application::IsKeyPressed(VK_RETURN)) 
+			}
+			if (Application::IsKeyPressed(VK_UP)) 
+				if (m_menu_choice > 1)
+				{
+					m_menu_choice--;
+					Sleep(150);
+				}
+
+				if (Application::IsKeyPressed(VK_RETURN)) 
 				{
 					if (m_menu_choice == 1) 
 					{
@@ -396,10 +404,18 @@ void Scene2D::Update(double dt)
 					}
 					if (m_menu_choice == 4) 
 					{
-						m_menu_status = EXIT;
-						Exit();
+						m_menu_status = SCORE;						
 					}
 				}		
+	}
+	if(m_menu_status == SCORE)
+	{
+		Sleep(150);
+		if (Application::IsKeyPressed(VK_RETURN)) 
+		{
+			m_menu_status = MAIN_MENU;
+			Sleep(150);
+		}
 	}
 	if(m_menu_status == CREDITS)
 	{
@@ -449,7 +465,7 @@ void Scene2D::Update(double dt)
 						m_menu_status = GAME;
 						m_isPaused = false;
 					}
-					if (m_menu_status == 2) 
+					if (m_menu_choice == 2) 
 					{
 						m_menu_status = MAIN_MENU;
 						m_menu_choice = 1;
@@ -505,12 +521,12 @@ void Scene2D::Update(double dt)
 					if(m_backgroundSound->isFinished() == true)
 					{
 						// Check if player hiding
-						//if(playerhiding)
-						//{
-						m_spawnGhost = true;
-						//}
-
-						//m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+						if(!CheckPlayerHiding())
+						{
+							m_spawnGhost = true;
+						}
+						
+						m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
 						m_backgroundSound->stop();
 						m_backgroundSound->drop();
 						m_backgroundSound = NULL;
@@ -518,7 +534,7 @@ void Scene2D::Update(double dt)
 						m_currentSound = SND_BACKGROUND;
 					}
 				}
-
+				
 				if(m_spawnGhost)
 				{
 					for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
@@ -746,6 +762,19 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 		m_player->CalPosition((m_cMap->GetTileSize()), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), (m_cMap->GetTileSize()), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), (float)m_cMap->GetTileSize());
 		m_updateMap = false;
 	}
+}
+
+bool Scene2D::CheckPlayerHiding()
+{
+	int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
+	int checkPosition_Y = m_cMap->GetNumOfTiles_Height() - (int) ceil( (float)(m_player->GetPosition().y + m_cMap->GetTileSize()) / m_cMap->GetTileSize());
+	
+	if(m_cBoundMap->theScreenMap[checkPosition_Y][checkPosition_X] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y][checkPosition_X+1] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y+1][checkPosition_X] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y+1][checkPosition_X+1] == 2)		
+	{
+		return true;
+	}
+
+	return false;
 }
 
 Projectile* Scene2D::FetchProjectile()
@@ -1020,9 +1049,27 @@ void Scene2D::RenderBackground()
 
 void Scene2D::RenderUI()
 {
+
 	if(m_menu_status == MAIN_MENU )
 	{
 		Render2DMesh(meshListUI[MAIN_MENU], false,1.0f);
+
+		if(m_menu_choice == 1)
+		{
+			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,490.f);
+		}
+		else if(m_menu_choice == 2)
+		{
+			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,350.f);
+		}
+		else if(m_menu_choice == 3)
+		{
+			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,200.f);
+		}
+		else if(m_menu_choice == 4)
+		{
+			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,60.f);
+		}
 	}
 	if(m_menu_status == INSTRUCTIONS)
 	{
@@ -1032,10 +1079,23 @@ void Scene2D::RenderUI()
 	{
 		Render2DMesh(meshListUI[CREDITS], false, 1.0f);
 	}
+	if(m_menu_status == SCORE)
+	{
+		Render2DMesh(meshListUI[SCORE], false, 1.0f);
+	}
 	if(m_menu_status == PAUSED)
 	{
 		Render2DMesh(meshListUI[PAUSED], false, 1.0f);
+		if(m_menu_choice == 1)
+		{
+			Render2DMesh(meshListUI[GEO_PAUSED_ARROW], false,300,-30.f,500.f);
+		}
+		else if(m_menu_choice == 2)
+		{
+			Render2DMesh(meshListUI[GEO_PAUSED_ARROW], false,300,-70.f,360.f);
+		}
 	}
+
 }
 
 void Scene2D::Render()
@@ -1057,15 +1117,12 @@ void Scene2D::Render()
 	modelStack.LoadIdentity();
 
 	glDisable(GL_DEPTH_TEST);
-
-	if(m_menu_status != EXIT)
-	{
 		if(m_menu_status != GAME)
 		{
 			//Render UI
 			RenderUI();
 		}
-	
+
 		if(m_menu_status == GAME)
 		{
 			// Render the tile map
@@ -1077,7 +1134,7 @@ void Scene2D::Render()
 			ss << "FPS: " << fps;
 			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
 		}
-	}
+	
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -1240,6 +1297,12 @@ void Scene2D::RenderTileMap()
 			{
 				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
 				tm->SetTileID(TILE_MIDDLE - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+			}
+			else if(m_cMap->theScreenMap[i][m] == TILE_HIDE_MIDDLE)
+			{
+				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
+				tm->SetTileID(TILE_HIDE_MIDDLE - 1);
 				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
 			}
 			else if(m_cMap->theScreenMap[i][m] == TILE_EDGE)
