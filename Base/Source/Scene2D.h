@@ -51,6 +51,8 @@ public:
 	void UpdateEnemy(double dt);
 	void UpdateProjectile(double dt);
 	void UpdateLevel(int checkPosition_X, int checkPosition_Y);
+
+	bool CheckPlayerHiding();
 	
 	void InitGame();
 	void ResetGame();
@@ -111,6 +113,8 @@ public:
 		GEO_ENEMY2,
 		GEO_TEXT,
 		GEO_BULLET,
+		GEO_ARROW,//arrow for menu
+		GEO_PAUSED_ARROW,//arrow for pause
 		NUM_GEOMETRY,
 	};
 	enum TILE_ID
@@ -125,7 +129,8 @@ public:
 		TILE_LEFT,
 		TILE_RIGHT,
 		TILE_MIDDLE,
-		TILE_DOOR = 19,
+		TILE_HIDE_MIDDLE = 18,
+		TILE_DOOR,
 		TILE_EDGE,
 		NUM_TILE,
 	};
@@ -157,8 +162,8 @@ public:
 		WIN,
 		LOSE,
 		INSTRUCTIONS,
+		SCORE,
 		GAME,
-		EXIT,
 		NUM_UI,
 	};
 

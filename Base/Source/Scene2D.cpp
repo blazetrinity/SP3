@@ -162,6 +162,13 @@ void Scene2D::Init()
 	meshListUI[CREDITS]->textureID[0] = LoadTGA("Image//menu_credits.tga");
 	meshListUI[INSTRUCTIONS] = MeshBuilder::Generate2DMesh("INSTRUCTIONS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
 	meshListUI[INSTRUCTIONS]->textureID[0] = LoadTGA("Image//menu_instructions.tga");
+	meshListUI[SCORE] = MeshBuilder::Generate2DMesh("SCORE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshListUI[SCORE]->textureID[0] = LoadTGA("Image//menu_highscore.tga");
+
+	meshListUI[GEO_ARROW] = MeshBuilder::Generate2DMesh("GEO_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
+	meshListUI[GEO_ARROW]->textureID[0] = LoadTGA("Image//arrow.tga");
+	meshListUI[GEO_PAUSED_ARROW] = MeshBuilder::Generate2DMesh("GEO_PAUSED_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
+	meshListUI[GEO_PAUSED_ARROW]->textureID[0] = LoadTGA("Image//paused_arrow.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_ENEMY1] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY1", 4, 3);
@@ -176,13 +183,181 @@ void Scene2D::Init()
 
 	meshList[GEO_BULLET] = MeshBuilder::Generate2DMesh("GEO_BULLET", Color(1, 1, 1), 0, 0, 1, 1);
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
+	
 
-	InitGame();
+	// Initialise and load the tile map
+	m_cMap = new CMap();
+	m_cMap->Init(800, 1024, 25, 32, 800 ,1024);
+	m_cMap->LoadMap( "Image//level1_visual.csv" );
 
-	m_resetInit = false;
+	m_cBoundMap = new CMap();
+	m_cBoundMap->Init(800, 1024, 25, 32, 800 ,1024);
+	m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
+
+	m_cDoorInteractionMap = new CMap();
+	m_cDoorInteractionMap->Init(800, 1024, 25, 32, 800 ,1024);
+	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
+
+	//Init Enemy Ai position and animations
+	m_cEnemyAndItemMap = new CMap();
+	m_cEnemyAndItemMap->Init(800, 1024, 25, 32, 800, 1024);
+
+	for(int i = 1; i < NUM_LEVELS; ++i)
+	{
+		switch(i)
+		{
+		case 1:	m_cEnemyAndItemMap->LoadMap( "Image//Level1EnemyAndItem.csv" );
+			break;
+		case 2:	m_cEnemyAndItemMap->LoadMap( "Image//Level2EnemyAndItem.csv" );
+			break;
+		case 3:	m_cEnemyAndItemMap->LoadMap( "Image//Level3EnemyAndItem.csv" );
+			break;
+		}
+
+		SpriteAnimation *whiteGhostSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_ENEMY2]));
+		SpriteAnimation *redGhostSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_ENEMY1]));
+
+		for(int j = 0; j < m_cEnemyAndItemMap->GetNumOfTiles_MapHeight(); j ++)
+		{
+			for(int k = 0; k < m_cEnemyAndItemMap->GetNumOfTiles_MapWidth(); k ++)
+			{
+				if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN)
+				{
+					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
+
+					EnemyIn2D* theEnemy = new EnemyIn2D;
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, NULL, WHITEGHOSTHEALTH);
+
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
+					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
+
+
+					Strategy_Patrol* theStrategy = new Strategy_Patrol;
+					theEnemy->ChangeStrategy(theStrategy);
+					m_enemyList.push_back(theEnemy);
+				}
+
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT)
+				{
+					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
+
+					EnemyIn2D* theEnemy = new EnemyIn2D;
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1, NULL, WHITEGHOSTHEALTH);
+
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
+					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
+
+					Strategy_Patrol* theStrategy = new Strategy_Patrol;
+					theEnemy->ChangeStrategy(theStrategy);
+					m_enemyList.push_back(theEnemy);
+				}
+
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
+				{
+					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
+
+					EnemyIn2D* theEnemy = new EnemyIn2D;
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, NULL, REDGHOSTHEALTH);
+
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
+					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
+
+					Strategy_Patrol* theStrategy = new Strategy_Patrol;
+					theEnemy->ChangeStrategy(theStrategy);
+					m_enemyList.push_back(theEnemy);
+				}
+
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
+				{
+					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
+
+					EnemyIn2D* theEnemy = new EnemyIn2D;
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, NULL, REDGHOSTHEALTH);
+
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
+					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
+
+					Strategy_Patrol* theStrategy = new Strategy_Patrol;
+					theEnemy->ChangeStrategy(theStrategy);
+					m_enemyList.push_back(theEnemy);
+				}
+			}
+		}
+	}
+
+	// Init Player position and animation
+	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
+	Skill* skill = new Skill();
+	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
+
+	m_player = new PlayerIn2D();
+	m_player->Init(Vector2(20, 20), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
+	m_player->SetMesh(sa);
+	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 7, 7, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 4, 4, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::IDLE_UP, 10, 10, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::IDLE_DOWN, 1, 1, 0, 1);
+	m_player->SetAnimation(PlayerIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+	m_player->SetAnimation(PlayerIn2D::WALK_LEFT, 3, 5, 0, 0.5);
+	m_player->SetAnimation(PlayerIn2D::WALK_UP, 9, 11, 0, 0.5);
+	m_player->SetAnimation(PlayerIn2D::WALK_DOWN, 0, 2, 0, 0.5);
+	m_player->ChangeAnimation(PlayerIn2D::IDLE_RIGHT);
+
+	//Init Sounds
+	m_theSoundEngine = createIrrKlangDevice();
+	m_backgroundSound = NULL;
+	m_eventSound= NULL;
+	m_sounds[SND_BACKGROUND] = m_theSoundEngine->addSoundSourceFromFile("wav//background.wav");
+	m_sounds[SND_GHOST_QUEUE] = m_theSoundEngine->addSoundSourceFromFile("wav//ghost_queue.wav");
+	m_sounds[SND_FIRE] = m_theSoundEngine->addSoundSourceFromFile("wav//fire.wav");
+	m_sounds[SND_DAMAGE] = m_theSoundEngine->addSoundSourceFromFile("wav//damage.wav");
+	m_sounds[SND_BOSS] = m_theSoundEngine->addSoundSourceFromFile("wav//boss.wav");
+	//m_sounds[SND_BOSS_ATTACK] = m_theSoundEngine->addSoundSourceFromFile("wav//boss_attack.wav");
+
+	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
+	m_currentSound = SND_BACKGROUND;
+
+	// Init game element variables
+	m_levelCompleted = false;
+	m_currentLevel = 1;
+	m_updateMap = false; 
+	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+	m_spawnGhost = false;
+	m_ghostTriggered = false;
 	m_isPaused = false;
 	m_menu_status = 0;
 	m_menu_choice = 1;
+
+	m_path = new AstarPathfind;
+	m_path->GenerateGrid(m_cBoundMap);
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
@@ -197,51 +372,51 @@ void Scene2D::Update(double dt)
 {
 	if(m_menu_status == MAIN_MENU)
 	{
+
 		int oldChoice = m_menu_choice;
 		if (Application::IsKeyPressed(VK_DOWN))
-		{
 			if (m_menu_choice < 4 )
 			{
 				m_menu_choice++;
 				Sleep(150);
-			}
-		}
 
-		if (Application::IsKeyPressed(VK_UP)) 
-		{
-			if (m_menu_choice > 1)
-			{
-				m_menu_choice--;
-				Sleep(150);
 			}
-		}
+			if (Application::IsKeyPressed(VK_UP)) 
+				if (m_menu_choice > 1)
+				{
+					m_menu_choice--;
+					Sleep(150);
+				}
 
+				if (Application::IsKeyPressed(VK_RETURN)) 
+				{
+					if (m_menu_choice == 1) 
+					{
+						m_menu_status = GAME;
+					}
+					if (m_menu_choice == 2) 
+					{
+						m_menu_status = INSTRUCTIONS;		
+					}
+					if (m_menu_choice == 3) 
+					{
+						m_menu_status = CREDITS;	
+					}
+					if (m_menu_choice == 4) 
+					{
+						m_menu_status = SCORE;						
+					}
+				}		
+	}
+	if(m_menu_status == SCORE)
+	{
+		Sleep(150);
 		if (Application::IsKeyPressed(VK_RETURN)) 
 		{
-			if (m_menu_choice == 1) 
-			{
-				m_menu_status = GAME;
-				if(m_resetInit)
-				{
-					ResetGame();
-				}
-			}
-			if (m_menu_choice == 2) 
-			{
-				m_menu_status = INSTRUCTIONS;		
-			}
-			if (m_menu_choice == 3) 
-			{
-				m_menu_status = CREDITS;	
-			}
-			if (m_menu_choice == 4) 
-			{
-				m_menu_status = EXIT;
-				Exit();
-			}
-		}		
+			m_menu_status = MAIN_MENU;
+			Sleep(150);
+		}
 	}
-
 	if(m_menu_status == CREDITS)
 	{
 		Sleep(150);
@@ -251,7 +426,6 @@ void Scene2D::Update(double dt)
 			Sleep(150);
 		}
 	}
-
 	if(m_menu_status == INSTRUCTIONS)
 	{
 		Sleep(150);
@@ -261,7 +435,6 @@ void Scene2D::Update(double dt)
 			Sleep(150);
 		}
 	}
-
 	if(m_menu_status == GAME)
 	{
 		if(Application::IsKeyPressed('P') && m_isPaused == false) 
@@ -275,37 +448,31 @@ void Scene2D::Update(double dt)
 	{
 		int oldChoice = m_menu_choice;
 		if (Application::IsKeyPressed(VK_DOWN))
-		{
 			if (m_menu_choice < 2 )
 			{
 				m_menu_choice++;
 			}
-		}
-		if (Application::IsKeyPressed(VK_UP)) 
-		{
-			if (m_menu_choice > 1)
-			{
-				m_menu_choice--;
-			}
-		}
-		if (Application::IsKeyPressed(VK_RETURN)) 
-		{
-			if (m_menu_choice == 1) 
-			{
-				m_menu_status = GAME;
-				m_isPaused = false;
-			}
-			if (m_menu_status == 2) 
-			{
-				m_menu_status = MAIN_MENU;
-				m_menu_choice = 1;
-				m_resetInit = true;
-				m_isPaused = false;
-				Sleep(150);
-			}
-		}		
-	}
+			if (Application::IsKeyPressed(VK_UP)) 
+				if (m_menu_choice > 1)
+				{
+					m_menu_choice--;
+				}
 
+				if (Application::IsKeyPressed(VK_RETURN)) 
+				{
+					if (m_menu_choice == 1) 
+					{
+						m_menu_status = GAME;
+						m_isPaused = false;
+					}
+					if (m_menu_choice == 2) 
+					{
+						m_menu_status = MAIN_MENU;
+						m_menu_choice = 1;
+						Sleep(150);
+					}
+				}		
+	}
 	if( m_menu_status == GAME)
 	{
 		if(m_isPaused == false)
@@ -354,12 +521,12 @@ void Scene2D::Update(double dt)
 					if(m_backgroundSound->isFinished() == true)
 					{
 						// Check if player hiding
-						//if(playerhiding)
-						//{
-						m_spawnGhost = true;
-						//}
-
-						//m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+						if(!CheckPlayerHiding())
+						{
+							m_spawnGhost = true;
+						}
+						
+						m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
 						m_backgroundSound->stop();
 						m_backgroundSound->drop();
 						m_backgroundSound = NULL;
@@ -367,7 +534,7 @@ void Scene2D::Update(double dt)
 						m_currentSound = SND_BACKGROUND;
 					}
 				}
-
+				
 				if(m_spawnGhost)
 				{
 					for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
@@ -394,7 +561,6 @@ void Scene2D::Update(double dt)
 		}
 	}
 }
-
 void Scene2D::UpdatePlayer(double dt)
 {
 	//Player Movement
@@ -451,7 +617,6 @@ void Scene2D::UpdateEnemy(double dt)
 				// Check if play collide with enemy
 				if(m_player->CollideWith(enemy))
 				{
-					cout << "collide" << endl;
 					// Player takes damage
 					//m_player->TakeDamage();
 				}
@@ -488,7 +653,7 @@ void Scene2D::UpdateProjectile(double dt)
 					EnemyIn2D *enemy = (EnemyIn2D *) *it2;
 
 					// Check if projectile collide with enemy
-					if(enemy->GetActive() && enemy->CollideWith(projectile) && enemy->GetCurrentLevel() == m_currentLevel)
+					if(enemy->CollideWith(projectile) && enemy->GetCurrentLevel() == m_currentLevel)
 					{
 						// Enemy takes damage
 						enemy->TakeDamage(projectile->GetDamage());
@@ -597,6 +762,19 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 		m_player->CalPosition((m_cMap->GetTileSize()), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), (m_cMap->GetTileSize()), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), (float)m_cMap->GetTileSize());
 		m_updateMap = false;
 	}
+}
+
+bool Scene2D::CheckPlayerHiding()
+{
+	int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
+	int checkPosition_Y = m_cMap->GetNumOfTiles_Height() - (int) ceil( (float)(m_player->GetPosition().y + m_cMap->GetTileSize()) / m_cMap->GetTileSize());
+	
+	if(m_cBoundMap->theScreenMap[checkPosition_Y][checkPosition_X] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y][checkPosition_X+1] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y+1][checkPosition_X] == 2 || m_cBoundMap->theScreenMap[checkPosition_Y+1][checkPosition_X+1] == 2)		
+	{
+		return true;
+	}
+
+	return false;
 }
 
 Projectile* Scene2D::FetchProjectile()
@@ -838,7 +1016,6 @@ void Scene2D::RenderMesh(Mesh *mesh, bool enableLight)
 	{	
 		glUniform1i(m_parameters[U_LIGHTENABLED], 0);
 	}
-
 	for(int i = 0; i < Mesh::MAX_TEXTURE; ++i)
 	{
 		if(mesh->textureID[i] > 0)
@@ -872,9 +1049,27 @@ void Scene2D::RenderBackground()
 
 void Scene2D::RenderUI()
 {
+
 	if(m_menu_status == MAIN_MENU )
 	{
 		Render2DMesh(meshListUI[MAIN_MENU], false,1.0f);
+
+		if(m_menu_choice == 1)
+		{
+			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,490.f);
+		}
+		else if(m_menu_choice == 2)
+		{
+			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,350.f);
+		}
+		else if(m_menu_choice == 3)
+		{
+			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,200.f);
+		}
+		else if(m_menu_choice == 4)
+		{
+			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,60.f);
+		}
 	}
 	if(m_menu_status == INSTRUCTIONS)
 	{
@@ -884,10 +1079,23 @@ void Scene2D::RenderUI()
 	{
 		Render2DMesh(meshListUI[CREDITS], false, 1.0f);
 	}
+	if(m_menu_status == SCORE)
+	{
+		Render2DMesh(meshListUI[SCORE], false, 1.0f);
+	}
 	if(m_menu_status == PAUSED)
 	{
 		Render2DMesh(meshListUI[PAUSED], false, 1.0f);
+		if(m_menu_choice == 1)
+		{
+			Render2DMesh(meshListUI[GEO_PAUSED_ARROW], false,300,-30.f,500.f);
+		}
+		else if(m_menu_choice == 2)
+		{
+			Render2DMesh(meshListUI[GEO_PAUSED_ARROW], false,300,-70.f,360.f);
+		}
 	}
+
 }
 
 void Scene2D::Render()
@@ -909,9 +1117,6 @@ void Scene2D::Render()
 	modelStack.LoadIdentity();
 
 	glDisable(GL_DEPTH_TEST);
-
-	if(m_menu_status != EXIT)
-	{
 		if(m_menu_status != GAME)
 		{
 			//Render UI
@@ -929,7 +1134,7 @@ void Scene2D::Render()
 			ss << "FPS: " << fps;
 			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
 		}
-	}
+	
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -947,8 +1152,6 @@ void Scene2D::Exit()
 		}
 	}
 
-	m_enemyList.clear();
-
 	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
 	{
 		Projectile* projectile = (Projectile*)*it;
@@ -959,8 +1162,6 @@ void Scene2D::Exit()
 			projectile = NULL;
 		}
 	}
-
-	m_projectileList.clear();
 
 	if(m_player != NULL)
 	{
@@ -1098,6 +1299,12 @@ void Scene2D::RenderTileMap()
 				tm->SetTileID(TILE_MIDDLE - 1);
 				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
 			}
+			else if(m_cMap->theScreenMap[i][m] == TILE_HIDE_MIDDLE)
+			{
+				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
+				tm->SetTileID(TILE_HIDE_MIDDLE - 1);
+				Render2DMesh(tm, false, 32.0f, (k + 0.5f) * m_cMap->GetTileSize() - m_cMap->GetmapFineOffset().x, (m_cMap->GetScreenHeight() - m_cMap->GetTileSize()) - (i - 0.5f) * m_cMap->GetTileSize());
+			}
 			else if(m_cMap->theScreenMap[i][m] == TILE_EDGE)
 			{
 				TileMap *tm = dynamic_cast<TileMap*>(meshList[GEO_TILEMAP]);
@@ -1143,228 +1350,4 @@ void Scene2D::RenderTileMap()
 	{
 		Render2DMesh(m_player->GetMesh(), false, m_player->GetScale().x, 16.0f + m_player->GetPosition().x, 16.0f + m_player->GetPosition().y);
 	}
-}
-
-void Scene2D::InitGame()
-{
-	// Initialise and load the tile map
-	m_cMap = new CMap();
-	m_cMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cMap->LoadMap( "Image//level1_visual.csv" );
-
-	m_cBoundMap = new CMap();
-	m_cBoundMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
-
-	m_cDoorInteractionMap = new CMap();
-	m_cDoorInteractionMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
-
-	m_path = new AstarPathfind;
-	m_path->GenerateGrid(m_cBoundMap);
-
-	//Init Enemy Ai position and animations
-	m_cEnemyAndItemMap = new CMap();
-	m_cEnemyAndItemMap->Init(800, 1024, 25, 32, 800, 1024);
-
-	for(int i = 1; i < NUM_LEVELS; ++i)
-	{
-		switch(i)
-		{
-		case 1:	m_cEnemyAndItemMap->LoadMap( "Image//Level1EnemyAndItem.csv" );
-			break;
-		case 2:	m_cEnemyAndItemMap->LoadMap( "Image//Level2EnemyAndItem.csv" );
-			break;
-		case 3:	m_cEnemyAndItemMap->LoadMap( "Image//Level3EnemyAndItem.csv" );
-			break;
-		}
-
-		SpriteAnimation *whiteGhostSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_ENEMY2]));
-		SpriteAnimation *redGhostSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_ENEMY1]));
-
-		for(int j = 0; j < m_cEnemyAndItemMap->GetNumOfTiles_MapHeight(); j ++)
-		{
-			for(int k = 0; k < m_cEnemyAndItemMap->GetNumOfTiles_MapWidth(); k ++)
-			{
-				if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN)
-				{
-					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
-
-					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, NULL, WHITEGHOSTHEALTH);
-
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
-					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
-
-
-					Strategy_Patrol* theStrategy = new Strategy_Patrol;
-					theEnemy->ChangeStrategy(theStrategy);
-					m_enemyList.push_back(theEnemy);
-				}
-
-				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT)
-				{
-					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
-
-					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1, NULL, WHITEGHOSTHEALTH);
-
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
-					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
-
-					Strategy_Patrol* theStrategy = new Strategy_Patrol;
-					theEnemy->ChangeStrategy(theStrategy);
-					m_enemyList.push_back(theEnemy);
-				}
-
-				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
-				{
-					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
-
-					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, NULL, REDGHOSTHEALTH);
-
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
-					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
-
-					Strategy_Patrol* theStrategy = new Strategy_Patrol;
-					theEnemy->ChangeStrategy(theStrategy);
-					m_enemyList.push_back(theEnemy);
-				}
-
-				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
-				{
-					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
-
-					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, NULL, REDGHOSTHEALTH);
-
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 10, 10, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 1, 1, 0, 1);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 3, 5, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 9, 11, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
-					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
-
-					Strategy_Patrol* theStrategy = new Strategy_Patrol;
-					theEnemy->ChangeStrategy(theStrategy);
-					m_enemyList.push_back(theEnemy);
-				}
-			}
-		}
-	}
-
-	// Init Player position and animation
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
-	Skill* skill = new Skill();
-	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
-
-	m_player = new PlayerIn2D();
-	m_player->Init(Vector2(50, 50), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
-	m_player->SetMesh(sa);
-	m_player->SetAnimation(PlayerIn2D::IDLE_RIGHT, 7, 7, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::IDLE_LEFT, 4, 4, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::IDLE_UP, 10, 10, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::IDLE_DOWN, 1, 1, 0, 1);
-	m_player->SetAnimation(PlayerIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
-	m_player->SetAnimation(PlayerIn2D::WALK_LEFT, 3, 5, 0, 0.5);
-	m_player->SetAnimation(PlayerIn2D::WALK_UP, 9, 11, 0, 0.5);
-	m_player->SetAnimation(PlayerIn2D::WALK_DOWN, 0, 2, 0, 0.5);
-	m_player->ChangeAnimation(PlayerIn2D::IDLE_RIGHT);
-
-	//Init Sounds
-	m_theSoundEngine = createIrrKlangDevice();
-	m_backgroundSound = NULL;
-	m_eventSound= NULL;
-	m_sounds[SND_BACKGROUND] = m_theSoundEngine->addSoundSourceFromFile("wav//background.wav");
-	m_sounds[SND_GHOST_QUEUE] = m_theSoundEngine->addSoundSourceFromFile("wav//ghost_queue.wav");
-	m_sounds[SND_FIRE] = m_theSoundEngine->addSoundSourceFromFile("wav//fire.wav");
-	m_sounds[SND_DAMAGE] = m_theSoundEngine->addSoundSourceFromFile("wav//damage.wav");
-	m_sounds[SND_BOSS] = m_theSoundEngine->addSoundSourceFromFile("wav//boss.wav");
-	//m_sounds[SND_BOSS_ATTACK] = m_theSoundEngine->addSoundSourceFromFile("wav//boss_attack.wav");
-
-	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
-	m_currentSound = SND_BACKGROUND;
-
-	// Init game element variables
-	m_levelCompleted = false;
-	m_currentLevel = 1;
-	m_updateMap = false; 
-	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
-	m_spawnGhost = false;
-	m_ghostTriggered = false;
-}
-
-void Scene2D::ResetGame()
-{
-	// Reset Maps
-	m_cMap->LoadMap( "Image//level1_visual.csv" );
-	m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
-	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
-
-	m_path->GenerateGrid(m_cBoundMap);
-
-	// Reset Player
-	Skill* skill = new Skill();
-	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
-
-	m_player->Init(Vector2(50, 50), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
-
-	// Reset enemy
-	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
-	{
-		EnemyIn2D* enemy = (EnemyIn2D*)*it;
-
-		if(enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT || enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
-		{
-			enemy->SetHealth(REDGHOSTHEALTH);
-		}
-		else
-		{
-			enemy->SetHealth(WHITEGHOSTHEALTH);
-		}
-
-		enemy->SetPosition(enemy->GetSpawnLocation());
-		enemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
-		enemy->SetActive(true);
-
-		Strategy_Patrol* theStrategy = new Strategy_Patrol;
-		enemy->ChangeStrategy(theStrategy);
-	}
-
-	// Reset Sound
-	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
-	m_currentSound = SND_BACKGROUND;
-
-	// Reset game element variables
-	m_levelCompleted = false;
-	m_currentLevel = 1;
-	m_updateMap = false; 
-	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
-	m_spawnGhost = false;
-	m_ghostTriggered = false;
 }
