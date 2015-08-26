@@ -23,6 +23,14 @@ public:
 		NUM_ENEMY_TYPE,
 	};
 
+	enum STRATEGY_TYPE
+	{
+		PATROL_STRATEGY = 0,
+		CHASE_STRATEGY,
+
+		NUM_STRATEGY,
+	};
+
 	enum ANIMATION_TYPE
 	{
 		IDLE_RIGHT = 0,
@@ -47,47 +55,40 @@ public:
 	void SetMesh(SpriteAnimation* newSprite);
 	// Change Current Animation
 	void ChangeAnimation(ANIMATION_TYPE Animation);
-	//Set Animations
+	// Set Animations
 	void SetAnimation(ANIMATION_TYPE Animation, int startFrame,int endFrame, int repeat, float time);
-	
+	// Set Current Strategy
+	void SetStrategy(STRATEGY_TYPE newStrategy, AstarPathfind* newPath);
+	// Set Active
+	void SetActive(bool newActive);
+	// Set Enemy type
+	void SetEnemyType(ENEMY_TYPE newtype);
+	// Set Enemy Health
+	virtual void SetHealth(int health);
+
 	// Get Mesh of the player
 	SpriteAnimation* GetMesh();
 	// Get Current Animation of the player
 	ANIMATION_TYPE GetAnimation();
-	
-	// Set Active
-	void SetActive(bool newActive);
-
-	// Set Enemy type
-	void SetEnemyType(ENEMY_TYPE newtype);
-	
-	// Set Enemy Health
-	virtual void SetHealth(int health);
-
 	// Get gamelevel of the enemy
 	int GetCurrentLevel();
-	
-	// Change Strategy
-	void ChangeStrategy(Strategy* theNewStrategy, bool bDelete=true);
 	// Get CurrentStrategy
-	Strategy* GetStrategy();
-
-	// Get Facing
-	bool GetFacing();
+	STRATEGY_TYPE GetCurrentStrategy();
 	// Get Active
 	bool GetActive();
-	
 	// Get Spawn Location
 	Vector2 GetSpawnLocation();
+	// Get View Position
+	Vector2 GetViewPosition();
+	// Get Enemy type
+	ENEMY_TYPE GetEnemyType();
 
 	// Attack
 	virtual bool Attack();
-
 	// Take Damage
 	virtual bool TakeDamage(float damage);
-
-	// Get Enemy type
-	ENEMY_TYPE GetEnemyType();
+	// Change Strategy
+	void ChangeStrategy(Strategy* theNewStrategy, bool bDelete=true);
 
 private:
 	// Enemy's gamelevel
@@ -106,6 +107,8 @@ private:
 	ENEMY_TYPE m_enemyType;
 	// Spawn Position
 	Vector2 m_spawnPosition;
+	// Enemy current strategy
+	STRATEGY_TYPE m_currentStrategy;
 };
 
 #endif

@@ -8,7 +8,7 @@ public:
 	Strategy_Patrol(void);
 	~Strategy_Patrol(void);
 
-	virtual void Update(CMap *m_cMap, Vector2* Position, Vector2* Velocity, Vector2* Direction, double* dt);
+	virtual void Update(Vector2* Position, Vector2* ViewPosition, Vector2* Velocity, Vector2* Direction, double dt, float Offset);
 
 private:
 	

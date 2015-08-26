@@ -11,9 +11,9 @@ Strategy_Patrol::~Strategy_Patrol(void)
 {
 }
 
-void Strategy_Patrol::Update(CMap *m_cMap, Vector2* Position, Vector2* Velocity, Vector2* Direction, double* dt)
+void Strategy_Patrol::Update(Vector2* Position, Vector2* ViewPosition, Vector2* Velocity, Vector2* Direction, double dt, float Offset)
 {
-	m_changeFacingTimer -= *dt;
+	m_changeFacingTimer -= dt;
 
 	if(m_changeFacingTimer <= 0)
 	{
@@ -24,6 +24,7 @@ void Strategy_Patrol::Update(CMap *m_cMap, Vector2* Position, Vector2* Velocity,
 	if(m_changeFacing)
 	{
 		*Direction = -*Direction;
+		*ViewPosition = *Position + ((*Direction) * (Offset));
 		m_changeFacing = false;
 	}
 

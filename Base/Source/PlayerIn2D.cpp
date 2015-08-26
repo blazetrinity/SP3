@@ -12,6 +12,12 @@ PlayerIn2D::PlayerIn2D(void)
 
 PlayerIn2D::~PlayerIn2D(void)
 {
+	if(m_sprite != NULL)
+	{
+		delete m_sprite;
+		m_sprite = NULL;
+	}
+
 	for(int i = 0; i < NUM_ANIMATION; ++i)
 	{
 		if(m_animations[i] != NULL)
@@ -125,7 +131,8 @@ bool PlayerIn2D::TakeDamage(float damage)
 // Set Mesh of the player
 void PlayerIn2D::SetMesh(SpriteAnimation* newMesh)
 {
-	this->m_sprite = newMesh;
+	this->m_sprite = new SpriteAnimation;
+	*(this->m_sprite) = *newMesh;
 }
 
 // Change Current Animation

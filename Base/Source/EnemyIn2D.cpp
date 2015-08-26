@@ -13,6 +13,12 @@ EnemyIn2D::~EnemyIn2D(void)
 		m_strategy = NULL;
 	}
 
+	if(m_sprite != NULL)
+	{
+		delete m_sprite;
+		m_sprite = NULL;
+	}
+
 	for(int i = 0; i < NUM_ANIMATION; ++i)
 	{
 		if(m_animations[i] != NULL)
@@ -26,13 +32,7 @@ EnemyIn2D::~EnemyIn2D(void)
 // Initialise this class instance
 void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel, SpriteAnimation *newSprite, EnemyIn2D::ENEMY_TYPE newType, float tileSize, Skill* skill, int health)
 {
-	CharacterIn2D::Init(position, scale, mass, tileSize, skill, health);
-	this->m_spawnPosition = position;
-	this->m_currentLevel = gameLevel;
-	this->m_sprite = new SpriteAnimation;
-	*(this->m_sprite) = *newSprite;
 	this->m_enemyType = newType;
-	this->m_active = true;
 
 	if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
 	{
@@ -42,6 +42,15 @@ void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel,
 	{
 		this->m_facingNormal.Set(1, 0);
 	}
+
+	CharacterIn2D::Init(position, scale, mass, tileSize, skill, health);
+	
+	this->m_spawnPosition = position;
+	this->m_currentLevel = gameLevel;
+	this->m_sprite = new SpriteAnimation;
+	*(this->m_sprite) = *newSprite;
+	this->m_active = true;
+
 	for(int i = 0; i < NUM_ANIMATION; ++i)
 	{
 		this->m_animations[i] = new Animation(); 
@@ -101,6 +110,23 @@ void EnemyIn2D::SetHealth(int health)
 	CharacterIn2D::SetHealth(health);
 }
 
+void EnemyIn2D::SetStrategy(STRATEGY_TYPE newStrategy, AstarPathfind* newPath)
+{
+	this->m_currentStrategy = newStrategy;
+	
+	if(m_currentStrategy == STRATEGY_TYPE::PATROL_STRATEGY)
+	{
+		Strategy_Patrol* theStrategy = new Strategy_Patrol;
+		ChangeStrategy(theStrategy);
+	}
+	else if(m_currentStrategy == STRATEGY_TYPE::CHASE_STRATEGY)
+	{
+		Strategy_Chase* theStrategy = new Strategy_Chase;
+		theStrategy->Init(newPath);
+		ChangeStrategy(theStrategy);
+	}
+}
+
 // Get gamelevel of the enemy	
 int EnemyIn2D::GetCurrentLevel()
 {
@@ -117,29 +143,13 @@ void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown, Vector2 m_playerPo
 		{
 			Strategy_Patrol* patrol = dynamic_cast<Strategy_Patrol*>(m_strategy);
 
-			if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
-			{
-				patrol->Update(m_cMap, &m_position, &m_velocity, &m_facingNormal, &dt);
-			}
-
-			else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
-			{
-				patrol->Update(m_cMap, &m_position, &m_velocity, &m_facingNormal, &dt);
-			}
+			patrol->Update(&m_position, &m_viewPosition, &m_velocity, &m_facingNormal, dt, VIEWOFFSET);
 		}
 		else
 		{
 			Strategy_Chase* chase = dynamic_cast<Strategy_Chase*>(m_strategy);
 
-			if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
-			{
-				chase->Update(&m_playerPosition, &m_position, &m_velocity, &dt);
-			}
-
-			else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
-			{
-				chase->Update(&m_playerPosition, &m_position, &m_velocity, &dt);
-			}
+			chase->Update(&m_playerPosition, &m_position, &m_velocity, &dt);
 		}
 	}
 
@@ -211,9 +221,9 @@ void EnemyIn2D::ChangeStrategy(Strategy* theNewStrategy, bool bDelete)
 }
 
 // Get CurrentStrategy
-Strategy* EnemyIn2D::GetStrategy()
+EnemyIn2D::STRATEGY_TYPE EnemyIn2D::GetCurrentStrategy()
 {
-	return m_strategy;
+	return m_currentStrategy;
 }
 
 // Get Active
@@ -232,6 +242,12 @@ EnemyIn2D::ENEMY_TYPE EnemyIn2D::GetEnemyType()
 Vector2 EnemyIn2D::GetSpawnLocation()
 {
 	return m_spawnPosition;
+}
+
+// Get View Position
+Vector2 EnemyIn2D::GetViewPosition()
+{
+	return m_viewPosition;
 }
 
 bool EnemyIn2D::Attack()

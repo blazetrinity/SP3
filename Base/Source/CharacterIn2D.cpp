@@ -2,6 +2,7 @@
 
 static const float GRAVITY = 9.8f;
 static const float FRICTIONCOEFFICENT = 4.0f;
+const float CharacterIn2D::VIEWOFFSET = 64.f;
 
 CharacterIn2D::CharacterIn2D(void)
 {
@@ -21,6 +22,7 @@ void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tile
 		delete m_skill;
 	}
 
+	this->m_viewPosition = m_position + (m_facingNormal * VIEWOFFSET);
 	this->m_skill = skill;
 	this->m_health = health;
 	this->m_velocity.Set(0, 0);
@@ -49,6 +51,7 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 	//Calculate the friction force
 	float frictionForce = this->m_mass * GRAVITY * FRICTIONCOEFFICENT;
 	Vector2 frictionDirection;
+
 	if(m_velocity.Length() != 0)
 	{
 		frictionDirection = -m_velocity.Normalized();
@@ -60,13 +63,24 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 
 	Vector2 frictionInOppositeDirection = frictionDirection * frictionForce;
 
+	if(frictionInOppositeDirection.Length() < 1.f)
+	{
+		frictionInOppositeDirection.Set(0,0);
+	}
+
 	m_velocity = m_velocity + (frictionInOppositeDirection * dt);
 
 	// New position next frame
 	Vector2 tilePos((map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())));
-	Vector2 viewPos((map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())));
+	Vector2 viewPos((map->GetmapOffset().x + (this->m_viewPosition.x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->m_viewPosition.y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())));
+
 	if(m_facingNormal.x > 0)
 	{
+		if(map->theScreenMap[viewPos.y][viewPos.x+1] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x+1] > 0)
+		{
+			this->m_viewPosition.x = this->m_viewPosition.x + (m_velocity.x * dt);
+		}
+
 		if(map->theScreenMap[tilePos.y][tilePos.x+1] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
 		{
 			this->m_position.x = this->m_position.x + (m_velocity.x * dt);
@@ -79,6 +93,11 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 
 	else if(m_facingNormal.x < 0)
 	{
+		if(map->theScreenMap[viewPos.y][viewPos.x] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x] > 0)
+		{
+			this->m_viewPosition.x = this->m_viewPosition.x + (m_velocity.x * dt);
+		}
+
 		if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x] > 0)
 		{
 			this->m_position.x = this->m_position.x + (m_velocity.x * dt);
@@ -91,6 +110,11 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 
 	if(m_facingNormal.y > 0)
 	{
+		if(map->theScreenMap[viewPos.y][viewPos.x] > 0 && map->theScreenMap[viewPos.y][viewPos.x+1] > 0)
+		{
+			this->m_viewPosition.y = this->m_viewPosition.y + (m_velocity.y * dt);
+		}
+
 		if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y][tilePos.x+1] > 0)
 		{
 			this->m_position.y = this->m_position.y + (m_velocity.y * dt);
@@ -103,6 +127,11 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 
 	else if(m_facingNormal.y < 0)
 	{
+		if(map->theScreenMap[viewPos.y+1][viewPos.x] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x+1] > 0)
+		{
+			this->m_viewPosition.y = this->m_viewPosition.y + (m_velocity.y * dt);
+		}
+
 		if(map->theScreenMap[tilePos.y+1][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
 		{
 			this->m_position.y = this->m_position.y + (m_velocity.y * dt);

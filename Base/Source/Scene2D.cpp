@@ -145,25 +145,25 @@ void Scene2D::Init()
 	meshList[GEO_TEXT]->textureID[0] = LoadTGA("Image//calibri.tga");
 
 	//UI
-	meshListUI[MAIN_MENU] = MeshBuilder::Generate2DMesh("MAIN_MENU", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshListUI[MAIN_MENU]->textureID[0] = LoadTGA("Image//menu_main.tga");
-	meshListUI[PAUSED] = MeshBuilder::Generate2DMesh("PAUSED", Color(1, 1, 1), 0.0f, 0.0f,1024.0f, 800.0f);
-	meshListUI[PAUSED]->textureID[0] = LoadTGA("Image//menu_paused.tga");
-	meshListUI[WIN] = MeshBuilder::Generate2DMesh("WIN", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshListUI[WIN]->textureID[0] = LoadTGA("Image//menu_win.tga");
-	meshListUI[LOSE] = MeshBuilder::Generate2DMesh("LOSE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshListUI[LOSE]->textureID[0] = LoadTGA("Image//menu_lose.tga");
-	meshListUI[CREDITS] = MeshBuilder::Generate2DMesh("CREDITS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshListUI[CREDITS]->textureID[0] = LoadTGA("Image//menu_credits.tga");
-	meshListUI[INSTRUCTIONS] = MeshBuilder::Generate2DMesh("INSTRUCTIONS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshListUI[INSTRUCTIONS]->textureID[0] = LoadTGA("Image//menu_instructions.tga");
-	meshListUI[SCORE] = MeshBuilder::Generate2DMesh("SCORE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshListUI[SCORE]->textureID[0] = LoadTGA("Image//menu_highscore.tga");
+	meshList[GEO_MAIN_MENU] = MeshBuilder::Generate2DMesh("MAIN_MENU", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_MAIN_MENU]->textureID[0] = LoadTGA("Image//menu_main.tga");
+	meshList[GEO_PAUSED] = MeshBuilder::Generate2DMesh("PAUSED", Color(1, 1, 1), 0.0f, 0.0f,1024.0f, 800.0f);
+	meshList[GEO_PAUSED]->textureID[0] = LoadTGA("Image//menu_paused.tga");
+	meshList[GEO_WIN] = MeshBuilder::Generate2DMesh("WIN", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_WIN]->textureID[0] = LoadTGA("Image//menu_win.tga");
+	meshList[GEO_LOSE] = MeshBuilder::Generate2DMesh("LOSE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_LOSE]->textureID[0] = LoadTGA("Image//menu_lose.tga");
+	meshList[GEO_CREDITS] = MeshBuilder::Generate2DMesh("CREDITS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_CREDITS]->textureID[0] = LoadTGA("Image//menu_credits.tga");
+	meshList[GEO_INSTRUCTIONS] = MeshBuilder::Generate2DMesh("INSTRUCTIONS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_INSTRUCTIONS]->textureID[0] = LoadTGA("Image//menu_instructions.tga");
+	meshList[GEO_SCORE] = MeshBuilder::Generate2DMesh("SCORE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_SCORE]->textureID[0] = LoadTGA("Image//menu_highscore.tga");
 
-	meshListUI[GEO_ARROW] = MeshBuilder::Generate2DMesh("GEO_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
-	meshListUI[GEO_ARROW]->textureID[0] = LoadTGA("Image//arrow.tga");
-	meshListUI[GEO_PAUSED_ARROW] = MeshBuilder::Generate2DMesh("GEO_PAUSED_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
-	meshListUI[GEO_PAUSED_ARROW]->textureID[0] = LoadTGA("Image//paused_arrow.tga");
+	meshList[GEO_ARROW] = MeshBuilder::Generate2DMesh("GEO_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
+	meshList[GEO_ARROW]->textureID[0] = LoadTGA("Image//arrow.tga");
+	meshList[GEO_PAUSED_ARROW] = MeshBuilder::Generate2DMesh("GEO_PAUSED_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
+	meshList[GEO_PAUSED_ARROW]->textureID[0] = LoadTGA("Image//paused_arrow.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_ENEMY1] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY1", 4, 3);
@@ -171,8 +171,8 @@ void Scene2D::Init()
 	meshList[GEO_ENEMY2] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY2", 4, 3);
 	meshList[GEO_ENEMY2]->textureID[0] = LoadTGA("Image//enemy2_sprite.tga");
 
-	meshList[GEO_CHARACTER_TEST] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
-	meshList[GEO_CHARACTER_TEST]->textureID[0] = LoadTGA("Image//character_sprite.tga");
+	meshList[GEO_CHARACTER] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
+	meshList[GEO_CHARACTER]->textureID[0] = LoadTGA("Image//character_sprite.tga");
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 4, 6);
 	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//map_tileset.tga");
 
@@ -252,8 +252,7 @@ void Scene2D::InitGame()
 					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
 
-					Strategy_Patrol* theStrategy = new Strategy_Patrol;
-					theEnemy->ChangeStrategy(theStrategy);
+					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 					m_enemyList.push_back(theEnemy);
 				}
 
@@ -274,8 +273,7 @@ void Scene2D::InitGame()
 					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
 
-					Strategy_Patrol* theStrategy = new Strategy_Patrol;
-					theEnemy->ChangeStrategy(theStrategy);
+					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 					m_enemyList.push_back(theEnemy);
 				}
 
@@ -296,8 +294,7 @@ void Scene2D::InitGame()
 					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
 
-					Strategy_Patrol* theStrategy = new Strategy_Patrol;
-					theEnemy->ChangeStrategy(theStrategy);
+					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 					m_enemyList.push_back(theEnemy);
 				}
 
@@ -318,8 +315,7 @@ void Scene2D::InitGame()
 					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 0, 2, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_RIGHT);
 
-					Strategy_Patrol* theStrategy = new Strategy_Patrol;
-					theEnemy->ChangeStrategy(theStrategy);
+					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 					m_enemyList.push_back(theEnemy);
 				}
 			}
@@ -327,7 +323,7 @@ void Scene2D::InitGame()
 	}
 
 	// Init Player position and animation
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER_TEST]);
+	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]);
 	Skill* skill = new Skill();
 	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
 
@@ -353,10 +349,11 @@ void Scene2D::InitGame()
 	m_sounds[SND_FIRE] = m_theSoundEngine->addSoundSourceFromFile("wav//fire.wav");
 	m_sounds[SND_DAMAGE] = m_theSoundEngine->addSoundSourceFromFile("wav//damage.wav");
 	m_sounds[SND_BOSS] = m_theSoundEngine->addSoundSourceFromFile("wav//boss.wav");
-	//m_sounds[SND_BOSS_ATTACK] = m_theSoundEngine->addSoundSourceFromFile("wav//boss_attack.wav");
-
+	
 	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
-	m_currentSound = SND_BACKGROUND;
+	m_backgroundSound->setVolume(0.5f);
+	m_currentBackgroundSound = SND_BACKGROUND;
+	m_currentEventSound = SND_BLANK;
 
 	// Init game element variables
 	m_levelCompleted = false;
@@ -403,7 +400,7 @@ void Scene2D::ResetGame()
 	m_player->ChangeAnimation(PlayerIn2D::IDLE_RIGHT);
 
 	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
-	m_currentSound = SND_BACKGROUND;
+	m_currentBackgroundSound = SND_BACKGROUND;
 
 	// Init game element variables
 	m_levelCompleted = false;
@@ -551,6 +548,17 @@ void Scene2D::Update(double dt)
 			if(Application::IsKeyPressed('4'))
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+			if(m_currentEventSound != SND_BLANK)
+			{
+				if(m_eventSound->isFinished() == true)
+				{
+					m_eventSound->stop();
+					m_eventSound->drop();
+					m_eventSound = NULL;
+					m_currentEventSound = SND_BLANK;
+				}
+			}
+
 			// Update the hero
 			int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
 			int checkPosition_Y = m_cMap->GetNumOfTiles_Height() - (int) ceil( (float)(m_player->GetPosition().y + m_cMap->GetTileSize()) / m_cMap->GetTileSize());
@@ -574,13 +582,13 @@ void Scene2D::Update(double dt)
 
 				if(m_ghostQueueTimer <= 0)
 				{
-					if(m_currentSound != SND_GHOST_QUEUE)
+					if(m_currentBackgroundSound != SND_GHOST_QUEUE)
 					{
 						m_backgroundSound->stop();
 						m_backgroundSound->drop();
 						m_backgroundSound = NULL;
 						m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_GHOST_QUEUE], false, false, true);
-						m_currentSound = SND_GHOST_QUEUE;
+						m_currentBackgroundSound = SND_GHOST_QUEUE;
 					}
 
 					if(m_backgroundSound->isFinished() == true)
@@ -596,7 +604,7 @@ void Scene2D::Update(double dt)
 						m_backgroundSound->drop();
 						m_backgroundSound = NULL;
 						m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
-						m_currentSound = SND_BACKGROUND;
+						m_currentBackgroundSound = SND_BACKGROUND;
 					}
 				}
 
@@ -659,6 +667,19 @@ void Scene2D::UpdatePlayer(double dt)
 		{
 			Projectile* projectile = FetchProjectile();
 			projectile->Init(m_player->GetSkill(),m_player->GetPosition(), m_player->GetScale(), m_player->GetFacingNormal(), meshList[GEO_BULLET], m_currentLevel, 1);
+
+			if(m_currentEventSound != SND_FIRE)
+			{
+				if(m_currentEventSound != SND_BLANK)
+				{
+					m_eventSound->stop();
+					m_eventSound->drop();
+					m_eventSound = NULL;
+				}
+
+				m_eventSound = m_theSoundEngine->play2D(m_sounds[SND_FIRE], false, false, true);
+				m_currentEventSound = SND_FIRE;
+			}
 		}
 	}
 
@@ -679,11 +700,70 @@ void Scene2D::UpdateEnemy(double dt)
 		{
 			if(((enemy->GetPosition().x - m_cMap->GetmapOffset().x) >= 0) && ((enemy->GetPosition().x - m_cMap->GetmapOffset().x) < m_cMap->GetScreenWidth()) && ((enemy->GetPosition().y >= 0) && (enemy->GetPosition().y < m_cMap->GetScreenHeight())))
 			{
-				// Check if play collide with enemy
+				if(enemy->GetCurrentStrategy() == EnemyIn2D::PATROL_STRATEGY && ((enemy->GetPosition() - m_player->GetPosition()).Length()) < (m_cMap->GetTileSize() * 4))
+				{
+					static Vector2 positiveAngle, negativeAngle;
+					positiveAngle.Set(90, 0);
+					negativeAngle.Set(270, 180);
+
+					// Check if player is in front of enemy
+					float Dist1 = (enemy->GetPosition() - m_player->GetPosition()).Length();
+					float Dist2 = (enemy->GetPosition() - enemy->GetViewPosition()).Length();
+					Vector2 enemyToPlayerDir = (m_player->GetPosition() - enemy->GetPosition()).Normalized();
+					float angleOfPlayerFromEnemy = atan2(enemyToPlayerDir.y, enemyToPlayerDir.x);
+					float angleOffset = 15.f;
+
+					if(Dist1 < Dist2)
+					{
+						if(enemy->GetFacingNormal().x > 0)
+						{
+							if(angleOfPlayerFromEnemy < positiveAngle.x + angleOffset || angleOfPlayerFromEnemy < positiveAngle.x - angleOffset)
+							{
+								enemy->SetStrategy(EnemyIn2D::CHASE_STRATEGY, m_path);
+							}
+						}
+						else if(enemy->GetFacingNormal().x < 0)
+						{
+							if(angleOfPlayerFromEnemy < negativeAngle.x + angleOffset || angleOfPlayerFromEnemy < negativeAngle.x - angleOffset)
+							{
+								enemy->SetStrategy(EnemyIn2D::CHASE_STRATEGY, m_path);
+							}
+						}
+						else if(enemy->GetFacingNormal().y > 0)
+						{
+							if(angleOfPlayerFromEnemy < positiveAngle.y + angleOffset || angleOfPlayerFromEnemy < positiveAngle.y - angleOffset)
+							{
+								enemy->SetStrategy(EnemyIn2D::CHASE_STRATEGY, m_path);
+							}
+						}
+						else if(enemy->GetFacingNormal().y < 0)
+						{
+							if(angleOfPlayerFromEnemy < negativeAngle.y + angleOffset || angleOfPlayerFromEnemy < negativeAngle.y - angleOffset)
+							{
+								enemy->SetStrategy(EnemyIn2D::CHASE_STRATEGY, m_path);
+							}
+						}
+					}
+				}
+
+				// Check if player collide with enemy
 				if(m_player->CollideWith(enemy))
 				{
 					// Player takes damage
 					//m_player->TakeDamage();
+
+					if(m_currentEventSound != SND_DAMAGE)
+					{
+						if(m_currentEventSound != SND_BLANK)
+						{
+							m_eventSound->stop();
+							m_eventSound->drop();
+							m_eventSound = NULL;
+						}
+
+						m_eventSound = m_theSoundEngine->play2D(m_sounds[SND_DAMAGE], false, false, true);
+						m_currentEventSound = SND_DAMAGE;
+					}
 				}
 			}
 
@@ -1117,47 +1197,47 @@ void Scene2D::RenderUI()
 
 	if(m_menu_status == MAIN_MENU )
 	{
-		Render2DMesh(meshListUI[MAIN_MENU], false,1.0f);
+		Render2DMesh(meshList[GEO_MAIN_MENU], false,1.0f);
 
 		if(m_menu_choice == 1)
 		{
-			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,490.f);
+			Render2DMesh(meshList[GEO_ARROW], false,100,5.f,490.f);
 		}
 		else if(m_menu_choice == 2)
 		{
-			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,350.f);
+			Render2DMesh(meshList[GEO_ARROW], false,100,5.f,350.f);
 		}
 		else if(m_menu_choice == 3)
 		{
-			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,200.f);
+			Render2DMesh(meshList[GEO_ARROW], false,100,5.f,200.f);
 		}
 		else if(m_menu_choice == 4)
 		{
-			Render2DMesh(meshListUI[GEO_ARROW], false,100,5.f,60.f);
+			Render2DMesh(meshList[GEO_ARROW], false,100,5.f,60.f);
 		}
 	}
 	if(m_menu_status == INSTRUCTIONS)
 	{
-		Render2DMesh(meshListUI[INSTRUCTIONS], false, 1.0f);
+		Render2DMesh(meshList[GEO_INSTRUCTIONS], false, 1.0f);
 	}
 	if(m_menu_status == CREDITS)
 	{
-		Render2DMesh(meshListUI[CREDITS], false, 1.0f);
+		Render2DMesh(meshList[GEO_CREDITS], false, 1.0f);
 	}
 	if(m_menu_status == SCORE)
 	{
-		Render2DMesh(meshListUI[SCORE], false, 1.0f);
+		Render2DMesh(meshList[GEO_SCORE], false, 1.0f);
 	}
 	if(m_menu_status == PAUSED)
 	{
-		Render2DMesh(meshListUI[PAUSED], false, 1.0f);
+		Render2DMesh(meshList[GEO_PAUSED], false, 1.0f);
 		if(m_menu_choice == 1)
 		{
-			Render2DMesh(meshListUI[GEO_PAUSED_ARROW], false,300,-30.f,500.f);
+			Render2DMesh(meshList[GEO_PAUSED_ARROW], false,300,-30.f,500.f);
 		}
 		else if(m_menu_choice == 2)
 		{
-			Render2DMesh(meshListUI[GEO_PAUSED_ARROW], false,300,-70.f,360.f);
+			Render2DMesh(meshList[GEO_PAUSED_ARROW], false,300,-70.f,360.f);
 		}
 	}
 
@@ -1239,6 +1319,8 @@ void Scene2D::Exit()
 		if(meshList[i])
 			delete meshList[i];
 	}
+
+
 
 	if(m_cMap != NULL)
 	{

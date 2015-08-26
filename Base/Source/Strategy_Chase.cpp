@@ -8,6 +8,11 @@ Strategy_Chase::Strategy_Chase(void)
 
 Strategy_Chase::~Strategy_Chase(void)
 {
+	if(m_path != NULL)
+	{
+		delete m_path;
+		m_path = NULL;
+	}
 }
 
 void Strategy_Chase::Init(AstarPathfind* path)

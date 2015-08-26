@@ -18,11 +18,7 @@ SpriteAnimation::SpriteAnimation(const SpriteAnimation &copy) : Mesh(copy.name),
 
 SpriteAnimation::~SpriteAnimation()
 {
-	if(m_anim)
-	{
-		delete m_anim;
-		m_anim = NULL;
-	}
+
 }
 
 SpriteAnimation& SpriteAnimation::operator=(const SpriteAnimation &copy)

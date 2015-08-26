@@ -106,15 +106,23 @@ public:
 	};
 	enum GEOMETRY_TYPE
 	{
-		GEO_BACKGROUND,
-		GEO_TILEMAP,
-		GEO_CHARACTER_TEST,
+		GEO_TILEMAP = 0,
+		GEO_CHARACTER,
 		GEO_ENEMY1,
 		GEO_ENEMY2,
+		GEO_BOSS,
 		GEO_TEXT,
 		GEO_BULLET,
 		GEO_ARROW,//arrow for menu
 		GEO_PAUSED_ARROW,//arrow for pause
+		GEO_MAIN_MENU,
+		GEO_CREDITS,
+		GEO_PAUSED,
+		GEO_WIN,
+		GEO_LOSE,
+		GEO_INSTRUCTIONS,
+		GEO_SCORE,
+
 		NUM_GEOMETRY,
 	};
 	enum TILE_ID
@@ -145,16 +153,16 @@ public:
 	};
 	enum SND_SOUNDS
 	{
-		SND_BACKGROUND = 0,
+		SND_BLANK = 0,
+		SND_BACKGROUND,
 		SND_GHOST_QUEUE,
 		SND_FIRE,
 		SND_DAMAGE,
 		SND_BOSS,
-		SND_BOSS_ATTACK,
 
 		TOTAL_SND,
 	};
-	enum UI
+	enum GAME_STATE
 	{
 		MAIN_MENU = 0,
 		CREDITS,
@@ -170,7 +178,6 @@ public:
 private:
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
-	Mesh* meshListUI[NUM_UI];
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
 
@@ -187,7 +194,6 @@ private:
 	float fps;
 
 	// Game element variables
-	bool m_resetInit;
 	bool m_levelCompleted;
 	int m_currentLevel;
 	bool m_updateMap;
@@ -223,7 +229,7 @@ private:
 	ISound* m_eventSound;
 	ISoundSource* m_sounds[TOTAL_SND];
 
-	SND_SOUNDS m_currentSound;
+	SND_SOUNDS m_currentBackgroundSound, m_currentEventSound;
 
 	AstarPathfind* m_path;
 };
