@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
+
+using std::vector;
 
 class Text
 {
@@ -11,15 +14,15 @@ public:
 	Text(void);
 	~Text(void);
 
-	void Init(std::string filename,Text list[]);
+	void Init(std::string filename);
 	std::string getText();
 	void setText(std::string Text);
-	int getStringsize(Text list[],int list_position);
-	char getTextCharacter(Text list[],int list_position,int string_position);
-	void Readfrom(std::string filename,Text list[]);
-	void Writeinto(std::string filename,Text list[],int size);
+	int getStringsize(int list_position);
+	char getTextCharacter(int list_position,int string_position);
+	void Readfrom(std::string filename);
+	void Writeinto(std::string filename, int size);
 protected:
-	std::string TexT;
+	vector<std::string> m_texts;
 };
 
 #endif

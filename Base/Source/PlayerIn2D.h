@@ -48,6 +48,8 @@ public:
 	ANIMATION_TYPE GetAnimation();
 	// Get bool to determine player render
 	bool GetRenderPlayer();
+	// Get Life
+	int GetLife();
 
 	// Update player velocity based on keypress
 	void MoveUpDown(const bool mode);

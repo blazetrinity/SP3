@@ -180,7 +180,7 @@ void Scene2D::Init()
 	meshList[GEO_ENEMY2]->textureID[0] = LoadTGA("Image//enemy2_sprite.tga");
 	meshList[GEO_CHARACTER] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
 	meshList[GEO_CHARACTER]->textureID[0] = LoadTGA("Image//character_sprite.tga");
-	
+
 	meshList[GEO_BOSS] = MeshBuilder::GenerateSpriteAnimation("GEO_BOSS", 3, 3);
 	meshList[GEO_BOSS]->textureID[0] = LoadTGA("Image//Boss.tga");
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 4, 6);
@@ -190,7 +190,7 @@ void Scene2D::Init()
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
 
 	InitGame();
-	
+
 	m_isPaused = false;
 	m_menuStatus = 0;
 	m_menuChoice = 1;
@@ -218,7 +218,7 @@ void Scene2D::InitGame()
 	m_cDoorInteractionMap = new CMap();
 	m_cDoorInteractionMap->Init(800, 1024, 25, 32, 800 ,1024);
 	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
-	
+
 	m_path = new AstarPathfind;
 	m_path->GenerateGrid(m_cBoundMap);
 
@@ -227,6 +227,7 @@ void Scene2D::InitGame()
 	m_cEnemyAndItemMap->Init(800, 1024, 25, 32, 800, 1024);
 
 	m_itemFactory = new ItemFactory;
+	Skill* skill = NULL;
 
 	for(int i = 1; i < NUM_LEVELS; ++i)
 	{
@@ -255,7 +256,11 @@ void Scene2D::InitGame()
 					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, NULL, WHITEGHOSTHEALTH);
+
+					skill = new Skill();
+					skill->Init(1.0f,10.f, 1.0f, false, Tag::ENEMY);
+
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, skill, WHITEGHOSTHEALTH);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -276,7 +281,11 @@ void Scene2D::InitGame()
 					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1, NULL, WHITEGHOSTHEALTH);
+
+					skill = new Skill();
+					skill->Init(1.0f,10.f, 1.0f, false, Tag::ENEMY);
+
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1, skill, WHITEGHOSTHEALTH);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -297,7 +306,11 @@ void Scene2D::InitGame()
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, NULL, REDGHOSTHEALTH);
+
+					skill = new Skill();
+					skill->Init(1.0f,10.f, 1.0f, false, Tag::ENEMY);
+
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, skill, REDGHOSTHEALTH);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -318,7 +331,11 @@ void Scene2D::InitGame()
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, NULL, REDGHOSTHEALTH);
+
+					skill = new Skill();
+					skill->Init(1.0f,10.f, 1.0f, false, Tag::ENEMY);
+
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, skill, REDGHOSTHEALTH);
 
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 7, 7, 0, 1);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 4, 4, 0, 1);
@@ -343,13 +360,13 @@ void Scene2D::InitGame()
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 5, 0, 0.2);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 0, 5, 0, 0.2);
 					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 0, 5, 0, 0.2);
-				    theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 0, 5, 0, 0.2);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 0, 5, 0, 0.2);
 					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
 					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 6, 8, 0, 0.5);
 					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 6, 8, 0, 0.5);
 					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 6, 8, 0, 0.5);
 					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_LEFT);
-					
+
 					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 					m_enemyList.push_back(theEnemy);
 				}
@@ -368,7 +385,7 @@ void Scene2D::InitGame()
 
 	// Init Player position and animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]);
-	Skill* skill = new Skill();
+	skill = new Skill();
 	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
 
 	m_player = new PlayerIn2D();
@@ -390,12 +407,13 @@ void Scene2D::InitGame()
 	m_eventSound= NULL;
 	m_sounds[SND_BACKGROUND] = m_theSoundEngine->addSoundSourceFromFile("wav//background.wav");
 	m_sounds[SND_MENU] = m_theSoundEngine->addSoundSourceFromFile("wav//menu.wav");
+	m_sounds[SND_GAMEOVER] = m_theSoundEngine->addSoundSourceFromFile("wav//weed.wav");
 	m_sounds[SND_GHOST_QUEUE] = m_theSoundEngine->addSoundSourceFromFile("wav//ghost_queue.wav");
 	m_sounds[SND_FIRE] = m_theSoundEngine->addSoundSourceFromFile("wav//fire.wav");
 	m_sounds[SND_DAMAGE] = m_theSoundEngine->addSoundSourceFromFile("wav//damage.wav");
 	m_sounds[SND_BOSS] = m_theSoundEngine->addSoundSourceFromFile("wav//boss.wav");
-    m_sounds[SND_BOSS_ATTACK] = m_theSoundEngine->addSoundSourceFromFile("wav//boss_attack.wav");
-    
+	m_sounds[SND_BOSS_ATTACK] = m_theSoundEngine->addSoundSourceFromFile("wav//boss_attack.wav");
+
 	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_MENU], true, false, true);
 	m_backgroundSound->setVolume(0.1f);
 
@@ -412,16 +430,16 @@ void Scene2D::InitGame()
 	m_resetGame = false;
 
 	// Init Text
-	TextArray = new Text[MAXTEXT];
-	TextArray->Init("Story.txt",TextArray);
-    m_listPosition = 0;
+	TextArray = new Text;
+	TextArray->Init("Story.txt");
+	m_listPosition = 0;
 	m_string_CharacterPosition = 0;
 	m_textTimer = 0;
 	m_storyLevelTracker = 1;
 	m_renderString = "";
 	m_score = 0;
 }
-	
+
 void Scene2D::ResetGame()
 {
 	m_cMap->LoadMap( "Image//level1_visual.csv" );
@@ -483,6 +501,19 @@ void Scene2D::ResetGame()
 
 void Scene2D::GameOver()
 {
+	if(m_currentBackgroundSound != SND_GAMEOVER)
+	{
+		if(m_currentBackgroundSound != SND_BLANK)
+		{
+			m_backgroundSound->stop();
+			m_backgroundSound->drop();
+			m_backgroundSound = NULL;
+		}
+
+		m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_GAMEOVER], false, false, true);
+		m_currentBackgroundSound = SND_GAMEOVER;
+	}
+
 	m_menuStatus = GAMEOVER;
 	m_resetGame = true;
 	//calculated and store high score
@@ -579,7 +610,7 @@ void Scene2D::Update(double dt)
 			Sleep(150);
 		}
 	}
-	
+
 	if(m_menuStatus == GAMEOVER)
 	{
 		Sleep(150);
@@ -587,6 +618,20 @@ void Scene2D::Update(double dt)
 		{
 			m_menuStatus = MAIN_MENU;
 			Sleep(150);
+
+			if(m_currentBackgroundSound != SND_MENU)
+			{
+				if(m_currentBackgroundSound != SND_BLANK)
+				{
+					m_backgroundSound->stop();
+					m_backgroundSound->drop();
+					m_backgroundSound = NULL;
+				}
+
+				m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_MENU], false, false, true);
+				m_backgroundSound->setVolume(0.1f);
+				m_currentBackgroundSound = SND_MENU;
+			}
 		}
 	}
 
@@ -663,7 +708,7 @@ void Scene2D::Update(double dt)
 			if(Application::IsKeyPressed('4'))
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-				
+
 			if(m_currentEventSound != SND_BLANK)
 			{
 				if(m_eventSound->isFinished() == true)
@@ -816,12 +861,12 @@ void Scene2D::UpdateStoryText(double dt)
 	{
 		if(m_string_CharacterPosition == 0)
 		{
-			m_storyLevelTracker = TextArray->getTextCharacter(TextArray,m_listPosition,(TextArray->getStringsize(TextArray,m_listPosition)-1));
+			m_storyLevelTracker = TextArray->getTextCharacter(m_listPosition,(TextArray->getStringsize(m_listPosition)-1));
 		}
 		if((m_storyLevelTracker-48) == m_currentLevel)
 		{
 			// check if string size have reached the end
-			if(m_string_CharacterPosition == (TextArray->getStringsize(TextArray,m_listPosition)-1))
+			if(m_string_CharacterPosition == (TextArray->getStringsize(m_listPosition)-1))
 			{
 				// text control
 				if(Application::IsKeyPressed('L') && m_textTimer > 0.15)
@@ -833,9 +878,9 @@ void Scene2D::UpdateStoryText(double dt)
 				}
 			}
 			//constant typewriter effect & string size must not reached max
-			if(m_textTimer > NULL && m_string_CharacterPosition != (TextArray->getStringsize(TextArray,m_listPosition)-1))
+			if(m_textTimer > NULL && m_string_CharacterPosition != (TextArray->getStringsize(m_listPosition)-1))
 			{
-				m_renderString += TextArray->getTextCharacter(TextArray,m_listPosition,m_string_CharacterPosition);
+				m_renderString += TextArray->getTextCharacter(m_listPosition,m_string_CharacterPosition);
 				m_textTimer = 0;
 				m_string_CharacterPosition++;
 			}
@@ -915,22 +960,25 @@ void Scene2D::UpdateEnemy(double dt)
 				if(m_player->CollideWith(enemy))
 				{
 					// Player takes damage
-					//if(m_player->TakeDamage())
-					//{
-					//	GameOver();
-					//}
-
-					if(m_currentEventSound != SND_DAMAGE)
+					if(m_player->TakeDamage(enemy->GetSkill()->GetDamage()))
 					{
-						if(m_currentEventSound != SND_BLANK)
+						if(m_currentEventSound != SND_DAMAGE)
 						{
-							m_eventSound->stop();
-							m_eventSound->drop();
-							m_eventSound = NULL;
+							if(m_currentEventSound != SND_BLANK)
+							{
+								m_eventSound->stop();
+								m_eventSound->drop();
+								m_eventSound = NULL;
+							}
+
+							m_eventSound = m_theSoundEngine->play2D(m_sounds[SND_DAMAGE], false, false, true);
+							m_currentEventSound = SND_DAMAGE;
 						}
 
-						m_eventSound = m_theSoundEngine->play2D(m_sounds[SND_DAMAGE], false, false, true);
-						m_currentEventSound = SND_DAMAGE;
+						if(m_player->GetLife() < 0)
+						{
+							GameOver();
+						}
 					}
 				}
 			}
@@ -1482,7 +1530,11 @@ void Scene2D::Exit()
 		}
 	}
 
-	delete []TextArray;
+	if(TextArray != NULL)
+	{
+		delete TextArray;
+		TextArray = NULL;
+	}
 
 	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
 	{
@@ -1531,22 +1583,24 @@ void Scene2D::Exit()
 		m_cEnemyAndItemMap = NULL;
 	}
 
-	if(m_theSoundEngine != NULL)
-	{
-		m_theSoundEngine->drop();
-		m_theSoundEngine = NULL;
-	}
-
 	if(m_backgroundSound != NULL)
 	{
+		m_backgroundSound->stop();
 		m_backgroundSound->drop();
 		m_backgroundSound = NULL;
 	}
 
 	if(m_eventSound != NULL)
 	{
+		m_eventSound->stop();
 		m_eventSound->drop();
 		m_eventSound = NULL;
+	}
+
+	if(m_theSoundEngine != NULL)
+	{
+		m_theSoundEngine->drop();
+		m_theSoundEngine = NULL;
 	}
 
 	if(m_path != NULL)

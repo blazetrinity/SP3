@@ -12,6 +12,11 @@ CharacterIn2D::CharacterIn2D(void)
 
 CharacterIn2D::~CharacterIn2D(void)
 {
+	if(m_skill != NULL)
+	{
+		delete m_skill;
+		m_skill = NULL;
+	}
 }
 
 void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill, int health)

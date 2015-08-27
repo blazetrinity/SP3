@@ -130,10 +130,7 @@ bool PlayerIn2D::TakeDamage(float damage)
 			--m_lifes;
 		}
 
-		if(m_lifes < 0)
-		{
-			return true;
-		}
+		return true;
 	}
 
 	return false;
@@ -202,6 +199,12 @@ PlayerIn2D::ANIMATION_TYPE PlayerIn2D::GetAnimation()
 bool PlayerIn2D::GetRenderPlayer()
 {
 	return m_renderPlayer;
+}
+
+// Get Life
+int PlayerIn2D::GetLife()
+{
+	return m_lifes;
 }
 
 // Update Velocity Up Down
