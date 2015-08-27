@@ -22,7 +22,7 @@ public:
 	};
 
 	// Init the item
-	virtual void Init(Vector2 position, Vector2 scale, float tileSize, ITEM_TYPE newType, Mesh* newMesh);
+	virtual void Init(Vector2 position, Vector2 scale, float tileSize, ITEM_TYPE newType, Mesh* newMesh, int level);
 
 	// Get the Mesh
 	Mesh* GetMesh(void);
@@ -31,6 +31,7 @@ public:
 	// Get Active
 	bool GetActive();
 
+	int GetLevel();
 	// Set the Mesh
 	void SetMesh(Mesh* theMesh);
 	// Set Active
@@ -43,6 +44,8 @@ protected:
 	ITEM_TYPE m_itemType;
 	// Item active
 	bool m_active;
+
+	int m_level;
 };
 
 #endif

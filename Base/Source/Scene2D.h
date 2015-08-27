@@ -9,6 +9,7 @@
 #include "Light.h"
 #include "Minimap.h"
 #include "Map.h"
+#include "ItemFactory.h"
 #include "TileMap.h"
 #include "PlayerIn2D.h"
 #include "EnemyIn2D.h"
@@ -126,7 +127,10 @@ public:
 		GEO_LOSE,
 		GEO_INSTRUCTIONS,
 		GEO_SCORE,
-
+		GEO_SPEED_POWER_UP,
+		GEO_FIRE_RATE_POWER_UP,
+		GEO_HEALTH_ITEM,
+		GEO_GUN_PART,
 		NUM_GEOMETRY,
 	};
 	enum TILE_ID
@@ -241,6 +245,8 @@ private:
 
 	// Enemey's handler
 	vector<EnemyIn2D*> m_enemyList;
+
+	ItemFactory* m_itemFactory;
 
 	// Projectile's handler
 	vector<Projectile*> m_projectileList;

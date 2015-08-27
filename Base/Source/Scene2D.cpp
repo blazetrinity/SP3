@@ -144,7 +144,7 @@ void Scene2D::Init()
 	}
 
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureID[0] = LoadTGA("Image//Test3.tga");
+	meshList[GEO_TEXT]->textureID[0] = LoadTGA("Image//text.tga");
 
 	//UI
 	meshList[GEO_MAIN_MENU] = MeshBuilder::Generate2DMesh("MAIN_MENU", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
@@ -166,6 +166,14 @@ void Scene2D::Init()
 	meshList[GEO_ARROW]->textureID[0] = LoadTGA("Image//arrow.tga");
 	meshList[GEO_PAUSED_ARROW] = MeshBuilder::Generate2DMesh("GEO_PAUSED_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
 	meshList[GEO_PAUSED_ARROW]->textureID[0] = LoadTGA("Image//paused_arrow.tga");
+	meshList[GEO_SPEED_POWER_UP] = MeshBuilder::Generate2DMesh("GEO_SPEED_POWER_UP", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_SPEED_POWER_UP]->textureID[0] = LoadTGA("Image//speed_up.tga");
+	meshList[GEO_FIRE_RATE_POWER_UP] = MeshBuilder::Generate2DMesh("GEO_FIRE_RATE_POWER_UP", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_FIRE_RATE_POWER_UP]->textureID[0] = LoadTGA("Image//fire_rate_up.tga");
+	meshList[GEO_HEALTH_ITEM] = MeshBuilder::Generate2DMesh("GEO_HEALTH_ITEM", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_HEALTH_ITEM]->textureID[0] = LoadTGA("Image//health_item.tga");
+	meshList[GEO_GUN_PART] = MeshBuilder::Generate2DMesh("GEO_GUN_PART", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_GUN_PART]->textureID[0] = LoadTGA("Image//gun_item.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_ENEMY1] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY1", 4, 3);
@@ -219,6 +227,8 @@ void Scene2D::InitGame()
 	//Init Enemy Ai position and animations
 	m_cEnemyAndItemMap = new CMap();
 	m_cEnemyAndItemMap->Init(800, 1024, 25, 32, 800, 1024);
+
+	m_itemFactory = new ItemFactory;
 
 	for(int i = 1; i < NUM_LEVELS; ++i)
 	{
@@ -325,7 +335,7 @@ void Scene2D::InitGame()
 					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 					m_enemyList.push_back(theEnemy);
 				}
-				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::BOSS_GHOST)
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == BOSS_GHOST)
 				{
 					SpriteAnimation* newSpriteAnimation = BossSpriteAnimation;
 
@@ -345,6 +355,15 @@ void Scene2D::InitGame()
 					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 					m_enemyList.push_back(theEnemy);
 				}
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == FIRE_SPEED_POWER)
+				{
+					m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::FIRE_SPEED_POWER,meshList[GEO_FIRE_RATE_POWER_UP],i);
+				}
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == MOVE_SPEED_POWER)
+				{
+					m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::MOVE_SPEED_POWER,meshList[GEO_SPEED_POWER_UP],i);
+				}
+
 			}
 		}
 	}

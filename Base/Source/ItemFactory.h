@@ -9,5 +9,5 @@ public:
 	~ItemFactory(void);
 
 
-	Item* Create(Vector2 position, Vector2 scale, float tileSize, Item::ITEM_TYPE itemType, Mesh* mesh);
+	Item* Create(Vector2 position, Vector2 scale, float tileSize, Item::ITEM_TYPE itemType, Mesh* mesh, int level);
 };

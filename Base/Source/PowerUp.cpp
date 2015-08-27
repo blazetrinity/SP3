@@ -10,11 +10,11 @@ PowerUp::~PowerUp(void)
 {
 }
 
-void PowerUp::Init(Vector2 position, Vector2 scale, float tileSize, float lifeTime, float modifiedValue, ITEM_TYPE newType, Mesh* newMesh)
+void PowerUp::Init(Vector2 position, Vector2 scale, float tileSize, float lifeTime, float modifiedValue, ITEM_TYPE newType, Mesh* newMesh, int level)
 {
 	this->m_lifeTime = this->m_maxLifeTime = lifeTime;
 	this->m_modifiedValue = modifiedValue;
-	Item::Init(position, scale, tileSize, newType, newMesh);
+	Item::Init(position, scale, tileSize, newType, newMesh, level);
 }
 
 void PowerUp::Update(double dt)
