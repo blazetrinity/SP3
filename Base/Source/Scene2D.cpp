@@ -151,10 +151,8 @@ void Scene2D::Init()
 	meshList[GEO_MAIN_MENU]->textureID[0] = LoadTGA("Image//menu_main.tga");
 	meshList[GEO_PAUSED] = MeshBuilder::Generate2DMesh("PAUSED", Color(1, 1, 1), 0.0f, 0.0f,1024.0f, 800.0f);
 	meshList[GEO_PAUSED]->textureID[0] = LoadTGA("Image//menu_paused.tga");
-	meshList[GEO_WIN] = MeshBuilder::Generate2DMesh("WIN", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshList[GEO_WIN]->textureID[0] = LoadTGA("Image//menu_win.tga");
-	meshList[GEO_LOSE] = MeshBuilder::Generate2DMesh("LOSE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshList[GEO_LOSE]->textureID[0] = LoadTGA("Image//menu_lose.tga");
+	meshList[GEO_GAMEOVER] = MeshBuilder::Generate2DMesh("WIN", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_GAMEOVER]->textureID[0] = LoadTGA("Image//menu_gameover.tga");
 	meshList[GEO_CREDITS] = MeshBuilder::Generate2DMesh("CREDITS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
 	meshList[GEO_CREDITS]->textureID[0] = LoadTGA("Image//menu_credits.tga");
 	meshList[GEO_INSTRUCTIONS] = MeshBuilder::Generate2DMesh("INSTRUCTIONS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
@@ -194,8 +192,8 @@ void Scene2D::Init()
 	InitGame();
 	
 	m_isPaused = false;
-	m_menu_status = 0;
-	m_menu_choice = 1;
+	m_menuStatus = 0;
+	m_menuChoice = 1;
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
@@ -357,11 +355,11 @@ void Scene2D::InitGame()
 				}
 				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == FIRE_SPEED_POWER)
 				{
-					m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::FIRE_SPEED_POWER,meshList[GEO_FIRE_RATE_POWER_UP],i);
+					m_itemList.push_back(m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::FIRE_SPEED_POWER,meshList[GEO_FIRE_RATE_POWER_UP],i));
 				}
 				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == MOVE_SPEED_POWER)
 				{
-					m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::MOVE_SPEED_POWER,meshList[GEO_SPEED_POWER_UP],i);
+					m_itemList.push_back(m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::MOVE_SPEED_POWER,meshList[GEO_SPEED_POWER_UP],i));
 				}
 
 			}
@@ -430,17 +428,31 @@ void Scene2D::ResetGame()
 	m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
 	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
 
-	m_path->GenerateGrid(m_cBoundMap);
+	// Init game element variables
+	m_levelCompleted = false;
+	m_currentLevel = 1;
+	m_updateMap = false; 
+	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+	m_spawnGhost = false;
+	m_ghostTriggered = false;
+	m_resetGame = false;
+	m_score = 0;
+	m_path->InitGrid(m_cBoundMap);
+
+	m_listPosition = 0;
+	m_string_CharacterPosition = 0;
+	m_textTimer = 0;
+	m_storyLevelTracker = 1;
+	m_renderString = "";
+	m_score = 0;
 
 	for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
 	{
-		Strategy_Patrol* theStrategy = new Strategy_Patrol;
-
 		EnemyIn2D* enemy = (EnemyIn2D*)*it;
 
 		enemy->SetActive(false);
 		enemy->SetPosition(enemy->GetSpawnLocation());
-		enemy->ChangeStrategy(theStrategy);
+		enemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 
 		if(enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT || enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
 		{
@@ -452,6 +464,13 @@ void Scene2D::ResetGame()
 		}
 	}
 
+	for(vector<Item*>::iterator it = m_itemList.begin(); it != m_itemList.end(); ++it)
+	{
+		Item* item = (Item*)*it;
+
+		item->SetActive(true);
+	}
+
 	Skill* skill = new Skill();
 	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
 
@@ -460,46 +479,42 @@ void Scene2D::ResetGame()
 
 	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
 	m_currentBackgroundSound = SND_BACKGROUND;
+}
 
-	// Init game element variables
-	m_levelCompleted = false;
-	m_currentLevel = 1;
-	m_updateMap = false; 
-	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
-	m_spawnGhost = false;
-	m_ghostTriggered = false;
-	m_resetGame = false;
-	m_score = 0;
-	m_path->InitGrid(m_cBoundMap);
+void Scene2D::GameOver()
+{
+	m_menuStatus = GAMEOVER;
+	m_resetGame = true;
+	//calculated and store high score
 }
 
 void Scene2D::Update(double dt)
 {
-	if(m_menu_status == MAIN_MENU)
+	if(m_menuStatus == MAIN_MENU)
 	{
-		int oldChoice = m_menu_choice;
+		int oldChoice = m_menuChoice;
 		if (Application::IsKeyPressed(VK_DOWN))
 		{
-			if (m_menu_choice < 4 )
+			if (m_menuChoice < 4 )
 			{
-				m_menu_choice++;
+				m_menuChoice++;
 				Sleep(150);
 
 			}
 		}
 		if (Application::IsKeyPressed(VK_UP)) 
 		{
-			if (m_menu_choice > 1)
+			if (m_menuChoice > 1)
 			{
-				m_menu_choice--;
+				m_menuChoice--;
 				Sleep(150);
 			}
 		}
 		if (Application::IsKeyPressed(VK_RETURN)) 
 		{
-			if (m_menu_choice == 1) 
+			if (m_menuChoice == 1) 
 			{
-				m_menu_status = GAME;
+				m_menuStatus = GAME;
 
 				if(m_currentBackgroundSound != SND_BACKGROUND)
 				{
@@ -520,90 +535,100 @@ void Scene2D::Update(double dt)
 					ResetGame();
 				}
 			}
-			if (m_menu_choice == 2) 
+			if (m_menuChoice == 2) 
 			{
-				m_menu_status = INSTRUCTIONS;		
+				m_menuStatus = INSTRUCTIONS;		
 			}
-			if (m_menu_choice == 3) 
+			if (m_menuChoice == 3) 
 			{
-				m_menu_status = CREDITS;	
+				m_menuStatus = CREDITS;	
 			}
-			if (m_menu_choice == 4) 
+			if (m_menuChoice == 4) 
 			{
-				m_menu_status = SCORE;						
+				m_menuStatus = SCORE;						
 			}
 		}		
 	}
 
-	if(m_menu_status == SCORE)
+	if(m_menuStatus == SCORE)
 	{
 		Sleep(150);
 		if (Application::IsKeyPressed(VK_RETURN)) 
 		{
-			m_menu_status = MAIN_MENU;
+			m_menuStatus = MAIN_MENU;
 			Sleep(150);
 		}
 	}
 
-	if(m_menu_status == CREDITS)
+	if(m_menuStatus == CREDITS)
 	{
 		Sleep(150);
 		if (Application::IsKeyPressed(VK_RETURN)) 
 		{
-			m_menu_status = MAIN_MENU;
+			m_menuStatus = MAIN_MENU;
 			Sleep(150);
 		}
 	}
 
-	if(m_menu_status == INSTRUCTIONS)
+	if(m_menuStatus == INSTRUCTIONS)
 	{
 		Sleep(150);
 		if (Application::IsKeyPressed(VK_RETURN)) 
 		{
-			m_menu_status = MAIN_MENU;
+			m_menuStatus = MAIN_MENU;
+			Sleep(150);
+		}
+	}
+	
+	if(m_menuStatus == GAMEOVER)
+	{
+		Sleep(150);
+		if (Application::IsKeyPressed(VK_RETURN)) 
+		{
+			m_menuStatus = MAIN_MENU;
 			Sleep(150);
 		}
 	}
 
-	if(m_menu_status == GAME)
+	if(m_menuStatus == GAME)
 	{
 		if(Application::IsKeyPressed('P') && m_isPaused == false) 
 		{
 			m_isPaused = true;
-			m_menu_status = PAUSED;
+			m_menuStatus = PAUSED;
 		}
 	}
 
-	if(m_menu_status == PAUSED)
+	if(m_menuStatus == PAUSED)
 	{
-		int oldChoice = m_menu_choice;
+		int oldChoice = m_menuChoice;
 		if (Application::IsKeyPressed(VK_DOWN))
 		{
-			if (m_menu_choice < 2 )
+			if (m_menuChoice < 2 )
 			{
-				m_menu_choice++;
+				m_menuChoice++;
 			}
 		}
 
 		if (Application::IsKeyPressed(VK_UP)) 
 		{	
-			if (m_menu_choice > 1)
+			if (m_menuChoice > 1)
 			{
-				m_menu_choice--;
+				m_menuChoice--;
 			}
 		}
 
 		if (Application::IsKeyPressed(VK_RETURN)) 
 		{
-			if (m_menu_choice == 1) 
+			if (m_menuChoice == 1) 
 			{
-				m_menu_status = GAME;
+				m_menuStatus = GAME;
 				m_isPaused = false;
 			}
-			if (m_menu_choice == 2) 
+			if (m_menuChoice == 2) 
 			{
-				m_menu_status = MAIN_MENU;
-				m_menu_choice = 1;
+				m_menuStatus = MAIN_MENU;
+				m_menuChoice = 1;
 				Sleep(150);
 				m_isPaused = false;
 				m_resetGame = true;
@@ -625,7 +650,7 @@ void Scene2D::Update(double dt)
 		}
 	}
 
-	if( m_menu_status == GAME)
+	if( m_menuStatus == GAME)
 	{
 		if(m_isPaused == false)
 		{
@@ -892,8 +917,7 @@ void Scene2D::UpdateEnemy(double dt)
 					// Player takes damage
 					//if(m_player->TakeDamage())
 					//{
-					//	//m_menu_status = MAIN_MENU;
-					//	m_resetGame = true;
+					//	GameOver();
 					//}
 
 					if(m_currentEventSound != SND_DAMAGE)
@@ -1339,47 +1363,51 @@ void Scene2D::RenderBackground()
 void Scene2D::RenderUI()
 {
 
-	if(m_menu_status == MAIN_MENU )
+	if(m_menuStatus == MAIN_MENU )
 	{
 		Render2DMesh(meshList[GEO_MAIN_MENU], false,1.0f);
 
-		if(m_menu_choice == 1)
+		if(m_menuChoice == 1)
 		{
 			Render2DMesh(meshList[GEO_ARROW], false,100,5.f,490.f);
 		}
-		else if(m_menu_choice == 2)
+		else if(m_menuChoice == 2)
 		{
 			Render2DMesh(meshList[GEO_ARROW], false,100,5.f,350.f);
 		}
-		else if(m_menu_choice == 3)
+		else if(m_menuChoice == 3)
 		{
 			Render2DMesh(meshList[GEO_ARROW], false,100,5.f,200.f);
 		}
-		else if(m_menu_choice == 4)
+		else if(m_menuChoice == 4)
 		{
 			Render2DMesh(meshList[GEO_ARROW], false,100,5.f,60.f);
 		}
 	}
-	if(m_menu_status == INSTRUCTIONS)
+	if(m_menuStatus == INSTRUCTIONS)
 	{
 		Render2DMesh(meshList[GEO_INSTRUCTIONS], false, 1.0f);
 	}
-	if(m_menu_status == CREDITS)
+	if(m_menuStatus == CREDITS)
 	{
 		Render2DMesh(meshList[GEO_CREDITS], false, 1.0f);
 	}
-	if(m_menu_status == SCORE)
+	if(m_menuStatus == SCORE)
 	{
 		Render2DMesh(meshList[GEO_SCORE], false, 1.0f);
 	}
-	if(m_menu_status == PAUSED)
+	if(m_menuStatus == GAMEOVER)
+	{
+		Render2DMesh(meshList[GEO_GAMEOVER], false, 1.0f);
+	}
+	if(m_menuStatus == PAUSED)
 	{
 		Render2DMesh(meshList[GEO_PAUSED], false, 1.0f);
-		if(m_menu_choice == 1)
+		if(m_menuChoice == 1)
 		{
 			Render2DMesh(meshList[GEO_PAUSED_ARROW], false,300,-30.f,500.f);
 		}
-		else if(m_menu_choice == 2)
+		else if(m_menuChoice == 2)
 		{
 			Render2DMesh(meshList[GEO_PAUSED_ARROW], false,300,-70.f,360.f);
 		}
@@ -1406,13 +1434,13 @@ void Scene2D::Render()
 	modelStack.LoadIdentity();
 
 	glDisable(GL_DEPTH_TEST);
-	if(m_menu_status != GAME)
+	if(m_menuStatus != GAME)
 	{
 		//Render UI
 		RenderUI();
 	}
 
-	if(m_menu_status == GAME)
+	if(m_menuStatus == GAME)
 	{
 		// Render the tile map
 		RenderTileMap();
@@ -1443,6 +1471,17 @@ void Scene2D::Exit()
 		}
 	}
 
+	for(vector<Item*>::iterator it = m_itemList.begin(); it != m_itemList.end(); ++it)
+	{
+		Item* item = (Item*)*it;
+
+		if(item != NULL)
+		{
+			delete item;
+			item = NULL;
+		}
+	}
+
 	delete []TextArray;
 
 	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
@@ -1467,8 +1506,6 @@ void Scene2D::Exit()
 		if(meshList[i])
 			delete meshList[i];
 	}
-
-
 
 	if(m_cMap != NULL)
 	{
@@ -1627,6 +1664,22 @@ void Scene2D::RenderTileMap()
 			if(((theEnemy_x >= 0 + m_cMap->GetmapOffset().x) && (theEnemy_x < m_cMap->GetScreenWidth() + m_cMap->GetmapOffset().x)) && ((theEnemy_y >= 0) && (theEnemy_y < m_cMap->GetScreenHeight())))
 			{
 				Render2DMesh(enemy->GetMesh(), false, enemy->GetScale().x, (16.0f + theEnemy_x) - m_cMap->GetmapOffset().x, (16.0f + theEnemy_y) - m_cMap->GetmapOffset().y);
+			}
+		}
+	}
+
+	for(vector<Item*>::iterator it = m_itemList.begin(); it != m_itemList.end(); ++it)
+	{
+		Item* item = (Item*)*it;
+
+		if(item->GetActive() && item->GetLevel() == m_currentLevel)
+		{
+			float item_x = item->GetPosition().x;
+			float item_y = item->GetPosition().y;
+
+			if(((item_x >= 0 + m_cMap->GetmapOffset().x) && (item_x < m_cMap->GetScreenWidth() + m_cMap->GetmapOffset().x)) && ((item_y >= 0) && (item_y < m_cMap->GetScreenHeight())))
+			{
+				Render2DMesh(item->GetMesh(), false, item->GetScale().x, (16.0f + item_x) - m_cMap->GetmapOffset().x, (16.0f + item_y) - m_cMap->GetmapOffset().y);
 			}
 		}
 	}

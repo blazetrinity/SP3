@@ -8,7 +8,7 @@ class Item : public GameObjectIn2D
 {
 public:
 	Item(void);
-	~Item(void);
+	virtual ~Item(void);
 
 	enum ITEM_TYPE
 	{

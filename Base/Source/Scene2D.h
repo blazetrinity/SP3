@@ -59,6 +59,7 @@ public:
 	
 	void InitGame();
 	void ResetGame();
+	void GameOver();
 
 	Projectile* FetchProjectile();
 
@@ -123,8 +124,7 @@ public:
 		GEO_MAIN_MENU,
 		GEO_CREDITS,
 		GEO_PAUSED,
-		GEO_WIN,
-		GEO_LOSE,
+		GEO_GAMEOVER,
 		GEO_INSTRUCTIONS,
 		GEO_SCORE,
 		GEO_SPEED_POWER_UP,
@@ -192,8 +192,7 @@ public:
 		MAIN_MENU = 0,
 		CREDITS,
 		PAUSED,
-		WIN,
-		LOSE,
+		GAMEOVER,
 		INSTRUCTIONS,
 		SCORE,
 		GAME,
@@ -231,8 +230,8 @@ private:
 	bool  m_isPaused;
 
 	// Menu variables
-	int  m_menu_status;
-	int  m_menu_choice;
+	int  m_menuStatus;
+	int  m_menuChoice;
 
 	// Handle to the tilemaps
 	CMap* m_cMap;
@@ -246,7 +245,11 @@ private:
 	// Enemey's handler
 	vector<EnemyIn2D*> m_enemyList;
 
+	// Item's Factory
 	ItemFactory* m_itemFactory;
+
+	// Item's handler
+	vector<Item*> m_itemList;
 
 	// Projectile's handler
 	vector<Projectile*> m_projectileList;
