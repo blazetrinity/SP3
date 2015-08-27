@@ -26,9 +26,10 @@ public:
 protected:
 	Vector2 m_velocity;
 	Vector2 m_facingNormal;
+	Vector2 m_viewPosition;
 	Skill* m_skill;
 	int m_health;
-	Vector2 m_viewPosition;
+	float m_mass;
 };
 
 #endif

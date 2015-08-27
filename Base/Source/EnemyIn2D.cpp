@@ -49,7 +49,7 @@ void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel,
 	this->m_currentLevel = gameLevel;
 	this->m_sprite = new SpriteAnimation;
 	*(this->m_sprite) = *newSprite;
-	this->m_active = true;
+	this->m_active = false;
 
 	for(int i = 0; i < NUM_ANIMATION; ++i)
 	{

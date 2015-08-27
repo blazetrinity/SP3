@@ -9,7 +9,7 @@ public:
 	GameObjectIn2D(void);
 	~GameObjectIn2D(void);
 
-	virtual void Init(Vector2 position, Vector2 scale, float mass, float tileSize);
+	virtual void Init(Vector2 position, Vector2 scale, float tileSize);
 
 	void SetPosition(Vector2 position);
 
@@ -19,7 +19,6 @@ public:
 protected:
 	Vector2 m_position;
 	Vector2 m_scale;
-	float m_mass;
 };
 
 #endif

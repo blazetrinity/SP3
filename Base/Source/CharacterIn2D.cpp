@@ -1,7 +1,7 @@
 #include "CharacterIn2D.h"
 
 static const float GRAVITY = 9.8f;
-static const float FRICTIONCOEFFICENT = 4.0f;
+static const float FRICTIONCOEFFICENT = 3.5f;
 const float CharacterIn2D::VIEWOFFSET = 64.f;
 
 CharacterIn2D::CharacterIn2D(void)
@@ -16,7 +16,7 @@ CharacterIn2D::~CharacterIn2D(void)
 
 void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill, int health)
 {
-	GameObjectIn2D::Init(position, scale, mass, tileSize);
+	GameObjectIn2D::Init(position, scale, tileSize);
 	if(m_skill)
 	{
 		delete m_skill;
@@ -25,6 +25,7 @@ void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tile
 	this->m_viewPosition = m_position + (m_facingNormal * VIEWOFFSET);
 	this->m_skill = skill;
 	this->m_health = health;
+	this->m_mass = mass;
 	this->m_velocity.Set(0, 0);
 }
 
@@ -49,10 +50,10 @@ void CharacterIn2D::Update(CMap *map,double dt, bool topDown)
 void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 {
 	//Calculate the friction force
-	float frictionForce = this->m_mass * GRAVITY * FRICTIONCOEFFICENT;
+	static float frictionForce = this->m_mass * GRAVITY * FRICTIONCOEFFICENT;
 	Vector2 frictionDirection;
 
-	if(m_velocity.Length() != 0)
+	if(m_velocity.Length() > 0)
 	{
 		frictionDirection = -m_velocity.Normalized();
 	}
@@ -69,6 +70,11 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 	}
 
 	m_velocity = m_velocity + (frictionInOppositeDirection * dt);
+
+	if(m_velocity.Length() < 1.f)
+	{
+		m_velocity.Set(0,0);
+	}
 
 	// New position next frame
 	Vector2 tilePos((map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())));
@@ -140,11 +146,6 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 		{
 			m_velocity.y = 0;
 		}
-	}
-
-	if(m_velocity.Length() < 1.f)
-	{
-		m_velocity.Set(0,0);
 	}
 }
 

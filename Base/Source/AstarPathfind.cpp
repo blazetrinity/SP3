@@ -104,20 +104,25 @@ vector<PositionNode*> AstarPathfind::RetracePath(PositionNode* startNode, Positi
 
 void AstarPathfind::GenerateGrid(CMap* map)
 {
-	this->m_map = map;
+	grid.resize(map->GetNumOfTiles_MapHeight());
 
-	grid.resize(m_map->GetNumOfTiles_MapHeight());
-
-	for(int i = 0; i < m_map->GetNumOfTiles_MapHeight(); ++i)
+	for(int i = 0; i < map->GetNumOfTiles_MapHeight(); ++i)
 	{
-		grid[i].resize(m_map->GetNumOfTiles_MapWidth());
+		grid[i].resize(map->GetNumOfTiles_MapWidth());
 
-		for(int j = 0; j < m_map->GetNumOfTiles_MapWidth(); ++j)
+		for(int j = 0; j < map->GetNumOfTiles_MapWidth(); ++j)
 		{
 			PositionNode* positionNode = new PositionNode;
 			grid[i][j] = positionNode;
 		}
 	}
+
+	InitGrid(map);
+}
+
+void AstarPathfind::InitGrid(CMap* map)
+{
+	this->m_map = map;
 
 	for(int i = 0; i < m_map->GetNumOfTiles_MapHeight(); ++i)
 	{

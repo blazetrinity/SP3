@@ -2,7 +2,7 @@
 
 #include "Item.h"
 
-class CHealthItem : public CItem
+class CHealthItem : public Item
 {
 public:
 	CHealthItem(void);

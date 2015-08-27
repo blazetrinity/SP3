@@ -235,7 +235,7 @@ void Scene2D::InitGame()
 		{
 			for(int k = 0; k < m_cEnemyAndItemMap->GetNumOfTiles_MapWidth(); k ++)
 			{
-				if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN)
+				if(m_cEnemyAndItemMap->theScreenMap[j][k] == WHITE_GHOST_PATROL_UPDOWN)
 				{
 					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
@@ -256,7 +256,7 @@ void Scene2D::InitGame()
 					m_enemyList.push_back(theEnemy);
 				}
 
-				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT)
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == WHITE_GHOST_PATROL_LEFTRIGHT)
 				{
 					SpriteAnimation* newSpriteAnimation = whiteGhostSpriteAnimation;
 
@@ -277,7 +277,7 @@ void Scene2D::InitGame()
 					m_enemyList.push_back(theEnemy);
 				}
 
-				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == RED_GHOST_PATROL_UPDOWN)
 				{
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
@@ -298,7 +298,7 @@ void Scene2D::InitGame()
 					m_enemyList.push_back(theEnemy);
 				}
 
-				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == RED_GHOST_PATROL_LEFTRIGHT)
 				{
 					SpriteAnimation* newSpriteAnimation = redGhostSpriteAnimation;
 
@@ -345,14 +345,16 @@ void Scene2D::InitGame()
 	m_backgroundSound = NULL;
 	m_eventSound= NULL;
 	m_sounds[SND_BACKGROUND] = m_theSoundEngine->addSoundSourceFromFile("wav//background.wav");
+	m_sounds[SND_MENU] = m_theSoundEngine->addSoundSourceFromFile("wav//menu.wav");
 	m_sounds[SND_GHOST_QUEUE] = m_theSoundEngine->addSoundSourceFromFile("wav//ghost_queue.wav");
 	m_sounds[SND_FIRE] = m_theSoundEngine->addSoundSourceFromFile("wav//fire.wav");
 	m_sounds[SND_DAMAGE] = m_theSoundEngine->addSoundSourceFromFile("wav//damage.wav");
 	m_sounds[SND_BOSS] = m_theSoundEngine->addSoundSourceFromFile("wav//boss.wav");
 	
-	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
-	m_backgroundSound->setVolume(0.5f);
-	m_currentBackgroundSound = SND_BACKGROUND;
+	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_MENU], true, false, true);
+	m_backgroundSound->setVolume(0.1f);
+
+	m_currentBackgroundSound = SND_MENU;
 	m_currentEventSound = SND_BLANK;
 
 	// Init game element variables
@@ -410,6 +412,7 @@ void Scene2D::ResetGame()
 	m_spawnGhost = false;
 	m_ghostTriggered = false;
 	m_resetGame = false;
+	m_path->InitGrid(m_cBoundMap);
 }
 
 void Scene2D::Update(double dt)
@@ -439,6 +442,21 @@ void Scene2D::Update(double dt)
 			if (m_menu_choice == 1) 
 			{
 				m_menu_status = GAME;
+
+				if(m_currentBackgroundSound != SND_BACKGROUND)
+				{
+					if(m_currentBackgroundSound != SND_BLANK)
+					{
+						m_backgroundSound->stop();
+						m_backgroundSound->drop();
+						m_backgroundSound = NULL;
+					}
+
+					m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], false, false, true);
+					m_backgroundSound->setVolume(0.5f);
+					m_currentBackgroundSound = SND_BACKGROUND;
+				}
+
 				if(m_resetGame)
 				{
 					ResetGame();
@@ -531,6 +549,20 @@ void Scene2D::Update(double dt)
 				Sleep(150);
 				m_isPaused = false;
 				m_resetGame = true;
+
+				if(m_currentBackgroundSound != SND_MENU)
+				{
+					if(m_currentBackgroundSound != SND_BLANK)
+					{
+						m_backgroundSound->stop();
+						m_backgroundSound->drop();
+						m_backgroundSound = NULL;
+					}
+
+					m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_MENU], false, false, true);
+					m_backgroundSound->setVolume(0.1f);
+					m_currentBackgroundSound = SND_MENU;
+				}
 			}
 		}
 	}
@@ -798,7 +830,7 @@ void Scene2D::UpdateProjectile(double dt)
 					EnemyIn2D *enemy = (EnemyIn2D *) *it2;
 
 					// Check if projectile collide with enemy
-					if(enemy->CollideWith(projectile) && enemy->GetCurrentLevel() == m_currentLevel)
+					if(enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel && enemy->CollideWith(projectile))
 					{
 						// Enemy takes damage
 						enemy->TakeDamage(projectile->GetDamage());
@@ -875,10 +907,6 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 
 	if(m_updateMap)
 	{
-		m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
-		m_ghostTriggered = false;
-		m_levelCompleted = false;
-
 		if(m_currentLevel == LEVEL1)
 		{
 			m_cMap->LoadMap( "Image//level1_visual.csv" );
@@ -906,6 +934,10 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 
 		m_player->CalPosition((m_cMap->GetTileSize()), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), (m_cMap->GetTileSize()), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), (float)m_cMap->GetTileSize());
 		m_updateMap = false;
+		m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+		m_ghostTriggered = false;
+		m_levelCompleted = false;
+		m_path->InitGrid(m_cBoundMap);
 	}
 }
 

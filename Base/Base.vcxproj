@@ -41,6 +41,7 @@
     <ClCompile Include="Source\Particle.cpp" />
     <ClCompile Include="Source\PlayerIn2D.cpp" />
     <ClCompile Include="Source\PositionNode.cpp" />
+    <ClCompile Include="Source\PowerUp.cpp" />
     <ClCompile Include="Source\Projectile.cpp" />
     <ClCompile Include="Source\Scene2D.cpp" />
     <ClCompile Include="Source\shader.cpp" />
@@ -87,6 +88,7 @@
     <ClInclude Include="Source\Particle.h" />
     <ClInclude Include="Source\PlayerIn2D.h" />
     <ClInclude Include="Source\PositionNode.h" />
+    <ClInclude Include="Source\PowerUp.h" />
     <ClInclude Include="Source\Projectile.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\Scene2D.h" />

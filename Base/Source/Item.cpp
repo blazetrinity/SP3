@@ -1,45 +1,55 @@
 #include "Item.h"
 
 
-CItem::CItem(void) : theMesh(NULL)
+Item::Item(void) : m_mesh(NULL)
 {
 }
 
 
-CItem::~CItem(void)
+Item::~Item(void)
 {
-	if (theMesh != NULL)
+	if (m_mesh != NULL)
 	{
-		delete theMesh;
-		theMesh = NULL;
+		delete m_mesh;
+		m_mesh = NULL;
 	}
 }
 
-// Get the pos of this Item
-Vector3 CItem::GetPos()
+// Init the item
+void Item::Init(Vector2 position, Vector2 scale, float tileSize, ITEM_TYPE newType, Mesh* newMesh)
 {
-	return m_Position;
+	GameObjectIn2D::Init(position, scale, tileSize);
+	this->m_active = true;
+	this->m_itemType = newType;
+	this->m_mesh = newMesh;
 }
-// Set the pos of this Item
-void CItem::SetPos(Vector3 newPos)
-{
-	this->m_Position = newPos;
-}
+
 // Get the Mesh
-Mesh* CItem::GetMesh(void)
+Mesh* Item::GetMesh(void)
 {
-	return theMesh;
+	return m_mesh;
 }
+
+// Get ITEM type
+Item::ITEM_TYPE Item::GetType()
+{
+	return m_itemType;
+}
+
+// Get Active
+bool Item::GetActive()
+{
+	return m_active;
+}
+
 // Set the Mesh
-void CItem::SetMesh(Mesh* theMesh)
+void Item::SetMesh(Mesh* newMesh)
 {
-	this->theMesh = theMesh;
+	this->m_mesh = newMesh;
 }
-// Set the Texture ID
-void CItem::SetTextureID(const int TextureID)
+
+// Set Active
+void Item::SetActive(bool newActive)
 {
-	if ((this->theMesh != NULL) && (TextureID != 0))
-	{
-		this->theMesh->textureID[0] = TextureID;
-	}
+	this->m_active = newActive;
 }

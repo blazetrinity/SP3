@@ -14,6 +14,7 @@ public:
 	vector<PositionNode*> FindPath(Vector2 startPos, Vector2 targetPos);
 	vector<PositionNode*> RetracePath(PositionNode* startNode, PositionNode* endNode);
 	void GenerateGrid(CMap* map);
+	void InitGrid(CMap* map);
 	vector<PositionNode*> GetNeighbours(PositionNode* node);
 	int GetDistance(PositionNode* nodeA, PositionNode* nodeB);
 

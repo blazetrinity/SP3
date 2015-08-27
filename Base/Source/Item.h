@@ -1,30 +1,48 @@
-#pragma once
+#ifndef ITEM_H
+#define ITEM_H
 
 #include "Mesh.h"
-#include "Vector3.h"
+#include "GameObjectIn2D.h"
 
-class CItem
+class Item : public GameObjectIn2D
 {
 public:
-	CItem(void);
-	~CItem(void);
+	Item(void);
+	~Item(void);
 
-protected:
-	//Position
-	Vector3 m_Position;
-	// Stores the texture for this Item
-	Mesh* theMesh;
+	enum ITEM_TYPE
+	{
+		KEY_ITEM = 0,
+		GUN_UPGRADE,
+		FIRE_SPEED_POWER,
+		MOVE_SPEED_POWER,
+		HEALTH_ITEM,
 
-public:
-	// Get the pos of this Item
-	Vector3 GetPos();
-	// Set the pos of this Item
-	void SetPos(Vector3 newPos);
+		NUM_ITEM_TYPE,
+	};
+
+	// Init the item
+	virtual void Init(Vector2 position, Vector2 scale, float tileSize, ITEM_TYPE newType, Mesh* newMesh);
+
 	// Get the Mesh
 	Mesh* GetMesh(void);
+	// Get ITEM type
+	ITEM_TYPE GetType();
+	// Get Active
+	bool GetActive();
+
 	// Set the Mesh
 	void SetMesh(Mesh* theMesh);
-	// Set the Texture ID
-	void SetTextureID(const int TextureID);
+	// Set Active
+	void SetActive(bool newActive);
+
+protected:
+	// Stores the texture for this Item
+	Mesh* m_mesh;
+	// ITEM type
+	ITEM_TYPE m_itemType;
+	// Item active
+	bool m_active;
 };
 
+#endif

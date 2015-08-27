@@ -20,7 +20,7 @@ void Projectile::Init(Skill* skill,Vector2 position, Vector2 scale, Vector2 dire
 	this->m_mesh = mesh;
 	this->m_level = level;
 	this->m_velocity = (direction * PROJECTILE_SPEED);
-	GameObjectIn2D::Init(position, scale, 1, tileSize);
+	GameObjectIn2D::Init(position, scale, tileSize);
 }
 	
 void Projectile::Update(CMap* map, double dt)

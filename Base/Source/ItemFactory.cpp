@@ -1,23 +1,32 @@
 #include "ItemFactory.h"
 #include <stdlib.h>
 
-CItemFactory::CItemFactory(void)
+ItemFactory::ItemFactory(void)
 {
 }
 
 
-CItemFactory::~CItemFactory(void)
+ItemFactory::~ItemFactory(void)
 {
 }
 
-CItem* CItemFactory::Create(ITEMID id)
+Item* ItemFactory::Create(Vector2 position, Vector2 scale, float tileSize, Item::ITEM_TYPE itemType, Mesh* mesh)
 {
-	CItem* theNewItem = NULL;
+	Item* theNewItem = NULL;
 
-	switch(id)
+	// Init the Item then return it
+
+	switch(itemType)
 	{
-	case HEALTH:
-		theNewItem = new CHealthItem;
+	case Item::KEY_ITEM:
+		break;
+	case Item::GUN_UPGRADE:
+		break;
+	case Item::HEALTH_ITEM:
+		break;
+	case Item::FIRE_SPEED_POWER:
+		break;
+	case Item::MOVE_SPEED_POWER:
 		break;
 	}
 

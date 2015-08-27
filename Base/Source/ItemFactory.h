@@ -1,20 +1,13 @@
 #pragma once
 
-#include "Item.h"
-#include "HealthItem.h"
+#include "PowerUp.h"
 
-class CItemFactory
+class ItemFactory
 {
 public:
-	CItemFactory(void);
-	~CItemFactory(void);
+	ItemFactory(void);
+	~ItemFactory(void);
 
-	enum ITEMID
-	{
-		HEALTH = 0,
 
-		NUM_ID
-	};
-
-	CItem* Create(ITEMID id);
+	Item* Create(Vector2 position, Vector2 scale, float tileSize, Item::ITEM_TYPE itemType, Mesh* mesh);
 };
