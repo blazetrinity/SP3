@@ -402,7 +402,7 @@ void Scene2D::InitGame()
 	m_textTimer = 0;
 	m_storyLevelTracker = 1;
 	m_renderString = "";
-	
+	m_score = 0;
 }
 	
 void Scene2D::ResetGame()
@@ -450,6 +450,7 @@ void Scene2D::ResetGame()
 	m_spawnGhost = false;
 	m_ghostTriggered = false;
 	m_resetGame = false;
+	m_score = 0;
 	m_path->InitGrid(m_cBoundMap);
 }
 
@@ -870,7 +871,11 @@ void Scene2D::UpdateEnemy(double dt)
 				if(m_player->CollideWith(enemy))
 				{
 					// Player takes damage
-					//m_player->TakeDamage();
+					//if(m_player->TakeDamage())
+					//{
+					//	//m_menu_status = MAIN_MENU;
+					//	m_resetGame = true;
+					//}
 
 					if(m_currentEventSound != SND_DAMAGE)
 					{

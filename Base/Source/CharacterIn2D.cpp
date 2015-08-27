@@ -24,7 +24,7 @@ void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tile
 
 	this->m_viewPosition = m_position + (m_facingNormal * VIEWOFFSET);
 	this->m_skill = skill;
-	this->m_health = health;
+	this->m_health = this->m_maxHealth = health;
 	this->m_mass = mass;
 	this->m_velocity.Set(0, 0);
 }

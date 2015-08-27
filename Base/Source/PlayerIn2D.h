@@ -59,6 +59,8 @@ public:
 
 	// Take Damage
 	virtual bool TakeDamage(float damage);
+	// Heal Health
+	virtual void HealHealth(float heal);
 
 	//Calculate Position after entering level
 	void CalPosition(const int leftBorder, const int rightBorder, const int topBorder, const int bottomBorder, float tileSize);
@@ -73,6 +75,7 @@ protected:
 	float m_invunerableTimer;
 	bool m_renderPlayer;
 	float m_renderPlayerTimer;
+	int m_lifes;
 };
 
 #endif

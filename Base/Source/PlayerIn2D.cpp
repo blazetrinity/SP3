@@ -1,5 +1,6 @@
 #include "PlayerIn2D.h"
 
+const static int MAXLIFE = 3;
 
 PlayerIn2D::PlayerIn2D(void)
 {
@@ -44,6 +45,7 @@ void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSiz
 	m_invunerableTimer = 0;
 	m_renderPlayer = true;
 	m_renderPlayerTimer = 0;
+	m_lifes = MAXLIFE;
 }
 
 // Update player position based on player's velocity
@@ -122,10 +124,30 @@ bool PlayerIn2D::TakeDamage(float damage)
 		m_invunerable = true;
 		m_invunerableTimer = 5;
 		m_renderPlayer = false;
-		return CharacterIn2D::TakeDamage(damage);
+		
+		if(CharacterIn2D::TakeDamage(damage))
+		{
+			--m_lifes;
+		}
+
+		if(m_lifes < 0)
+		{
+			return true;
+		}
 	}
 
 	return false;
+}
+
+// Heal Health
+void PlayerIn2D::HealHealth(float heal)
+{
+	this->m_health += heal;
+
+	if(m_health > m_maxHealth)
+	{
+		this->m_health = m_maxHealth;
+	}
 }
 
 // Set Mesh of the player

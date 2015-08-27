@@ -29,6 +29,7 @@ protected:
 	Vector2 m_viewPosition;
 	Skill* m_skill;
 	int m_health;
+	int m_maxHealth;
 	float m_mass;
 };
 

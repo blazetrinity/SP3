@@ -219,6 +219,7 @@ private:
 	int m_currentLevel;
 	bool m_updateMap;
 	float m_ghostQueueTimer;
+	int m_score;
 	bool m_spawnGhost;
 	bool m_ghostTriggered;
 	bool m_resetGame;
