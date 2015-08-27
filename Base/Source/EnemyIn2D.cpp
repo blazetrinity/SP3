@@ -38,7 +38,7 @@ void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel,
 	{
 		this->m_facingNormal.Set(0, 1);
 	}
-	else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
+	else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::BOSS_GHOST)
 	{
 		this->m_facingNormal.Set(1, 0);
 	}
@@ -145,7 +145,7 @@ void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown, Vector2 m_playerPo
 
 			patrol->Update(&m_position, &m_viewPosition, &m_velocity, &m_facingNormal, dt, VIEWOFFSET);
 		}
-		else
+		else if(dynamic_cast<Strategy_Chase*>(m_strategy) != NULL)
 		{
 			Strategy_Chase* chase = dynamic_cast<Strategy_Chase*>(m_strategy);
 

@@ -51,6 +51,7 @@
     <ClCompile Include="Source\Strategy_Chase.cpp" />
     <ClCompile Include="Source\Strategy_Patrol.cpp" />
     <ClCompile Include="Source\Tag.cpp" />
+    <ClCompile Include="Source\Text.cpp" />
     <ClCompile Include="Source\TileMap.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Weapon.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="Source\Strategy_Chase.h" />
     <ClInclude Include="Source\Strategy_Patrol.h" />
     <ClInclude Include="Source\Tag.h" />
+    <ClInclude Include="Source\Text.h" />
     <ClInclude Include="Source\TileMap.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />

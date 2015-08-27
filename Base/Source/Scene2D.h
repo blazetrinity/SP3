@@ -16,6 +16,7 @@
 #include "Strategy_Chase.h"
 #include "Projectile.h"
 #include <irrKlang.h>
+#include "Text.h"
 
 using namespace irrklang;
 using std::vector;
@@ -50,6 +51,7 @@ public:
 	void UpdatePlayer(double dt);
 	void UpdateEnemy(double dt);
 	void UpdateProjectile(double dt);
+	void UpdateStoryText(double dt);
 	void UpdateLevel(int checkPosition_X, int checkPosition_Y);
 
 	bool CheckPlayerHiding();
@@ -102,6 +104,8 @@ public:
 		U_COLOR_TEXTURE_ENABLED1,
 		U_TEXT_ENABLED,
 		U_TEXT_COLOR,
+		//U_TEXT_ALPHA_ENABLED,
+		//U_TEXT_ALPHA,
 		U_TOTAL,
 	};
 	enum GEOMETRY_TYPE
@@ -175,6 +179,7 @@ public:
 		SND_FIRE,
 		SND_DAMAGE,
 		SND_BOSS,
+		SND_BOSS_ATTACK,
 
 		TOTAL_SND,
 	};
@@ -238,6 +243,14 @@ private:
 
 	// Projectile's handler
 	vector<Projectile*> m_projectileList;
+
+	//Text
+	Text *TextArray;
+    int m_listPosition;
+	int m_string_CharacterPosition;
+	double m_textTimer;
+	string m_renderString;
+	unsigned short m_storyLevelTracker;
 
 	//The sound engine
 	ISoundEngine* m_theSoundEngine;

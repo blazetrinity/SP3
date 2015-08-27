@@ -8,9 +8,11 @@
 #include "LoadTGA.h"
 #include <sstream>
 
+static const int MAXTEXT = 69;
 static const float MAXGHOSTQUEUETIMER = 15.0f;
 static const int WHITEGHOSTHEALTH = 30;
 static const int REDGHOSTHEALTH = 60;
+static const int BOSSHEALTH = 666;
 static const int PLAYERHEALTH = 100;
 
 Scene2D::Scene2D()
@@ -142,7 +144,7 @@ void Scene2D::Init()
 	}
 
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureID[0] = LoadTGA("Image//calibri.tga");
+	meshList[GEO_TEXT]->textureID[0] = LoadTGA("Image//Test3.tga");
 
 	//UI
 	meshList[GEO_MAIN_MENU] = MeshBuilder::Generate2DMesh("MAIN_MENU", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
@@ -170,9 +172,11 @@ void Scene2D::Init()
 	meshList[GEO_ENEMY1]->textureID[0] = LoadTGA("Image//enemy1_sprite.tga");
 	meshList[GEO_ENEMY2] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY2", 4, 3);
 	meshList[GEO_ENEMY2]->textureID[0] = LoadTGA("Image//enemy2_sprite.tga");
-
 	meshList[GEO_CHARACTER] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
 	meshList[GEO_CHARACTER]->textureID[0] = LoadTGA("Image//character_sprite.tga");
+	
+	meshList[GEO_BOSS] = MeshBuilder::GenerateSpriteAnimation("GEO_BOSS", 3, 3);
+	meshList[GEO_BOSS]->textureID[0] = LoadTGA("Image//Boss.tga");
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 4, 6);
 	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//map_tileset.tga");
 
@@ -226,8 +230,11 @@ void Scene2D::InitGame()
 			break;
 		case 3:	m_cEnemyAndItemMap->LoadMap( "Image//Level3EnemyAndItem.csv" );
 			break;
+		case 4: m_cEnemyAndItemMap->LoadMap( "Image//Level4EnemyAndItem.csv" );
+			break;
 		}
 
+		SpriteAnimation *BossSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_BOSS]));
 		SpriteAnimation *whiteGhostSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_ENEMY2]));
 		SpriteAnimation *redGhostSpriteAnimation = (dynamic_cast<SpriteAnimation*>(meshList[GEO_ENEMY1]));
 
@@ -318,6 +325,26 @@ void Scene2D::InitGame()
 					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
 					m_enemyList.push_back(theEnemy);
 				}
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == EnemyIn2D::BOSS_GHOST)
+				{
+					SpriteAnimation* newSpriteAnimation = BossSpriteAnimation;
+
+					EnemyIn2D* theEnemy = new EnemyIn2D;
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(64, 64), 10, i, newSpriteAnimation, EnemyIn2D::BOSS_GHOST, 1, NULL, BOSSHEALTH);
+
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 5, 0, 0.2);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 0, 5, 0, 0.2);
+					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 0, 5, 0, 0.2);
+				    theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 0, 5, 0, 0.2);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 6, 8, 0, 0.5);
+					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 6, 8, 0, 0.5);
+					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_LEFT);
+					
+					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
+					m_enemyList.push_back(theEnemy);
+				}
 			}
 		}
 	}
@@ -350,7 +377,8 @@ void Scene2D::InitGame()
 	m_sounds[SND_FIRE] = m_theSoundEngine->addSoundSourceFromFile("wav//fire.wav");
 	m_sounds[SND_DAMAGE] = m_theSoundEngine->addSoundSourceFromFile("wav//damage.wav");
 	m_sounds[SND_BOSS] = m_theSoundEngine->addSoundSourceFromFile("wav//boss.wav");
-	
+    m_sounds[SND_BOSS_ATTACK] = m_theSoundEngine->addSoundSourceFromFile("wav//boss_attack.wav");
+    
 	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_MENU], true, false, true);
 	m_backgroundSound->setVolume(0.1f);
 
@@ -365,6 +393,16 @@ void Scene2D::InitGame()
 	m_spawnGhost = false;
 	m_ghostTriggered = false;
 	m_resetGame = false;
+
+	// Init Text
+	TextArray = new Text[MAXTEXT];
+	TextArray->Init("Story.txt",TextArray);
+    m_listPosition = 0;
+	m_string_CharacterPosition = 0;
+	m_textTimer = 0;
+	m_storyLevelTracker = 1;
+	m_renderString = "";
+	
 }
 	
 void Scene2D::ResetGame()
@@ -580,6 +618,7 @@ void Scene2D::Update(double dt)
 			if(Application::IsKeyPressed('4'))
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+				
 			if(m_currentEventSound != SND_BLANK)
 			{
 				if(m_eventSound->isFinished() == true)
@@ -603,6 +642,9 @@ void Scene2D::Update(double dt)
 
 			//Ai Update and collision with character
 			UpdateEnemy(dt);
+
+			//Text Update
+			UpdateStoryText(dt);
 
 			//Projectile Update
 			UpdateProjectile(dt);
@@ -645,7 +687,7 @@ void Scene2D::Update(double dt)
 					for(vector<EnemyIn2D*>::iterator it = m_enemyList.begin(); it != m_enemyList.end(); ++it)
 					{
 						EnemyIn2D* enemy = (EnemyIn2D*)*it;
-						if(enemy->GetActive() == false && enemy->GetCurrentLevel() == m_currentLevel)
+						if(enemy->GetActive() == false && enemy->GetCurrentLevel() == m_currentLevel && enemy->GetEnemyType() != EnemyIn2D::BOSS_GHOST)
 						{
 							enemy->SetActive(true);
 						}
@@ -718,6 +760,52 @@ void Scene2D::UpdatePlayer(double dt)
 	//Update the player velocity and position
 	m_player->Update(m_cBoundMap, dt, true);
 
+}
+
+void Scene2D::UpdateStoryText(double dt)
+{
+	// control key spam
+	m_textTimer += dt;
+	// array list
+	if(m_listPosition < MAXTEXT)
+	{
+		if(m_string_CharacterPosition == 0)
+		{
+			m_storyLevelTracker = TextArray->getTextCharacter(TextArray,m_listPosition,(TextArray->getStringsize(TextArray,m_listPosition)-1));
+		}
+		if((m_storyLevelTracker-48) == m_currentLevel)
+		{
+			// check if string size have reached the end
+			if(m_string_CharacterPosition == (TextArray->getStringsize(TextArray,m_listPosition)-1))
+			{
+				// text control
+				if(Application::IsKeyPressed('L') && m_textTimer > 0.15)
+				{
+					m_string_CharacterPosition = 0;
+					m_listPosition++;
+					m_renderString.clear();
+					m_textTimer = 0;
+				}
+			}
+			//constant typewriter effect & string size must not reached max
+			if(m_textTimer > NULL && m_string_CharacterPosition != (TextArray->getStringsize(TextArray,m_listPosition)-1))
+			{
+				m_renderString += TextArray->getTextCharacter(TextArray,m_listPosition,m_string_CharacterPosition);
+				m_textTimer = 0;
+				m_string_CharacterPosition++;
+			}
+		}
+		else if((m_storyLevelTracker-48) > m_currentLevel)
+		{
+			m_renderString.clear();
+		}
+		else
+		{
+			m_renderString.clear();
+			m_listPosition++;
+			m_string_CharacterPosition = 0;
+		}
+	}
 }
 
 void Scene2D::UpdateEnemy(double dt)
@@ -1055,7 +1143,7 @@ void Scene2D::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, floa
 	for(unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 1.0f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
+		characterSpacing.SetToTranslation(i * 0.5f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 
@@ -1310,6 +1398,8 @@ void Scene2D::Render()
 		ss.precision(3);
 		ss << "FPS: " << fps;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
+
+		RenderTextOnScreen(meshList[GEO_TEXT], m_renderString, Color(1,1,1), 2.5, 0, 0);
 	}
 
 	glEnable(GL_DEPTH_TEST);
@@ -1328,6 +1418,8 @@ void Scene2D::Exit()
 			enemy = NULL;
 		}
 	}
+
+	delete []TextArray;
 
 	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
 	{
