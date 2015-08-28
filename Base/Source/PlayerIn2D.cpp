@@ -1,6 +1,7 @@
 #include "PlayerIn2D.h"
 
 const static int MAXLIFE = 3;
+static float MOVESPEED = 100;
 
 PlayerIn2D::PlayerIn2D(void)
 {
@@ -40,7 +41,7 @@ void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSiz
 			this->m_animations[i] = new Animation();
 		}
 	}
-	
+
 	m_invunerable = false;
 	m_invunerableTimer = 0;
 	m_renderPlayer = true;
@@ -84,6 +85,33 @@ void PlayerIn2D::Update(CMap *map, double dt, bool topDown)
 		m_skill->Update(dt);
 	}
 
+	vector<PowerUp*>::iterator it = m_activePowerUp.begin();
+	while(it != m_activePowerUp.end())
+	{
+		PowerUp* powerup = (PowerUp*)* it;
+
+		powerup->Update(dt);
+
+		if(powerup->GetLifeTime() <= 0)
+		{
+			switch(powerup->GetType())
+			{
+			case PowerUp::FIRE_SPEED_POWER:
+				m_skill->SetCoolDown(powerup->GetOriginalValue());
+				break;
+			case PowerUp::MOVE_SPEED_POWER:
+				MOVESPEED = powerup->GetOriginalValue();
+				break;
+			}
+
+			it = m_activePowerUp.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
 	//Update player vunerablity
 	if(m_invunerable)
 	{
@@ -124,11 +152,13 @@ bool PlayerIn2D::TakeDamage(float damage)
 		m_invunerable = true;
 		m_invunerableTimer = 5;
 		m_renderPlayer = false;
-		
+
 		if(CharacterIn2D::TakeDamage(damage))
 		{
 			--m_lifes;
 		}
+
+		cout << "Health " << m_health << endl;
 
 		return true;
 	}
@@ -145,6 +175,36 @@ void PlayerIn2D::HealHealth(float heal)
 	{
 		this->m_health = m_maxHealth;
 	}
+
+	cout << "Health " << m_health << endl;
+}
+
+// Add power up
+void PlayerIn2D::AddPowerUp(PowerUp* newPowerUp)
+{
+	for(vector<PowerUp*>::iterator it = m_activePowerUp.begin(); it != m_activePowerUp.end(); ++it)
+	{
+		PowerUp* powerup = (PowerUp*)* it;
+
+		if(powerup->GetType() == newPowerUp->GetType())
+		{
+			powerup->ResetLifeTime();
+			return;
+		}
+	}
+
+	switch(newPowerUp->GetType())
+	{
+	case PowerUp::FIRE_SPEED_POWER:
+		newPowerUp->StoreOriginalValue(m_skill->GetCoolDown());
+		m_skill->SetCoolDown(newPowerUp->GetmodifiedValue());
+		break;
+	case PowerUp::MOVE_SPEED_POWER:
+		newPowerUp->StoreOriginalValue(MOVESPEED);
+		MOVESPEED = newPowerUp->GetmodifiedValue();
+		break;
+	}
+	m_activePowerUp.push_back(newPowerUp);
 }
 
 // Set Mesh of the player
@@ -212,11 +272,11 @@ void PlayerIn2D::MoveUpDown(const bool mode)
 {
 	if (mode)
 	{
-		m_velocity.y = 100;
+		m_velocity.y = MOVESPEED;
 	}
 	else
 	{
-		m_velocity.y = -100;
+		m_velocity.y = -MOVESPEED;
 	}
 	m_velocity.x = 0;
 }
@@ -226,11 +286,11 @@ void PlayerIn2D::MoveLeftRight(const bool mode)
 {
 	if (mode)
 	{
-		m_velocity.x = -100;
+		m_velocity.x = -MOVESPEED;
 	}
 	else
 	{
-		m_velocity.x = 100;
+		m_velocity.x = MOVESPEED;
 	}
 	m_velocity.y = 0;
 }

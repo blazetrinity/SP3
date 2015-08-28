@@ -307,25 +307,25 @@ void Camera3::MoveLeft(const double dt, std::vector<unsigned char> &heightMap, V
 	right.y = 0;
 	right.Normalize();
 	
-	if(stance == PLAYER_STANCE::STANCE_STAND)
+	if(stance == STANCE_STAND)
 	{
 		position -= right * CAMERA_SPEED_WALK * (float)dt;
 		target -= right * CAMERA_SPEED_WALK * (float)dt;
 	}
 	
-	else if(stance == PLAYER_STANCE::STANCE_RUN)
+	else if(stance == STANCE_RUN)
 	{
 		position -= right * CAMERA_SPEED_RUN * (float)dt;
 		target -= right * CAMERA_SPEED_RUN * (float)dt;
 	}
 
-	else if(stance == PLAYER_STANCE::STANCE_CROUCH)
+	else if(stance == STANCE_CROUCH)
 	{
 		position -= right * CAMERA_SPEED_CROUCH * (float)dt;
 		target -= right * CAMERA_SPEED_CROUCH * (float)dt;
 	}
 
-	else if(stance == PLAYER_STANCE::STANCE_PRONE)
+	else if(stance == STANCE_PRONE)
 	{
 		position -= right * CAMERA_SPEED_PRONE * (float)dt;
 		target -= right * CAMERA_SPEED_PRONE * (float)dt;
@@ -346,25 +346,25 @@ void Camera3::MoveRight(const double dt, std::vector<unsigned char> &heightMap, 
 	right.y = 0;
 	right.Normalize();
 
-	if(stance == PLAYER_STANCE::STANCE_STAND)
+	if(stance == STANCE_STAND)
 	{
 		position += right * CAMERA_SPEED_WALK * (float)dt;
 		target += right * CAMERA_SPEED_WALK * (float)dt;
 	}
 	
-	else if(stance == PLAYER_STANCE::STANCE_RUN)
+	else if(stance == STANCE_RUN)
 	{
 		position += right * CAMERA_SPEED_RUN * (float)dt;
 		target += right * CAMERA_SPEED_RUN * (float)dt;
 	}
 
-	else if(stance == PLAYER_STANCE::STANCE_CROUCH)
+	else if(stance == STANCE_CROUCH)
 	{
 		position += right * CAMERA_SPEED_CROUCH * (float)dt;
 		target += right * CAMERA_SPEED_CROUCH * (float)dt;
 	}
 
-	else if(stance == PLAYER_STANCE::STANCE_PRONE)
+	else if(stance == STANCE_PRONE)
 	{
 		position += right * CAMERA_SPEED_PRONE * (float)dt;
 		target += right * CAMERA_SPEED_PRONE * (float)dt;

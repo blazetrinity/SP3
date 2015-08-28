@@ -8,18 +8,13 @@ Item::Item(void) : m_mesh(NULL)
 
 Item::~Item(void)
 {
-	if (m_mesh != NULL)
-	{
-		delete m_mesh;
-		m_mesh = NULL;
-	}
 }
 
 // Init the item
 void Item::Init(Vector2 position, Vector2 scale, float tileSize, ITEM_TYPE newType, Mesh* newMesh, int level)
 {
 	GameObjectIn2D::Init(position, scale, tileSize);
-	this->m_level = level;
+	this->m_currentLevel = level;
 	this->m_active = true;
 	this->m_itemType = newType;
 	this->m_mesh = newMesh;
@@ -43,9 +38,9 @@ bool Item::GetActive()
 	return m_active;
 }
 
-int Item::GetLevel()
+int Item::GetCurrentLevel()
 {
-	return m_level;
+	return m_currentLevel;
 }
 
 // Set the Mesh

@@ -12,30 +12,36 @@ ItemFactory::~ItemFactory(void)
 
 Item* ItemFactory::Create(Vector2 position, Vector2 scale, float tileSize, Item::ITEM_TYPE itemType, Mesh* mesh, int level)
 {
-	Item* theNewItem = new Item;
-	PowerUp* theNewPowerUp = NULL;
+	Item* newItem = NULL;
+	PowerUp* newPowerUp = NULL;
 	// Init the Item then return it
 
 	switch(itemType)
 	{
 	case Item::KEY_ITEM:
-		theNewItem->Init(position, scale, tileSize, itemType, mesh, level);
+		newItem = new Item;
+		newItem->Init(position, scale, tileSize, itemType, mesh, level);
+		return newItem;
 		break;
 	case Item::GUN_UPGRADE:
-		theNewItem->Init(position, scale, tileSize, itemType, mesh, level);
+		newItem = new Item;
+		newItem->Init(position, scale, tileSize, itemType, mesh, level);
+		return newItem;
 		break;
 	case Item::HEALTH_ITEM:
-		theNewItem->Init(position, scale, tileSize, itemType, mesh, level);
+		newItem = new Item;
+		newItem->Init(position, scale, tileSize, itemType, mesh, level);
+		return newItem;
 		break;
 	case Item::FIRE_SPEED_POWER:
-		theNewPowerUp = dynamic_cast<PowerUp*>(theNewItem);
-		theNewPowerUp->Init(position,scale,tileSize,10,0.5,itemType,mesh,level);
+		newPowerUp = new PowerUp;
+		newPowerUp->Init(position,scale,tileSize,10,0.5,itemType,mesh,level);
+		return newPowerUp;
 		break;
 	case Item::MOVE_SPEED_POWER:
-		theNewPowerUp = dynamic_cast<PowerUp*>(theNewItem);
-		theNewPowerUp->Init(position,scale,tileSize,3,150,itemType,mesh,level);
+		newPowerUp = new PowerUp;
+		newPowerUp->Init(position,scale,tileSize,3,150,itemType,mesh,level);
+		return newPowerUp;
 		break;
 	}
-
-	return theNewItem;
 }

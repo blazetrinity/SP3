@@ -36,6 +36,11 @@ bool Skill::Use()
 	return false;
 }
 
+void Skill::SetCoolDown(float newCoolDown)
+{
+	this->m_coolDown = newCoolDown;
+}
+
 float Skill::GetLifeTime()
 {
 	return m_lifeTime;
@@ -44,6 +49,11 @@ float Skill::GetLifeTime()
 float Skill::GetDamage()
 {
 	return m_damage;
+}
+
+float Skill::GetCoolDown()
+{
+	return m_coolDown;
 }
 	
 bool Skill::GetRanged()
@@ -54,4 +64,9 @@ bool Skill::GetRanged()
 Tag Skill::GetTag()
 {
 	return m_tag;
+}
+
+void Skill::UpgradeDamage(float damageToIncrease)
+{
+	this->m_damage += damageToIncrease;
 }

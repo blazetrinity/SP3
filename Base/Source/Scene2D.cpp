@@ -9,11 +9,14 @@
 #include <sstream>
 
 static const int MAXTEXT = 69;
-static const float MAXGHOSTQUEUETIMER = 15.0f;
+static const float MAXGHOSTQUEUETIMER = 10.0f;
 static const int WHITEGHOSTHEALTH = 30;
 static const int REDGHOSTHEALTH = 60;
 static const int BOSSHEALTH = 666;
 static const int PLAYERHEALTH = 100;
+static const int GUN_UPGRADE_REQUIREMENT = 5;
+static const float SKILLUPGRADE = 10;
+static const float HEALAMOUNT = 30;
 
 Scene2D::Scene2D()
 	: m_cMap(NULL)
@@ -164,15 +167,15 @@ void Scene2D::Init()
 	meshList[GEO_ARROW]->textureID[0] = LoadTGA("Image//arrow.tga");
 	meshList[GEO_PAUSED_ARROW] = MeshBuilder::Generate2DMesh("GEO_PAUSED_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
 	meshList[GEO_PAUSED_ARROW]->textureID[0] = LoadTGA("Image//paused_arrow.tga");
-	meshList[GEO_SPEED_POWER_UP] = MeshBuilder::Generate2DMesh("GEO_SPEED_POWER_UP", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_SPEED_POWER_UP] = MeshBuilder::Generate2DMesh("GEO_SPEED_POWER_UP", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
 	meshList[GEO_SPEED_POWER_UP]->textureID[0] = LoadTGA("Image//speed_up.tga");
-	meshList[GEO_FIRE_RATE_POWER_UP] = MeshBuilder::Generate2DMesh("GEO_FIRE_RATE_POWER_UP", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_FIRE_RATE_POWER_UP] = MeshBuilder::Generate2DMesh("GEO_FIRE_RATE_POWER_UP", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
 	meshList[GEO_FIRE_RATE_POWER_UP]->textureID[0] = LoadTGA("Image//fire_rate_up.tga");
-	meshList[GEO_HEALTH_ITEM] = MeshBuilder::Generate2DMesh("GEO_HEALTH_ITEM", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_HEALTH_ITEM] = MeshBuilder::Generate2DMesh("GEO_HEALTH_ITEM", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
 	meshList[GEO_HEALTH_ITEM]->textureID[0] = LoadTGA("Image//health_item.tga");
-	meshList[GEO_GUN_PART] = MeshBuilder::Generate2DMesh("GEO_GUN_PART", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_GUN_PART] = MeshBuilder::Generate2DMesh("GEO_GUN_PART", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
 	meshList[GEO_GUN_PART]->textureID[0] = LoadTGA("Image//gun_item.tga");
-	meshList[GEO_KEY_ITEM] =MeshBuilder::Generate2DMesh("GEO_KEY_ITEM", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_KEY_ITEM] =MeshBuilder::Generate2DMesh("GEO_KEY_ITEM", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
 	meshList[GEO_KEY_ITEM]->textureID[0] = LoadTGA("Image//key_item.tga");
 
 	// Load the ground mesh and texture
@@ -211,15 +214,15 @@ void Scene2D::InitGame()
 	// Initialise and load the tile map
 	m_cMap = new CMap();
 	m_cMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cMap->LoadMap( "Image//level1_visual.csv" );
+	m_cMap->LoadMap( "Csv//level1_visual.csv" );
 
 	m_cBoundMap = new CMap();
 	m_cBoundMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
+	m_cBoundMap->LoadMap( "Csv//level1_bound.csv" );
 
 	m_cDoorInteractionMap = new CMap();
 	m_cDoorInteractionMap->Init(800, 1024, 25, 32, 800 ,1024);
-	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
+	m_cDoorInteractionMap->LoadMap( "Csv//level1_door.csv" );
 
 	m_path = new AstarPathfind;
 	m_path->GenerateGrid(m_cBoundMap);
@@ -235,13 +238,13 @@ void Scene2D::InitGame()
 	{
 		switch(i)
 		{
-		case 1:	m_cEnemyAndItemMap->LoadMap( "Image//Level1EnemyAndItem.csv" );
+		case 1:	m_cEnemyAndItemMap->LoadMap( "Csv//level1EnemyAndItem.csv" );
 			break;
-		case 2:	m_cEnemyAndItemMap->LoadMap( "Image//Level2EnemyAndItem.csv" );
+		case 2:	m_cEnemyAndItemMap->LoadMap( "Csv//level2EnemyAndItem.csv" );
 			break;
-		case 3:	m_cEnemyAndItemMap->LoadMap( "Image//Level3EnemyAndItem.csv" );
+		case 3:	m_cEnemyAndItemMap->LoadMap( "Csv//level3EnemyAndItem.csv" );
 			break;
-		case 4: m_cEnemyAndItemMap->LoadMap( "Image//Level4EnemyAndItem.csv" );
+		case 4: m_cEnemyAndItemMap->LoadMap( "Csv//level4EnemyAndItem.csv" );
 			break;
 		}
 
@@ -310,7 +313,7 @@ void Scene2D::InitGame()
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 
 					skill = new Skill();
-					skill->Init(1.0f,10.f, 1.0f, false, Tag::ENEMY);
+					skill->Init(1.0f,20.f, 1.0f, false, Tag::ENEMY);
 
 					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, skill, REDGHOSTHEALTH);
 
@@ -335,7 +338,7 @@ void Scene2D::InitGame()
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 
 					skill = new Skill();
-					skill->Init(1.0f,10.f, 1.0f, false, Tag::ENEMY);
+					skill->Init(1.0f,20.f, 1.0f, false, Tag::ENEMY);
 
 					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, skill, REDGHOSTHEALTH);
 
@@ -438,6 +441,7 @@ void Scene2D::InitGame()
 	m_currentLevel = 1;
 	m_updateMap = false; 
 	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+	m_gunCollectibleCount = 0;
 	m_spawnGhost = false;
 	m_ghostTriggered = false;
 	m_resetGame = false;
@@ -464,6 +468,7 @@ void Scene2D::ResetGame()
 	m_currentLevel = 1;
 	m_updateMap = false; 
 	m_ghostQueueTimer = MAXGHOSTQUEUETIMER / m_currentLevel;
+	m_gunCollectibleCount = 0;
 	m_spawnGhost = false;
 	m_ghostTriggered = false;
 	m_resetGame = false;
@@ -733,13 +738,6 @@ void Scene2D::Update(double dt)
 				}
 			}
 
-			// Update the hero
-			int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
-			int checkPosition_Y = m_cMap->GetNumOfTiles_Height() - (int) ceil( (float)(m_player->GetPosition().y + m_cMap->GetTileSize()) / m_cMap->GetTileSize());
-
-			//Check if player is going into the next level
-			UpdateLevel(checkPosition_X, checkPosition_Y);
-
 			//Player Movement
 			UpdatePlayer(dt);
 
@@ -751,6 +749,26 @@ void Scene2D::Update(double dt)
 
 			//Projectile Update
 			UpdateProjectile(dt);
+
+			//Item Update
+			UpdateItem();
+
+			if(m_gunCollectibleCount == GUN_UPGRADE_REQUIREMENT)
+			{
+				m_player->GetSkill()->UpgradeDamage(SKILLUPGRADE);
+				m_gunCollectibleCount = 0;
+			}
+
+			if(m_levelCompleted)
+			{
+				// Update the hero
+				int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
+				int checkPosition_Y = m_cMap->GetNumOfTiles_Height() - (int) ceil( (float)(m_player->GetPosition().y + m_cMap->GetTileSize()) / m_cMap->GetTileSize());
+
+				//Check if player is going into the next level
+				UpdateLevel(checkPosition_X, checkPosition_Y);
+			}
+
 
 			//Up ghost trigger
 			if(!m_ghostTriggered && !m_levelCompleted)
@@ -1046,6 +1064,59 @@ void Scene2D::UpdateProjectile(double dt)
 	}
 }
 
+void Scene2D::UpdateItem()
+{
+	for(vector<Item*>::iterator it = m_itemList.begin(); it != m_itemList.end(); ++it)
+	{
+		Item* item = (Item*)*it;
+
+		if(item->GetActive() && item->GetCurrentLevel() == m_currentLevel && item->CollideWith(m_player))
+		{
+			switch(item->GetType())
+			{
+			case Item::KEY_ITEM:
+				{
+					m_levelCompleted = true;
+
+					if(m_currentBackgroundSound == SND_GHOST_QUEUE)
+					{
+						m_backgroundSound->stop();
+						m_backgroundSound->drop();
+						m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], false, false, true);
+						m_backgroundSound->setVolume(0.5f);
+						m_currentBackgroundSound = SND_BACKGROUND;
+					}
+				}
+				break;
+			case Item::GUN_UPGRADE:
+				{
+					++m_gunCollectibleCount;
+				}
+				break;
+			case Item::HEALTH_ITEM:
+				{
+					m_player->HealHealth(HEALAMOUNT);
+				}
+				break;
+			case Item::FIRE_SPEED_POWER:
+				{
+					PowerUp* powerup = dynamic_cast<PowerUp*>(item);
+					m_player->AddPowerUp(powerup);
+				}
+				break;
+			case Item::MOVE_SPEED_POWER:
+				{
+					PowerUp* powerup = dynamic_cast<PowerUp*>(item);
+					m_player->AddPowerUp(powerup);
+				}
+				break;
+			}
+
+			item->SetActive(false);
+		}
+	}
+}
+
 void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 {
 	if(m_updateMap == false)
@@ -1106,27 +1177,27 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 	{
 		if(m_currentLevel == LEVEL1)
 		{
-			m_cMap->LoadMap( "Image//level1_visual.csv" );
-			m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
-			m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
+			m_cMap->LoadMap( "Csv//level1_visual.csv" );
+			m_cBoundMap->LoadMap( "Csv//level1_bound.csv" );
+			m_cDoorInteractionMap->LoadMap( "Csv//level1_door.csv" );
 		}
 		else if(m_currentLevel == LEVEL2)
 		{
-			m_cMap->LoadMap( "Image//level2_visual.csv" );
-			m_cBoundMap->LoadMap( "Image//level2_bound.csv" );
-			m_cDoorInteractionMap->LoadMap( "Image//level2_door.csv" );
+			m_cMap->LoadMap( "Csv//level2_visual.csv" );
+			m_cBoundMap->LoadMap( "Csv//level2_bound.csv" );
+			m_cDoorInteractionMap->LoadMap( "Csv//level2_door.csv" );
 		}
 		else if(m_currentLevel == LEVEL3)
 		{
-			m_cMap->LoadMap( "Image//level3_visual.csv" );
-			m_cBoundMap->LoadMap( "Image//level3_bound.csv" );
-			m_cDoorInteractionMap->LoadMap( "Image//level3_door.csv" );
+			m_cMap->LoadMap( "Csv//level3_visual.csv" );
+			m_cBoundMap->LoadMap( "Csv//level3_bound.csv" );
+			m_cDoorInteractionMap->LoadMap( "Csv//level3_door.csv" );
 		}
 		else if(m_currentLevel == LEVEL4)
 		{
-			m_cMap->LoadMap( "Image//level4_visual.csv" );
-			m_cBoundMap->LoadMap( "Image//level4_bound.csv" );
-			m_cDoorInteractionMap->LoadMap( "Image//level4_door.csv" );
+			m_cMap->LoadMap( "Csv//level4_visual.csv" );
+			m_cBoundMap->LoadMap( "Csv//level4_bound.csv" );
+			m_cDoorInteractionMap->LoadMap( "Csv//level4_door.csv" );
 		}
 
 		m_player->CalPosition((m_cMap->GetTileSize()), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), (m_cMap->GetTileSize()), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), (float)m_cMap->GetTileSize());
@@ -1173,31 +1244,6 @@ Projectile* Scene2D::FetchProjectile()
 	projectile->SetActive(true);
 	return projectile;
 }
-
-/********************************************************************************
-Update Camera position
-********************************************************************************/
-void Scene2D::UpdateCameraStatus(const unsigned char key, const bool status)
-{
-	//camera.UpdateStatus(key, status);
-
-	// Update avatar position
-}
-
-/********************************************************************************
-Update Weapon status
-********************************************************************************/
-void Scene2D::UpdateWeaponStatus(const unsigned char key)
-{
-
-}
-
-void Scene2D::StartGame()
-{
-
-}
-
-static const float SKYBOXSIZE = 1000.f;
 
 void Scene2D::RenderText(Mesh* mesh, std::string text, Color color)
 {
@@ -1739,14 +1785,14 @@ void Scene2D::RenderTileMap()
 	{
 		Item* item = (Item*)*it;
 
-		if(item->GetActive() && item->GetLevel() == m_currentLevel)
+		if(item->GetActive() && item->GetCurrentLevel() == m_currentLevel)
 		{
 			float item_x = item->GetPosition().x;
 			float item_y = item->GetPosition().y;
 
 			if(((item_x >= 0 + m_cMap->GetmapOffset().x) && (item_x < m_cMap->GetScreenWidth() + m_cMap->GetmapOffset().x)) && ((item_y >= 0) && (item_y < m_cMap->GetScreenHeight())))
 			{
-				Render2DMesh(item->GetMesh(), false, item->GetScale().x, (16.0f + item_x) - m_cMap->GetmapOffset().x, (16.0f + item_y) - m_cMap->GetmapOffset().y);
+				Render2DMesh(item->GetMesh(), false, item->GetScale().x, (item_x) - m_cMap->GetmapOffset().x, (item_y) - m_cMap->GetmapOffset().y);
 			}
 		}
 	}

@@ -22,18 +22,27 @@ void PowerUp::Update(double dt)
 	this->m_lifeTime -= dt;
 }
 
-void PowerUp::AppliedPowerUp(float *attribute)
+void PowerUp::StoreOriginalValue(float attribute)
 {
-	this->m_originalValue = *attribute;
-	*attribute = this->m_modifiedValue;
+	this->m_originalValue = attribute;
 }
 	
-void PowerUp::RemovePowerUp(float *attribute)
+float PowerUp::GetOriginalValue()
 {
-	*attribute = this->m_originalValue;
+	return m_originalValue;
+}
+	
+float PowerUp::GetmodifiedValue()
+{
+	return m_modifiedValue;
 }
 
 void PowerUp::ResetLifeTime()
 {
 	this->m_lifeTime = this->m_maxLifeTime;
+}
+
+float PowerUp::GetLifeTime()
+{
+	return m_lifeTime;
 }

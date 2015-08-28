@@ -32,11 +32,6 @@ public:
 
 	virtual void Init();
 	virtual void Update(double dt);
-	virtual void StartGame();
-	// Update Camera status
-	virtual void UpdateCameraStatus(const unsigned char key, const bool status = true);
-	// Update Weapon status
-	virtual void UpdateWeaponStatus(const unsigned char key);
 	virtual void Render();
 	virtual void Exit();
 
@@ -52,6 +47,7 @@ public:
 	void UpdatePlayer(double dt);
 	void UpdateEnemy(double dt);
 	void UpdateProjectile(double dt);
+	void UpdateItem();
 	void UpdateStoryText(double dt);
 	void UpdateLevel(int checkPosition_X, int checkPosition_Y);
 
@@ -222,6 +218,7 @@ private:
 	int m_currentLevel;
 	bool m_updateMap;
 	float m_ghostQueueTimer;
+	int m_gunCollectibleCount;
 	int m_score;
 	bool m_spawnGhost;
 	bool m_ghostTriggered;

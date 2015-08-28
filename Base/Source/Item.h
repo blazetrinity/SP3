@@ -31,7 +31,7 @@ public:
 	// Get Active
 	bool GetActive();
 
-	int GetLevel();
+	int GetCurrentLevel();
 	// Set the Mesh
 	void SetMesh(Mesh* theMesh);
 	// Set Active
@@ -44,8 +44,8 @@ protected:
 	ITEM_TYPE m_itemType;
 	// Item active
 	bool m_active;
-
-	int m_level;
+	// The level the item is on
+	int m_currentLevel;
 };
 
 #endif

@@ -13,10 +13,15 @@ public:
 	virtual void Update(double dt);
 	virtual bool Use();
 
+	void SetCoolDown(float newCoolDown);
+
 	float GetLifeTime();
 	float GetDamage();
+	float GetCoolDown();
 	bool GetRanged();
 	Tag GetTag();
+
+	void UpgradeDamage(float damageToIncrease);
 
 protected:
 	float m_lifeTime;
