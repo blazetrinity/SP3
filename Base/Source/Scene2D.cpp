@@ -1642,7 +1642,7 @@ void Scene2D::Render()
 		ss << "FPS: " << fps;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
 
-		RenderTextOnScreen(meshList[GEO_TEXT], m_renderString, Color(1,1,1), 2.5, 0, 0);
+		RenderTextOnScreen(meshList[GEO_TEXT], m_renderString, Color(1,1,1), 2.5, 0, 57);
 	}
 
 	glEnable(GL_DEPTH_TEST);
