@@ -172,6 +172,8 @@ void Scene2D::Init()
 	meshList[GEO_HEALTH_ITEM]->textureID[0] = LoadTGA("Image//health_item.tga");
 	meshList[GEO_GUN_PART] = MeshBuilder::Generate2DMesh("GEO_GUN_PART", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
 	meshList[GEO_GUN_PART]->textureID[0] = LoadTGA("Image//gun_item.tga");
+	meshList[GEO_KEY_ITEM] =MeshBuilder::Generate2DMesh("GEO_KEY_ITEM", Color(1, 1, 1), 0.0f, 0.0f, 32, 32);
+	meshList[GEO_KEY_ITEM]->textureID[0] = LoadTGA("Image//key_item.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_ENEMY1] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY1", 4, 3);
@@ -378,7 +380,18 @@ void Scene2D::InitGame()
 				{
 					m_itemList.push_back(m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::MOVE_SPEED_POWER,meshList[GEO_SPEED_POWER_UP],i));
 				}
-
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == GUN_UPGRADE)
+				{
+					m_itemList.push_back(m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::GUN_UPGRADE,meshList[GEO_GUN_PART],i));
+				}
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == HEALTH_ITEM)
+				{
+					m_itemList.push_back(m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::HEALTH_ITEM,meshList[GEO_HEALTH_ITEM],i));
+				}
+				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == KEY_ITEM)
+				{
+					m_itemList.push_back(m_itemFactory->Create(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32),1,Item::KEY_ITEM,meshList[GEO_KEY_ITEM],i));
+				}
 			}
 		}
 	}
