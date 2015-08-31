@@ -208,6 +208,7 @@ void Scene2D::Init()
 	m_bossbulletAnimation->m_anim->Set(0, 5, 0, 0.1);
 
 	InitGame();
+	InitHighScore();
 
 	m_isPaused = false;
 	m_menuStatus = 0;
@@ -221,7 +222,27 @@ void Scene2D::Init()
 
 	bLightEnabled = true;
 }
+void Scene2D::InitHighScore()
+{
+	const int size = 5;
+	std::string value[size];
+	std::ifstream is("Highscore.txt");
+	std::string::size_type sz;
 
+	int i = 0;
+
+	while(!is.eof() && i < size)
+	{
+		is >> value[i++];
+	}
+	is.close();
+
+	for(int j = 0; j < size; ++j)
+	{
+		m_highscore[j] = std::stoi(value[j], &sz);
+	}
+
+}
 void Scene2D::InitGame()
 {
 	// Initialise and load the tile map
@@ -544,10 +565,51 @@ void Scene2D::GameOver()
 		m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_GAMEOVER], false, false, true);
 		m_currentBackgroundSound = SND_GAMEOVER;
 	}
-
+	SortHighscore(m_score);
 	m_menuStatus = GAMEOVER;
 	m_resetGame = true;
 	//calculated and store high score
+}
+
+void Scene2D::SortHighscore(int newscore)
+{
+	const int tempsize = 6;
+	int templist[tempsize];
+
+	for(int i = 0; i < (tempsize - 1); ++i)
+	{
+		templist[i] = m_highscore[i];
+	}
+
+	templist[(tempsize - 1)] = newscore;
+
+	for(int iter = (tempsize - 1); iter > 0; --iter)
+	{
+		for(int index = (tempsize - iter); index > 0; --index)
+		{
+			if(templist[index] > templist[(index - 1)])
+			{
+				int temp = templist[index];
+				templist[index] = templist[(index - 1)];
+				templist[(index - 1)] = temp;
+			}
+		}
+	}
+
+	for(int j = 0; j < tempsize - 1; ++j)
+	{
+		m_highscore[j] = templist[j];
+	}
+
+	std::ofstream os("Highscore.txt");
+
+	int k = 0;
+	while(k < (tempsize - 1))
+	{
+		os << m_highscore[k] << "\n";
+		++k;
+	}
+	os.close();
 }
 
 void Scene2D::Update(double dt)
@@ -1625,10 +1687,21 @@ void Scene2D::Render()
 	modelStack.LoadIdentity();
 
 	glDisable(GL_DEPTH_TEST);
+	std::ostringstream ss;
+	const int size = 5;
 	if(m_menuStatus != GAME)
 	{
 		//Render UI
 		RenderUI();
+		if(m_menuStatus == SCORE)
+		{
+			for(int i = 0; i < size; ++i)
+			{
+				ss.str(std::string());
+				ss << i+1 << ". " << m_highscore[i];
+				RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 35, 35 - (i*5));
+			}
+		}
 	}
 
 	if(m_menuStatus == GAME)
@@ -1637,7 +1710,6 @@ void Scene2D::Render()
 		RenderTileMap();
 
 		//On screen text
-		std::ostringstream ss;
 		ss.precision(3);
 		ss << "FPS: " << fps;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	

@@ -53,6 +53,9 @@ public:
 
 	bool CheckPlayerHiding();
 	
+	void SortHighscore(int newscore);
+
+	void InitHighScore();
 	void InitGame();
 	void ResetGame();
 	void GameOver();
@@ -224,6 +227,7 @@ private:
 	bool m_spawnGhost;
 	bool m_ghostTriggered;
 	bool m_resetGame;
+	int m_highscore[5];
 
 	bool  m_isPaused;
 
