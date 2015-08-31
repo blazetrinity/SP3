@@ -160,8 +160,8 @@ void Scene2D::Init()
 	meshList[GEO_CREDITS]->textureID[0] = LoadTGA("Image//menu_credits.tga");
 	meshList[GEO_INSTRUCTIONS] = MeshBuilder::Generate2DMesh("INSTRUCTIONS", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
 	meshList[GEO_INSTRUCTIONS]->textureID[0] = LoadTGA("Image//menu_instructions.tga");
-	meshList[GEO_SCORE] = MeshBuilder::Generate2DMesh("SCORE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
-	meshList[GEO_SCORE]->textureID[0] = LoadTGA("Image//menu_highscore.tga");
+	meshList[GEO_HIGHSCORE] = MeshBuilder::Generate2DMesh("HIGHSCORE", Color(1, 1, 1), 0.0f, 0.0f, 1024.0f, 800.0f);
+	meshList[GEO_HIGHSCORE]->textureID[0] = LoadTGA("Image//menu_highscore.tga");
 
 	meshList[GEO_ARROW] = MeshBuilder::Generate2DMesh("GEO_ARROW", Color(1, 1, 1), 0.0f, 0.0f, 1, 1);
 	meshList[GEO_ARROW]->textureID[0] = LoadTGA("Image//arrow.tga");
@@ -206,6 +206,17 @@ void Scene2D::Init()
 	m_bossbulletAnimation = dynamic_cast<SpriteAnimation*>(meshList[GEO_BOSS_BULLET]);
 	m_bossbulletAnimation->m_anim = new Animation;
 	m_bossbulletAnimation->m_anim->Set(0, 5, 0, 0.1);
+
+	meshList[GEO_HEALTH] = MeshBuilder::Generate2DMesh("GEO_HEALTH", Color(1, 1, 1), 0, 0, 3, 1);
+	meshList[GEO_HEALTH]->textureID[0] = LoadTGA("Image//HUD_health.tga");
+	meshList[GEO_LIVES] = MeshBuilder::Generate2DMesh("GEO_HEALTH", Color(1, 1, 1), 0, 0, 1, 1);
+	meshList[GEO_LIVES]->textureID[0] = LoadTGA("Image//HUD_lives.tga");
+	meshList[GEO_HEARTS] = MeshBuilder::Generate2DMesh("GEO_HEALTH", Color(1, 1, 1), 0, 0, 1, 1);
+	meshList[GEO_HEARTS]->textureID[0] = LoadTGA("Image//HUD_hearts.tga");
+	meshList[GEO_COMPLETED] = MeshBuilder::Generate2DMesh("GEO_COMPLETED", Color(1, 1, 1), 0, 0, 5, 1);
+	meshList[GEO_COMPLETED]->textureID[0] = LoadTGA("Image//HUD_levelcompleted.tga");
+	meshList[GEO_SCORE] = MeshBuilder::Generate2DMesh("GEO_COMPLETED", Color(1, 1, 1), 0, 0, 2, 1);
+	meshList[GEO_SCORE]->textureID[0] = LoadTGA("Image//HUD_score.tga");
 
 	InitGame();
 	InitHighScore();
@@ -1648,7 +1659,7 @@ void Scene2D::RenderUI()
 	}
 	if(m_menuStatus == SCORE)
 	{
-		Render2DMesh(meshList[GEO_SCORE], false, 1.0f);
+		Render2DMesh(meshList[GEO_HIGHSCORE], false, 1.0f);
 	}
 	if(m_menuStatus == GAMEOVER)
 	{
@@ -1667,6 +1678,49 @@ void Scene2D::RenderUI()
 		}
 	}
 
+}
+void Scene2D::RenderHUD()
+{
+	//On screen text
+	std::ostringstream ss;
+	ss.precision(3);
+	ss << "FPS: " << fps;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 0, 1), 2, 70,0);	
+
+	//On screen text
+	std::ostringstream ss1;
+	ss1.precision(3);
+	ss1 << m_player->GetHealth();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 10, 57);
+
+	std::ostringstream ss2;
+	ss2.precision(3);
+	ss2 << m_score;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 3, 74, 57);
+
+
+	Render2DMesh(meshList[GEO_HEALTH], false,35,0,765);
+	Render2DMesh(meshList[GEO_SCORE], false,35,835,765);
+	if(m_levelCompleted)
+	{
+		Render2DMesh(meshList[GEO_COMPLETED], false,35,435,765);
+	}
+	
+	if(m_player->GetLife() == 3)
+	{
+		Render2DMesh(meshList[GEO_HEARTS], false,30,205,770);
+		Render2DMesh(meshList[GEO_HEARTS], false,30,235,770);
+		Render2DMesh(meshList[GEO_HEARTS], false,30,265,770);
+	}
+	else if(m_player->GetLife() == 2)
+	{
+		Render2DMesh(meshList[GEO_HEARTS], false,30,205,770);
+		Render2DMesh(meshList[GEO_HEARTS], false,30,235,770);
+	}
+	else
+		Render2DMesh(meshList[GEO_HEARTS], false,30,205,770);
+
+	RenderTextOnScreen(meshList[GEO_TEXT], m_renderString, Color(1,1,1), 2.5, 0, 0);
 }
 
 void Scene2D::Render()
@@ -1709,7 +1763,8 @@ void Scene2D::Render()
 	{
 		// Render the tile map
 		RenderTileMap();
-
+		RenderHUD();
+		
 		//On screen text
 		ss.precision(3);
 		ss << "FPS: " << fps;

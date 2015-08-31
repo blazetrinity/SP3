@@ -156,6 +156,7 @@ bool PlayerIn2D::TakeDamage(float damage)
 		if(CharacterIn2D::TakeDamage(damage))
 		{
 			--m_lifes;
+			m_health = 100;
 		}
 
 		cout << "Health " << m_health << endl;
@@ -165,7 +166,14 @@ bool PlayerIn2D::TakeDamage(float damage)
 
 	return false;
 }
-
+int PlayerIn2D::GetHealth(void)
+{
+	return m_health;
+}
+int PlayerIn2D::GetLives(void)
+{
+	return m_lifes;
+}
 // Heal Health
 void PlayerIn2D::HealHealth(float heal)
 {

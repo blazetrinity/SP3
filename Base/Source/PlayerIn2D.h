@@ -43,7 +43,10 @@ public:
 	void SetInvunerable(bool invunerable);
 	// Set Player Health
 	void SetHealth(int health);
-
+	//return health
+	int GetHealth(void);
+	//return lives
+	int GetLives(void);
 	// Get Mesh of the player
 	SpriteAnimation* GetMesh();
 	// Get Current Animation of the player
