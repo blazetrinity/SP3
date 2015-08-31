@@ -5,19 +5,24 @@ static const float PROJECTILE_SPEED = 100.f;
 Projectile::Projectile(void)
 {
 	this->m_active = false;
+	this->m_sprite = NULL;
 }
-
 
 Projectile::~Projectile(void)
 {
 }
 
-void Projectile::Init(Skill* skill,Vector2 position, Vector2 scale, Vector2 direction, Mesh* mesh, int level, float tileSize)
+void Projectile::Init(Skill* skill,Vector2 position, Vector2 scale, Vector2 direction, SpriteAnimation* newSprite, int level, float tileSize)
 {
 	this->m_lifeTime = skill->GetLifeTime();
 	this->m_damage = skill->GetDamage();
 	this->m_tag = skill->GetTag();
-	this->m_mesh = mesh;
+
+	this->m_sprite = newSprite;
+	
+	this->m_sprite->m_anim = newSprite->m_anim;
+	this->m_sprite->Reset();
+
 	this->m_level = level;
 	this->m_velocity = (direction * PROJECTILE_SPEED);
 	GameObjectIn2D::Init(position, scale, tileSize);
@@ -83,6 +88,7 @@ void Projectile::Update(CMap* map, double dt)
 	m_lifeTime -= dt;
 
 	this->CalcBound(m_position, m_scale);
+	this->m_sprite->Update(dt);
 
 	if(m_lifeTime <= 0)
 	{
@@ -110,9 +116,9 @@ bool Projectile::GetActive()
 	return m_active;
 }
 
-Mesh* Projectile::GetMesh()
+SpriteAnimation* Projectile::GetMesh()
 {
-	return m_mesh;
+	return m_sprite;
 }
 
 int Projectile::GetLevel()

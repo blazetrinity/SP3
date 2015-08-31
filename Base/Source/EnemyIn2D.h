@@ -10,7 +10,7 @@ class EnemyIn2D : public CharacterIn2D
 {
 public:
 	EnemyIn2D(void);
-	~EnemyIn2D(void);
+	virtual ~EnemyIn2D(void);
 
 	enum ENEMY_TYPE
 	{
@@ -54,7 +54,7 @@ public:
 	// Set Mesh of the Enemy
 	void SetMesh(SpriteAnimation* newSprite);
 	// Change Current Animation
-	void ChangeAnimation(ANIMATION_TYPE Animation);
+	void ChangeAnimation(ANIMATION_TYPE newAnimation);
 	// Set Animations
 	void SetAnimation(ANIMATION_TYPE Animation, int startFrame,int endFrame, int repeat, float time);
 	// Set Current Strategy

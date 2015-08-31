@@ -34,11 +34,11 @@ void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel,
 {
 	this->m_enemyType = newType;
 
-	if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
+	if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::BOSS_GHOST)
 	{
 		this->m_facingNormal.Set(0, 1);
 	}
-	else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::BOSS_GHOST)
+	else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
 	{
 		this->m_facingNormal.Set(1, 0);
 	}
@@ -49,7 +49,7 @@ void EnemyIn2D::Init(Vector2 position, Vector2 scale, float mass, int gameLevel,
 	this->m_currentLevel = gameLevel;
 	this->m_sprite = new SpriteAnimation;
 	*(this->m_sprite) = *newSprite;
-	this->m_active = false;
+	this->m_active = true;
 
 	for(int i = 0; i < NUM_ANIMATION; ++i)
 	{
@@ -64,12 +64,12 @@ void EnemyIn2D::SetMesh(SpriteAnimation* newSprite)
 }
 
 // Change Current Animation
-void EnemyIn2D::ChangeAnimation(ANIMATION_TYPE Animation)
+void EnemyIn2D::ChangeAnimation(ANIMATION_TYPE newAnimation)
 {
-	if(m_currentAnimation != Animation)
+	if(m_currentAnimation != newAnimation)
 	{
-		this->m_currentAnimation = Animation;
-		m_sprite->m_anim = m_animations[m_currentAnimation];
+		this->m_currentAnimation = newAnimation;
+		this->m_sprite->m_anim = m_animations[m_currentAnimation];
 		m_sprite->Reset();
 	}
 }
@@ -156,51 +156,75 @@ void EnemyIn2D::Update(CMap* m_cMap, double dt, bool topDown, Vector2 m_playerPo
 	// Update enemy's position
 	CharacterIn2D::Update(m_cMap, dt, topDown);
 
+	if(m_skill != NULL)
+	{
+		m_skill->Update(dt);
+	}
+
 	// Update enemy's moving animation
 	if(m_velocity.Length() != 0)
 	{
-		if(m_facingNormal.x < 0)
+		if(m_enemyType == EnemyIn2D::BOSS_GHOST)
 		{
 			ChangeAnimation(WALK_LEFT);
 			GetMesh()->Update(dt);
 		}
-		else if(m_facingNormal.y > 0)
+
+		else
 		{
-			ChangeAnimation(WALK_UP);
-			GetMesh()->Update(dt);
-		}
-		else if(m_facingNormal.y < 0)
-		{
-			ChangeAnimation(WALK_DOWN);
-			GetMesh()->Update(dt);
-		}
-		else if(m_facingNormal.x > 0)
-		{
-			ChangeAnimation(WALK_RIGHT);
-			GetMesh()->Update(dt);
+			if(m_facingNormal.x < 0)
+			{
+				ChangeAnimation(WALK_LEFT);
+				GetMesh()->Update(dt);
+			}
+			else if(m_facingNormal.y > 0)
+			{
+				ChangeAnimation(WALK_UP);
+				GetMesh()->Update(dt);
+			}
+			else if(m_facingNormal.y < 0)
+			{
+				ChangeAnimation(WALK_DOWN);
+				GetMesh()->Update(dt);
+			}
+			else if(m_facingNormal.x > 0)
+			{
+				ChangeAnimation(WALK_RIGHT);
+				GetMesh()->Update(dt);
+			}
 		}
 	}
+
 	else
 	{
-		if(m_facingNormal.x < 0)
+		if(m_enemyType == EnemyIn2D::BOSS_GHOST)
 		{
-			ChangeAnimation(IDLE_LEFT);
+			ChangeAnimation(WALK_LEFT);
 			GetMesh()->Update(dt);
 		}
-		else if(m_facingNormal.y > 0)
+
+		else
 		{
-			ChangeAnimation(IDLE_UP);
-			GetMesh()->Update(dt);
-		}
-		else if(m_facingNormal.y < 0)
-		{
-			ChangeAnimation(IDLE_DOWN);
-			GetMesh()->Update(dt);
-		}
-		else if(m_facingNormal.x > 0)
-		{
-			ChangeAnimation(IDLE_RIGHT);
-			GetMesh()->Update(dt);
+			if(m_facingNormal.x < 0)
+			{
+				ChangeAnimation(IDLE_LEFT);
+				GetMesh()->Update(dt);
+			}
+			else if(m_facingNormal.y > 0)
+			{
+				ChangeAnimation(IDLE_UP);
+				GetMesh()->Update(dt);
+			}
+			else if(m_facingNormal.y < 0)
+			{
+				ChangeAnimation(IDLE_DOWN);
+				GetMesh()->Update(dt);
+			}
+			else if(m_facingNormal.x > 0)
+			{
+				ChangeAnimation(IDLE_RIGHT);
+				GetMesh()->Update(dt);
+			}
 		}
 	}
 }

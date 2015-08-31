@@ -5,7 +5,7 @@
 #include "Skill.h"
 #include "Map.h"
 #include "Tag.h"
-#include "Mesh.h"
+#include "SpriteAnimation.h"
 
 class Projectile : public GameObjectIn2D
 {
@@ -13,13 +13,13 @@ public:
 	Projectile(void);
 	~Projectile(void);
 
-	virtual void Init(Skill* skill,Vector2 position, Vector2 scale, Vector2 direction, Mesh* mesh, int level, float tileSize);
+	virtual void Init(Skill* skill,Vector2 position, Vector2 scale, Vector2 direction, SpriteAnimation* m_sprite, int level, float tileSize);
 	virtual void Update(CMap* map, double dt);
 	void SetVelocity(Vector2 velocity);
 	void SetActive(bool active);
 	float GetDamage();
 	bool GetActive();
-	Mesh* GetMesh();
+	SpriteAnimation* GetMesh();
 	int GetLevel();
 	Tag GetTag();
 
@@ -30,7 +30,7 @@ protected:
 	Vector2 m_velocity;
 	Tag m_tag;
 	bool m_active;
-	Mesh* m_mesh;
+	SpriteAnimation* m_sprite;
 };
 
 #endif

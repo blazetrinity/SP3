@@ -12,7 +12,7 @@ static const int MAXTEXT = 69;
 static const float MAXGHOSTQUEUETIMER = 10.0f;
 static const int WHITEGHOSTHEALTH = 30;
 static const int REDGHOSTHEALTH = 60;
-static const int BOSSHEALTH = 666;
+static const int BOSSHEALTH = 200;
 static const int PLAYERHEALTH = 100;
 static const int GUN_UPGRADE_REQUIREMENT = 5;
 static const float SKILLUPGRADE = 10;
@@ -183,16 +183,29 @@ void Scene2D::Init()
 	meshList[GEO_ENEMY1]->textureID[0] = LoadTGA("Image//enemy1_sprite.tga");
 	meshList[GEO_ENEMY2] = MeshBuilder::GenerateSpriteAnimation("GEO_ENEMY2", 4, 3);
 	meshList[GEO_ENEMY2]->textureID[0] = LoadTGA("Image//enemy2_sprite.tga");
+	meshList[GEO_BOSS] = MeshBuilder::GenerateSpriteAnimation("GEO_BOSS", 1, 3);
+	meshList[GEO_BOSS]->textureID[0] = LoadTGA("Image//boss.tga");
+
 	meshList[GEO_CHARACTER] = MeshBuilder::GenerateSpriteAnimation("GEO_CHARACTER_TEST", 4, 3);
 	meshList[GEO_CHARACTER]->textureID[0] = LoadTGA("Image//character_sprite.tga");
 
-	meshList[GEO_BOSS] = MeshBuilder::GenerateSpriteAnimation("GEO_BOSS", 3, 3);
-	meshList[GEO_BOSS]->textureID[0] = LoadTGA("Image//Boss.tga");
+	
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 4, 6);
 	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//map_tileset.tga");
 
-	meshList[GEO_BULLET] = MeshBuilder::Generate2DMesh("GEO_BULLET", Color(1, 1, 1), 0, 0, 1, 1);
+	meshList[GEO_BULLET] = MeshBuilder::GenerateSpriteAnimation("GEO_BULLET", 1, 1);
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
+
+	meshList[GEO_BOSS_BULLET] = MeshBuilder::GenerateSpriteAnimation("GEO_BOSS_BULLET", 1, 6);
+	meshList[GEO_BOSS_BULLET]->textureID[0] = LoadTGA("Image//boss_bullet.tga");
+
+	m_bulletAnimation = dynamic_cast<SpriteAnimation*>(meshList[GEO_BULLET]);
+	m_bulletAnimation->m_anim = new Animation;
+	m_bulletAnimation->m_anim->Set(0, 0, 0, 1);
+
+	m_bossbulletAnimation = dynamic_cast<SpriteAnimation*>(meshList[GEO_BOSS_BULLET]);
+	m_bossbulletAnimation->m_anim = new Animation;
+	m_bossbulletAnimation->m_anim->Set(0, 5, 0, 0.1);
 
 	InitGame();
 
@@ -360,19 +373,17 @@ void Scene2D::InitGame()
 					SpriteAnimation* newSpriteAnimation = BossSpriteAnimation;
 
 					EnemyIn2D* theEnemy = new EnemyIn2D;
-					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(64, 64), 10, i, newSpriteAnimation, EnemyIn2D::BOSS_GHOST, 1, NULL, BOSSHEALTH);
 
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_RIGHT, 0, 5, 0, 0.2);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_LEFT, 0, 5, 0, 0.2);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_UP, 0, 5, 0, 0.2);
-					theEnemy->SetAnimation(EnemyIn2D::IDLE_DOWN, 0, 5, 0, 0.2);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_RIGHT, 6, 8, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 6, 8, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_UP, 6, 8, 0, 0.5);
-					theEnemy->SetAnimation(EnemyIn2D::WALK_DOWN, 6, 8, 0, 0.5);
-					theEnemy->ChangeAnimation(EnemyIn2D::IDLE_LEFT);
+					skill = new Skill();
+					skill->Init(5.0f, 20.f, 2.5f, true, Tag::BOSS);
+
+					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(64, 64), 10, i, newSpriteAnimation, EnemyIn2D::BOSS_GHOST, 1, skill, BOSSHEALTH);
+
+					theEnemy->SetAnimation(EnemyIn2D::WALK_LEFT, 0, 2, 0, 0.7);
+					theEnemy->ChangeAnimation(EnemyIn2D::WALK_LEFT);
 
 					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
+					//theEnemy->SetActive(true);
 					m_enemyList.push_back(theEnemy);
 				}
 				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == FIRE_SPEED_POWER)
@@ -494,9 +505,13 @@ void Scene2D::ResetGame()
 		{
 			enemy->SetHealth(REDGHOSTHEALTH);
 		}
-		else
+		else if(enemy->GetEnemyType() == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || enemy->GetEnemyType() == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN)
 		{
 			enemy->SetHealth(WHITEGHOSTHEALTH);
+		}
+		else
+		{
+			enemy->SetHealth(BOSSHEALTH);
 		}
 	}
 
@@ -759,7 +774,7 @@ void Scene2D::Update(double dt)
 				m_gunCollectibleCount = 0;
 			}
 
-			if(m_levelCompleted)
+			//if(m_levelCompleted)
 			{
 				// Update the hero
 				int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
@@ -771,7 +786,7 @@ void Scene2D::Update(double dt)
 
 
 			//Up ghost trigger
-			if(!m_ghostTriggered && !m_levelCompleted)
+			if(!m_ghostTriggered && !m_levelCompleted && m_currentLevel != LEVEL4)
 			{
 				m_ghostQueueTimer -= (float)dt;
 
@@ -861,7 +876,8 @@ void Scene2D::UpdatePlayer(double dt)
 		if(m_player->Attack())
 		{
 			Projectile* projectile = FetchProjectile();
-			projectile->Init(m_player->GetSkill(),m_player->GetPosition(), m_player->GetScale(), m_player->GetFacingNormal(), meshList[GEO_BULLET], m_currentLevel, 1);
+
+			projectile->Init(m_player->GetSkill(),m_player->GetPosition(), m_player->GetScale(), m_player->GetFacingNormal(), m_bulletAnimation, m_currentLevel, 1);
 
 			if(m_currentEventSound != SND_FIRE)
 			{
@@ -961,6 +977,7 @@ void Scene2D::UpdateEnemy(double dt)
 							if(angleOfPlayerFromEnemy < positiveAngle.x + angleOffset || angleOfPlayerFromEnemy < positiveAngle.x - angleOffset)
 							{
 								enemy->SetStrategy(EnemyIn2D::CHASE_STRATEGY, m_path);
+								enemy->SetCollision(false);
 							}
 						}
 						else if(enemy->GetFacingNormal().x < 0)
@@ -968,6 +985,7 @@ void Scene2D::UpdateEnemy(double dt)
 							if(angleOfPlayerFromEnemy < negativeAngle.x + angleOffset || angleOfPlayerFromEnemy < negativeAngle.x - angleOffset)
 							{
 								enemy->SetStrategy(EnemyIn2D::CHASE_STRATEGY, m_path);
+								enemy->SetCollision(false);
 							}
 						}
 						else if(enemy->GetFacingNormal().y > 0)
@@ -975,6 +993,7 @@ void Scene2D::UpdateEnemy(double dt)
 							if(angleOfPlayerFromEnemy < positiveAngle.y + angleOffset || angleOfPlayerFromEnemy < positiveAngle.y - angleOffset)
 							{
 								enemy->SetStrategy(EnemyIn2D::CHASE_STRATEGY, m_path);
+								enemy->SetCollision(false);
 							}
 						}
 						else if(enemy->GetFacingNormal().y < 0)
@@ -982,6 +1001,7 @@ void Scene2D::UpdateEnemy(double dt)
 							if(angleOfPlayerFromEnemy < negativeAngle.y + angleOffset || angleOfPlayerFromEnemy < negativeAngle.y - angleOffset)
 							{
 								enemy->SetStrategy(EnemyIn2D::CHASE_STRATEGY, m_path);
+								enemy->SetCollision(false);
 							}
 						}
 					}
@@ -1016,6 +1036,16 @@ void Scene2D::UpdateEnemy(double dt)
 
 			// Update enemy
 			enemy->Update(m_cBoundMap, dt, true, m_player->GetPosition());
+
+			if(enemy->GetEnemyType() == EnemyIn2D::BOSS_GHOST)
+			{
+				if(enemy->Attack())
+				{
+					Projectile* projectile = FetchProjectile();
+
+					projectile->Init(enemy->GetSkill(), enemy->GetPosition(), enemy->GetScale(), Vector2(-1, 0), m_bossbulletAnimation, m_currentLevel, 1);
+				}
+			}
 		}
 	}
 }
@@ -1048,7 +1078,25 @@ void Scene2D::UpdateProjectile(double dt)
 					if(enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel && enemy->CollideWith(projectile))
 					{
 						// Enemy takes damage
-						enemy->TakeDamage(projectile->GetDamage());
+						if(enemy->TakeDamage(projectile->GetDamage()))
+						{
+							if(enemy->GetEnemyType() == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || enemy->GetEnemyType() == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN)
+							{
+								m_score += 10;
+							}
+
+							else if(enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT || enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
+							{
+								m_score += 20;
+							}
+
+							else if(enemy->GetEnemyType() == EnemyIn2D::BOSS_GHOST)
+							{
+								m_score += 100;
+
+								GameOver();
+							}
+						}
 
 						// Projectile hit so turn projectile off
 						projectile->SetActive(false);
@@ -1058,7 +1106,29 @@ void Scene2D::UpdateProjectile(double dt)
 
 			else if(projectile->GetTag().GetEntity() == Tag::BOSS)
 			{
+				if(projectile->GetLevel() == m_currentLevel && projectile->CollideWith(m_player))
+				{
+					if(m_player->TakeDamage(projectile->GetDamage()))
+					{
+						if(m_currentEventSound != SND_DAMAGE)
+						{
+							if(m_currentEventSound != SND_BLANK)
+							{
+								m_eventSound->stop();
+								m_eventSound->drop();
+								m_eventSound = NULL;
+							}
 
+							m_eventSound = m_theSoundEngine->play2D(m_sounds[SND_DAMAGE], false, false, true);
+							m_currentEventSound = SND_DAMAGE;
+						}
+
+						if(m_player->GetLife() < 0)
+						{
+							GameOver();
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1186,18 +1256,33 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 			m_cMap->LoadMap( "Csv//level2_visual.csv" );
 			m_cBoundMap->LoadMap( "Csv//level2_bound.csv" );
 			m_cDoorInteractionMap->LoadMap( "Csv//level2_door.csv" );
+
+			if(!m_ghostTriggered)
+			{
+				m_score += 100 * m_currentLevel - 1;
+			}
 		}
 		else if(m_currentLevel == LEVEL3)
 		{
 			m_cMap->LoadMap( "Csv//level3_visual.csv" );
 			m_cBoundMap->LoadMap( "Csv//level3_bound.csv" );
 			m_cDoorInteractionMap->LoadMap( "Csv//level3_door.csv" );
+
+			if(!m_ghostTriggered)
+			{
+				m_score += 100 * m_currentLevel - 1;
+			}
 		}
 		else if(m_currentLevel == LEVEL4)
 		{
 			m_cMap->LoadMap( "Csv//level4_visual.csv" );
 			m_cBoundMap->LoadMap( "Csv//level4_bound.csv" );
 			m_cDoorInteractionMap->LoadMap( "Csv//level4_door.csv" );
+
+			if(!m_ghostTriggered)
+			{
+				m_score += 100 * m_currentLevel - 1;
+			}
 		}
 
 		m_player->CalPosition((m_cMap->GetTileSize()), (m_cMap->GetScreenWidth() - (2 * m_cMap->GetTileSize())), (m_cMap->GetTileSize()), (m_cMap->GetScreenHeight() - (2 * m_cMap->GetTileSize())), (float)m_cMap->GetTileSize());
@@ -1803,7 +1888,7 @@ void Scene2D::RenderTileMap()
 
 		if(projectile->GetActive())
 		{
-			Render2DMesh(projectile->GetMesh(),false, projectile->GetScale().x, 0.0f + projectile->GetPosition().x, 0.0f + projectile->GetPosition().y);
+			Render2DMesh(projectile->GetMesh(),false, projectile->GetScale().x, 16.0f + projectile->GetPosition().x, 16.0f + projectile->GetPosition().y);
 		}
 	}
 

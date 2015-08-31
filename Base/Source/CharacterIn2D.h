@@ -9,7 +9,7 @@ class CharacterIn2D : public GameObjectIn2D
 {
 public:
 	CharacterIn2D(void);
-	~CharacterIn2D(void);
+	virtual ~CharacterIn2D(void);
 
 	virtual void Init(Vector2 position, Vector2 scale, float mass, float tileSize, Skill* skill, int health);
 	virtual void Update(CMap *map, double dt, bool topDown);
@@ -21,6 +21,8 @@ public:
 	virtual bool TakeDamage(float damage);
 	virtual void SetHealth(int health);
 
+	void SetCollision(bool collide);
+
 	static const float VIEWOFFSET;
 
 protected:
@@ -31,6 +33,7 @@ protected:
 	int m_health;
 	int m_maxHealth;
 	float m_mass;
+	bool m_collision;
 };
 
 #endif

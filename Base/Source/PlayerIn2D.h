@@ -10,7 +10,7 @@ class PlayerIn2D : public CharacterIn2D
 {
 public:
 	PlayerIn2D(void);
-	~PlayerIn2D(void);
+	virtual ~PlayerIn2D(void);
 
 	//Types of animations the player has
 	enum ANIMATION_TYPE
@@ -36,7 +36,7 @@ public:
 	// Set Mesh of the player
 	void SetMesh(SpriteAnimation* newMesh);
 	// Change Current Animation
-	void ChangeAnimation(ANIMATION_TYPE Animation);
+	void ChangeAnimation(ANIMATION_TYPE newAnimation);
 	// Set Animations
 	void SetAnimation(ANIMATION_TYPE Animation, int startFrame,int endFrame, int repeat, float time);
 	// Set invunerablity

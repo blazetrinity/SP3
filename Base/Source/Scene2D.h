@@ -113,6 +113,7 @@ public:
 		GEO_BOSS,
 		GEO_TEXT,
 		GEO_BULLET,
+		GEO_BOSS_BULLET,
 		GEO_ARROW,//arrow for menu
 		GEO_PAUSED_ARROW,//arrow for pause
 		GEO_MAIN_MENU,
@@ -258,6 +259,9 @@ private:
 	double m_textTimer;
 	string m_renderString;
 	unsigned short m_storyLevelTracker;
+
+	// Bullet Animations
+	SpriteAnimation* m_bulletAnimation, *m_bossbulletAnimation;
 
 	//The sound engine
 	ISoundEngine* m_theSoundEngine;

@@ -8,6 +8,13 @@
 struct Animation
 {
 	Animation() {}
+	Animation(const Animation &copy)
+	{
+		this->startFrame = copy.startFrame;
+		this->endFrame = copy.endFrame;
+		this->repeatCount = copy.repeatCount;
+		this->animTime = copy.animTime;
+	}
 
 	void Set(int startFrame,int endFrame, int repeat, float time)
 	{
@@ -15,6 +22,17 @@ struct Animation
 		this->endFrame = endFrame;
 		this->repeatCount = repeat;
 		this->animTime = time;
+	}
+
+	//Assignment operator
+	Animation& operator=(const Animation &copy)
+	{
+		this->startFrame = copy.startFrame;
+		this->endFrame = copy.endFrame;
+		this->repeatCount = copy.repeatCount;
+		this->animTime = copy.animTime;
+
+		return *this;
 	}
 
 	int startFrame;

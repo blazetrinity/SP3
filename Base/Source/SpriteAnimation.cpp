@@ -18,7 +18,6 @@ SpriteAnimation::SpriteAnimation(const SpriteAnimation &copy) : Mesh(copy.name),
 
 SpriteAnimation::~SpriteAnimation()
 {
-
 }
 
 SpriteAnimation& SpriteAnimation::operator=(const SpriteAnimation &copy)
@@ -34,7 +33,7 @@ SpriteAnimation& SpriteAnimation::operator=(const SpriteAnimation &copy)
 	this->m_currentTime = copy.m_currentTime;
 	this->m_currentFrame = copy.m_currentFrame;
 	this->m_playCount = copy.m_playCount;
-	m_anim = NULL;
+	this->m_anim = NULL;
 	return *this;
 }
 

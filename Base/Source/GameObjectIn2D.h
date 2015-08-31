@@ -7,7 +7,7 @@ class GameObjectIn2D : public CollisionIn2D
 {
 public:
 	GameObjectIn2D(void);
-	~GameObjectIn2D(void);
+	virtual ~GameObjectIn2D(void);
 
 	virtual void Init(Vector2 position, Vector2 scale, float tileSize);
 

@@ -215,12 +215,12 @@ void PlayerIn2D::SetMesh(SpriteAnimation* newMesh)
 }
 
 // Change Current Animation
-void PlayerIn2D::ChangeAnimation(ANIMATION_TYPE Animation)
+void PlayerIn2D::ChangeAnimation(ANIMATION_TYPE newAnimation)
 {
-	if(m_currentAnimation != Animation)
+	if(m_currentAnimation != newAnimation)
 	{
-		this->m_currentAnimation = Animation;
-		m_sprite->m_anim = m_animations[m_currentAnimation];
+		this->m_currentAnimation = newAnimation;
+		this->m_sprite->m_anim = m_animations[m_currentAnimation];
 		m_sprite->Reset();
 	}
 }

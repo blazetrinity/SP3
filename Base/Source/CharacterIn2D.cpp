@@ -32,6 +32,7 @@ void CharacterIn2D::Init(Vector2 position, Vector2 scale, float mass, float tile
 	this->m_health = this->m_maxHealth = health;
 	this->m_mass = mass;
 	this->m_velocity.Set(0, 0);
+	this->m_collision = true;
 }
 
 void CharacterIn2D::Update(CMap *map,double dt, bool topDown)
@@ -85,72 +86,80 @@ void CharacterIn2D::UpdateTopDown(CMap *map, double dt)
 	Vector2 tilePos((map->GetmapOffset().x + (this->GetPosition().x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->GetPosition().y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())));
 	Vector2 viewPos((map->GetmapOffset().x + (this->m_viewPosition.x + (this->m_velocity.x * dt))) / map->GetTileSize() , map->GetNumOfTiles_Height() - (int) (ceil((float)((this->m_viewPosition.y + this->m_velocity.y * dt) + map->GetTileSize()) / map->GetTileSize())));
 
-	if(m_facingNormal.x > 0)
+	if(m_collision)
 	{
-		if(map->theScreenMap[viewPos.y][viewPos.x+1] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x+1] > 0)
+		if(m_facingNormal.x > 0)
 		{
-			this->m_viewPosition.x = this->m_viewPosition.x + (m_velocity.x * dt);
+			if(map->theScreenMap[viewPos.y][viewPos.x+1] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x+1] > 0)
+			{
+				this->m_viewPosition.x = this->m_viewPosition.x + (m_velocity.x * dt);
+			}
+
+			if(map->theScreenMap[tilePos.y][tilePos.x+1] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
+			{
+				this->m_position.x = this->m_position.x + (m_velocity.x * dt);
+			}
+			else
+			{
+				m_velocity.x = 0;
+			}
 		}
 
-		if(map->theScreenMap[tilePos.y][tilePos.x+1] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
+		else if(m_facingNormal.x < 0)
 		{
-			this->m_position.x = this->m_position.x + (m_velocity.x * dt);
+			if(map->theScreenMap[viewPos.y][viewPos.x] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x] > 0)
+			{
+				this->m_viewPosition.x = this->m_viewPosition.x + (m_velocity.x * dt);
+			}
+
+			if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x] > 0)
+			{
+				this->m_position.x = this->m_position.x + (m_velocity.x * dt);
+			}
+			else
+			{
+				m_velocity.x = 0;
+			}
 		}
-		else
+
+		if(m_facingNormal.y > 0)
 		{
-			m_velocity.x = 0;
+			if(map->theScreenMap[viewPos.y][viewPos.x] > 0 && map->theScreenMap[viewPos.y][viewPos.x+1] > 0)
+			{
+				this->m_viewPosition.y = this->m_viewPosition.y + (m_velocity.y * dt);
+			}
+
+			if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y][tilePos.x+1] > 0)
+			{
+				this->m_position.y = this->m_position.y + (m_velocity.y * dt);
+			}
+			else
+			{
+				m_velocity.y = 0;
+			}
+		}
+
+		else if(m_facingNormal.y < 0)
+		{
+			if(map->theScreenMap[viewPos.y+1][viewPos.x] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x+1] > 0)
+			{
+				this->m_viewPosition.y = this->m_viewPosition.y + (m_velocity.y * dt);
+			}
+
+			if(map->theScreenMap[tilePos.y+1][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
+			{
+				this->m_position.y = this->m_position.y + (m_velocity.y * dt);
+			}
+			else
+			{
+				m_velocity.y = 0;
+			}
 		}
 	}
-
-	else if(m_facingNormal.x < 0)
+	
+	else
 	{
-		if(map->theScreenMap[viewPos.y][viewPos.x] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x] > 0)
-		{
-			this->m_viewPosition.x = this->m_viewPosition.x + (m_velocity.x * dt);
-		}
-
-		if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x] > 0)
-		{
-			this->m_position.x = this->m_position.x + (m_velocity.x * dt);
-		}
-		else
-		{
-			m_velocity.x = 0;
-		}
-	}
-
-	if(m_facingNormal.y > 0)
-	{
-		if(map->theScreenMap[viewPos.y][viewPos.x] > 0 && map->theScreenMap[viewPos.y][viewPos.x+1] > 0)
-		{
-			this->m_viewPosition.y = this->m_viewPosition.y + (m_velocity.y * dt);
-		}
-
-		if(map->theScreenMap[tilePos.y][tilePos.x] > 0 && map->theScreenMap[tilePos.y][tilePos.x+1] > 0)
-		{
-			this->m_position.y = this->m_position.y + (m_velocity.y * dt);
-		}
-		else
-		{
-			m_velocity.y = 0;
-		}
-	}
-
-	else if(m_facingNormal.y < 0)
-	{
-		if(map->theScreenMap[viewPos.y+1][viewPos.x] > 0 && map->theScreenMap[viewPos.y+1][viewPos.x+1] > 0)
-		{
-			this->m_viewPosition.y = this->m_viewPosition.y + (m_velocity.y * dt);
-		}
-
-		if(map->theScreenMap[tilePos.y+1][tilePos.x] > 0 && map->theScreenMap[tilePos.y+1][tilePos.x+1] > 0)
-		{
-			this->m_position.y = this->m_position.y + (m_velocity.y * dt);
-		}
-		else
-		{
-			m_velocity.y = 0;
-		}
+		this->m_position = this->m_position + (m_velocity * dt);
 	}
 }
 
@@ -189,4 +198,9 @@ bool CharacterIn2D::TakeDamage(float damage)
 void CharacterIn2D::SetHealth(int health)
 {
 	this->m_health = health;
+}
+
+void CharacterIn2D::SetCollision(bool collide)
+{
+	this->m_collision = collide;
 }

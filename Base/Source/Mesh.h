@@ -18,7 +18,7 @@ public:
 	};
 	Mesh(const std::string &meshName);
 	Mesh();
-	~Mesh();
+	virtual ~Mesh();
 	virtual void Render();
 	void Render(unsigned offset, unsigned count);
 
