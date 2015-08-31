@@ -528,9 +528,6 @@ void Scene2D::ResetGame()
 
 	m_player->Init(Vector2(64, 64), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
 	m_player->ChangeAnimation(PlayerIn2D::IDLE_RIGHT);
-
-	m_backgroundSound = m_theSoundEngine->play2D(m_sounds[SND_BACKGROUND], true, false, true);
-	m_currentBackgroundSound = SND_BACKGROUND;
 }
 
 void Scene2D::GameOver()
@@ -558,26 +555,28 @@ void Scene2D::Update(double dt)
 	if(m_menuStatus == MAIN_MENU)
 	{
 		int oldChoice = m_menuChoice;
-		if (Application::IsKeyPressed(VK_DOWN))
+		if(Application::IsKeyPressed(VK_DOWN))
 		{
-			if (m_menuChoice < 4 )
+			if(m_menuChoice < 4 )
 			{
 				m_menuChoice++;
 				Sleep(150);
 
 			}
 		}
-		if (Application::IsKeyPressed(VK_UP)) 
+
+		if(Application::IsKeyPressed(VK_UP)) 
 		{
-			if (m_menuChoice > 1)
+			if(m_menuChoice > 1)
 			{
 				m_menuChoice--;
 				Sleep(150);
 			}
 		}
-		if (Application::IsKeyPressed(VK_RETURN)) 
+
+		if(Application::IsKeyPressed(VK_RETURN)) 
 		{
-			if (m_menuChoice == 1) 
+			if(m_menuChoice == 1)
 			{
 				m_menuStatus = GAME;
 
@@ -600,15 +599,15 @@ void Scene2D::Update(double dt)
 					ResetGame();
 				}
 			}
-			if (m_menuChoice == 2) 
+			if(m_menuChoice == 2) 
 			{
 				m_menuStatus = INSTRUCTIONS;		
 			}
-			if (m_menuChoice == 3) 
+			if(m_menuChoice == 3) 
 			{
 				m_menuStatus = CREDITS;	
 			}
-			if (m_menuChoice == 4) 
+			if(m_menuChoice == 4) 
 			{
 				m_menuStatus = SCORE;						
 			}
@@ -647,7 +646,6 @@ void Scene2D::Update(double dt)
 
 	if(m_menuStatus == GAMEOVER)
 	{
-		Sleep(150);
 		if (Application::IsKeyPressed(VK_RETURN)) 
 		{
 			m_menuStatus = MAIN_MENU;
