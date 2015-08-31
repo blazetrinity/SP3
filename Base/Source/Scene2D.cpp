@@ -383,7 +383,7 @@ void Scene2D::InitGame()
 					theEnemy->ChangeAnimation(EnemyIn2D::WALK_LEFT);
 
 					theEnemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
-					//theEnemy->SetActive(true);
+					theEnemy->SetActive(true);
 					m_enemyList.push_back(theEnemy);
 				}
 				else if(m_cEnemyAndItemMap->theScreenMap[j][k] == FIRE_SPEED_POWER)
@@ -512,6 +512,7 @@ void Scene2D::ResetGame()
 		else
 		{
 			enemy->SetHealth(BOSSHEALTH);
+			enemy->SetActive(true);
 		}
 	}
 
