@@ -193,7 +193,7 @@ void Scene2D::Init()
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 4, 6);
 	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//map_tileset.tga");
 
-	meshList[GEO_BULLET] = MeshBuilder::GenerateSpriteAnimation("GEO_BULLET", 1, 1);
+	meshList[GEO_BULLET] = MeshBuilder::GenerateSpriteAnimation("GEO_BULLET", 1, 4);
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
 
 	meshList[GEO_BOSS_BULLET] = MeshBuilder::GenerateSpriteAnimation("GEO_BOSS_BULLET", 1, 6);
@@ -201,7 +201,7 @@ void Scene2D::Init()
 
 	m_bulletAnimation = dynamic_cast<SpriteAnimation*>(meshList[GEO_BULLET]);
 	m_bulletAnimation->m_anim = new Animation;
-	m_bulletAnimation->m_anim->Set(0, 0, 0, 1);
+	m_bulletAnimation->m_anim->Set(0, 3, 0, 0.5);
 
 	m_bossbulletAnimation = dynamic_cast<SpriteAnimation*>(meshList[GEO_BOSS_BULLET]);
 	m_bossbulletAnimation->m_anim = new Animation;
@@ -308,7 +308,7 @@ void Scene2D::InitGame()
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 
 					skill = new Skill();
-					skill->Init(1.0f,10.f, 1.0f, false, Tag::ENEMY);
+					skill->Init(1.0f,10.f, 1.f, 1.f, false, Tag::ENEMY);
 
 					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN, 1, skill, WHITEGHOSTHEALTH);
 
@@ -333,7 +333,7 @@ void Scene2D::InitGame()
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 
 					skill = new Skill();
-					skill->Init(1.0f,10.f, 1.0f, false, Tag::ENEMY);
+					skill->Init(1.0f, 10.f, 1.f, 1.f, false, Tag::ENEMY);
 
 					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT, 1, skill, WHITEGHOSTHEALTH);
 
@@ -358,7 +358,7 @@ void Scene2D::InitGame()
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 
 					skill = new Skill();
-					skill->Init(1.0f,20.f, 1.0f, false, Tag::ENEMY);
+					skill->Init(1.0f,20.f, 1.f, 1.f, false, Tag::ENEMY);
 
 					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_UPDOWN, 1, skill, REDGHOSTHEALTH);
 
@@ -383,7 +383,7 @@ void Scene2D::InitGame()
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 
 					skill = new Skill();
-					skill->Init(1.0f,20.f, 1.0f, false, Tag::ENEMY);
+					skill->Init(1.0f,20.f, 1.f, 1.f, false, Tag::ENEMY);
 
 					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(32, 32), 10, i, newSpriteAnimation, EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT, 1, skill, REDGHOSTHEALTH);
 
@@ -407,7 +407,7 @@ void Scene2D::InitGame()
 					EnemyIn2D* theEnemy = new EnemyIn2D;
 
 					skill = new Skill();
-					skill->Init(5.0f, 20.f, 2.5f, true, Tag::BOSS);
+					skill->Init(5.0f, 20.f, 2.5f, 125.f, true, Tag::BOSS);
 
 					theEnemy->Init(Vector2((float)k * m_cEnemyAndItemMap->GetTileSize(), (float)(m_cEnemyAndItemMap->GetScreenHeight() -  ((j * m_cEnemyAndItemMap->GetTileSize()) +  m_cEnemyAndItemMap->GetTileSize()))), Vector2(64, 64), 10, i, newSpriteAnimation, EnemyIn2D::BOSS_GHOST, 1, skill, BOSSHEALTH);
 
@@ -445,7 +445,7 @@ void Scene2D::InitGame()
 	// Init Player position and animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_CHARACTER]);
 	skill = new Skill();
-	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
+	skill->Init(5.0f, 20.f, 1.0f, 200.f, true, Tag::PLAYER);
 
 	m_player = new PlayerIn2D();
 	m_player->Init(Vector2(64, 64), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
@@ -557,7 +557,7 @@ void Scene2D::ResetGame()
 	}
 
 	Skill* skill = new Skill();
-	skill->Init(5.0f, 20.f, 1.0f, true, Tag::PLAYER);
+	skill->Init(5.0f, 20.f, 1.0f, 200.f, true, Tag::PLAYER);
 
 	m_player->Init(Vector2(64, 64), Vector2(32, 32), 10, 1, skill, PLAYERHEALTH);
 	m_player->ChangeAnimation(PlayerIn2D::IDLE_RIGHT);
@@ -580,7 +580,6 @@ void Scene2D::GameOver()
 	SortHighscore(m_score);
 	m_menuStatus = GAMEOVER;
 	m_resetGame = true;
-	//calculated and store high score
 }
 
 void Scene2D::SortHighscore(int newscore)
@@ -1030,7 +1029,7 @@ void Scene2D::UpdateEnemy(double dt)
 		{
 			if(((enemy->GetPosition().x - m_cMap->GetmapOffset().x) >= 0) && ((enemy->GetPosition().x - m_cMap->GetmapOffset().x) < m_cMap->GetScreenWidth()) && ((enemy->GetPosition().y >= 0) && (enemy->GetPosition().y < m_cMap->GetScreenHeight())))
 			{
-				if(enemy->GetCurrentStrategy() == EnemyIn2D::PATROL_STRATEGY && ((enemy->GetPosition() - m_player->GetPosition()).Length()) < (m_cMap->GetTileSize() * 4))
+				if(enemy->GetEnemyType() != EnemyIn2D::BOSS_GHOST && enemy->GetCurrentStrategy() == EnemyIn2D::PATROL_STRATEGY && ((enemy->GetPosition() - m_player->GetPosition()).Length()) < (m_cMap->GetTileSize() * 4))
 				{
 					static Vector2 positiveAngle, negativeAngle;
 					positiveAngle.Set(90, 0);

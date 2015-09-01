@@ -9,7 +9,7 @@ public:
 	Skill(void);
 	~Skill(void);
 
-	virtual void Init(float lifeTime, float damage, float coolDown, bool ranged, Tag::ENTITIES_TAGS entity);
+	virtual void Init(float lifeTime, float damage, float coolDown, float speed, bool ranged, Tag::ENTITIES_TAGS entity);
 	virtual void Update(double dt);
 	virtual bool Use();
 
@@ -18,6 +18,7 @@ public:
 	float GetLifeTime();
 	float GetDamage();
 	float GetCoolDown();
+	float GetSpeed();
 	bool GetRanged();
 	Tag GetTag();
 
@@ -28,6 +29,7 @@ protected:
 	float m_damage;
 	float m_coolDown;
 	float m_lastUse;
+	float m_speed;
 	bool m_ranged;
 	Tag m_tag;
 };

@@ -1,7 +1,5 @@
 #include "Projectile.h"
 
-static const float PROJECTILE_SPEED = 100.f;
-
 Projectile::Projectile(void)
 {
 	this->m_active = false;
@@ -17,6 +15,7 @@ void Projectile::Init(Skill* skill,Vector2 position, Vector2 scale, Vector2 dire
 	this->m_lifeTime = skill->GetLifeTime();
 	this->m_damage = skill->GetDamage();
 	this->m_tag = skill->GetTag();
+	this->m_speed = skill->GetSpeed();
 
 	this->m_sprite = newSprite;
 	
@@ -24,7 +23,7 @@ void Projectile::Init(Skill* skill,Vector2 position, Vector2 scale, Vector2 dire
 	this->m_sprite->Reset();
 
 	this->m_level = level;
-	this->m_velocity = (direction * PROJECTILE_SPEED);
+	this->m_velocity = (direction * m_speed);
 	GameObjectIn2D::Init(position, scale, tileSize);
 }
 	

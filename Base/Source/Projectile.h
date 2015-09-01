@@ -26,6 +26,7 @@ public:
 protected:
 	float m_lifeTime;
 	float m_damage;
+	float m_speed;
 	int m_level;
 	Vector2 m_velocity;
 	Tag m_tag;
