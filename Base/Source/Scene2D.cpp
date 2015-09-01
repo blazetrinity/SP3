@@ -502,9 +502,9 @@ void Scene2D::InitGame()
 
 void Scene2D::ResetGame()
 {
-	m_cMap->LoadMap( "Image//level1_visual.csv" );
-	m_cBoundMap->LoadMap( "Image//level1_bound.csv" );
-	m_cDoorInteractionMap->LoadMap( "Image//level1_door.csv" );
+	m_cMap->LoadMap( "Csv//level1_visual.csv" );
+	m_cBoundMap->LoadMap( "Csv//level1_bound.csv" );
+	m_cDoorInteractionMap->LoadMap( "Csv//level1_door.csv" );
 
 	// Init game element variables
 	m_levelCompleted = false;
@@ -1332,7 +1332,7 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 
 			if(!m_ghostTriggered)
 			{
-				m_score += 100 * m_currentLevel - 1;
+				m_score += 100 * (m_currentLevel - 1);
 			}
 		}
 		else if(m_currentLevel == LEVEL3)
@@ -1343,7 +1343,7 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 
 			if(!m_ghostTriggered)
 			{
-				m_score += 100 * m_currentLevel - 1;
+				m_score += 100 * (m_currentLevel - 1);
 			}
 		}
 		else if(m_currentLevel == LEVEL4)
@@ -1354,7 +1354,7 @@ void Scene2D::UpdateLevel(int checkPosition_X, int checkPosition_Y)
 
 			if(!m_ghostTriggered)
 			{
-				m_score += 100 * m_currentLevel - 1;
+				m_score += 100 * (m_currentLevel - 1);
 			}
 		}
 
@@ -1769,8 +1769,6 @@ void Scene2D::Render()
 		ss.precision(3);
 		ss << "FPS: " << fps;
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
-
-		RenderTextOnScreen(meshList[GEO_TEXT], m_renderString, Color(1,1,1), 2.5, 0, 57);
 	}
 
 	glEnable(GL_DEPTH_TEST);
