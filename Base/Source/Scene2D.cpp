@@ -494,7 +494,7 @@ void Scene2D::InitGame()
 	TextArray->Init("Story.txt");
 	m_listPosition = 0;
 	m_string_CharacterPosition = 0;
-	m_textTimer = 0;
+	m_textTimer = 0.0f;
 	m_storyLevelTracker = 1;
 	m_renderString = "";
 	m_score = 0;
@@ -520,7 +520,7 @@ void Scene2D::ResetGame()
 
 	m_listPosition = 0;
 	m_string_CharacterPosition = 0;
-	m_textTimer = 0;
+	m_textTimer = 0.0f;
 	m_storyLevelTracker = 1;
 	m_renderString = "";
 	m_score = 0;
@@ -563,7 +563,10 @@ void Scene2D::ResetGame()
 		{
 			PowerUp* powerup = dynamic_cast<PowerUp*>(item);
 
-			powerup->ResetLifeTime();
+			if(powerup != NULL)
+			{
+				powerup->ResetLifeTime();
+			}
 		}
 	}
 
@@ -857,7 +860,7 @@ void Scene2D::Update(double dt)
 				m_gunCollectibleCount = 0;
 			}
 
-			//if(m_levelCompleted)
+			if(m_levelCompleted)
 			{
 				// Update the hero
 				int checkPosition_X = (int) ((m_cMap->GetmapOffset().x + m_player->GetPosition().x) / m_cMap->GetTileSize());
@@ -1004,14 +1007,14 @@ void Scene2D::UpdateStoryText(double dt)
 					m_string_CharacterPosition = 0;
 					m_listPosition++;
 					m_renderString.clear();
-					m_textTimer = 0;
+					m_textTimer = 0.0f;
 				}
 			}
 			//constant typewriter effect & string size must not reached max
 			if(m_textTimer > NULL && m_string_CharacterPosition != (TextArray->getStringsize(m_listPosition)-1))
 			{
 				m_renderString += TextArray->getTextCharacter(m_listPosition,m_string_CharacterPosition);
-				m_textTimer = 0;
+				m_textTimer = 0.0f;
 				m_string_CharacterPosition++;
 			}
 		}
@@ -1774,11 +1777,6 @@ void Scene2D::Render()
 		// Render the tile map
 		RenderTileMap();
 		RenderHUD();
-		
-		//On screen text
-		ss.precision(3);
-		ss << "FPS: " << fps;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);	
 	}
 
 	glEnable(GL_DEPTH_TEST);
