@@ -193,7 +193,7 @@ void Scene2D::Init()
 	meshList[GEO_TILEMAP] = MeshBuilder::GenerateTileMap("GEO_TILEMAP", 4, 6);
 	meshList[GEO_TILEMAP]->textureID[0] = LoadTGA("Image//map_tileset.tga");
 
-	meshList[GEO_BULLET] = MeshBuilder::GenerateSpriteAnimation("GEO_BULLET", 1, 4);
+	meshList[GEO_BULLET] = MeshBuilder::GenerateSpriteAnimation("GEO_BULLET", 1, 5);
 	meshList[GEO_BULLET]->textureID[0] = LoadTGA("Image//bullet.tga");
 
 	meshList[GEO_BOSS_BULLET] = MeshBuilder::GenerateSpriteAnimation("GEO_BOSS_BULLET", 1, 6);
@@ -201,7 +201,7 @@ void Scene2D::Init()
 
 	m_bulletAnimation = dynamic_cast<SpriteAnimation*>(meshList[GEO_BULLET]);
 	m_bulletAnimation->m_anim = new Animation;
-	m_bulletAnimation->m_anim->Set(0, 3, 0, 0.5);
+	m_bulletAnimation->m_anim->Set(0, 4, 0, 0.5);
 
 	m_bossbulletAnimation = dynamic_cast<SpriteAnimation*>(meshList[GEO_BOSS_BULLET]);
 	m_bossbulletAnimation->m_anim = new Animation;
@@ -549,11 +549,25 @@ void Scene2D::ResetGame()
 		}
 	}
 
+	for(vector<Projectile*>::iterator it = m_projectileList.begin(); it != m_projectileList.end(); ++it)
+	{
+		Projectile* projectile = (Projectile*)*it;
+		
+		projectile->SetActive(false);
+	}
+
 	for(vector<Item*>::iterator it = m_itemList.begin(); it != m_itemList.end(); ++it)
 	{
 		Item* item = (Item*)*it;
 
 		item->SetActive(true);
+
+		if(item->GetType() == Item::FIRE_SPEED_POWER || Item::MOVE_SPEED_POWER)
+		{
+			PowerUp* powerup = dynamic_cast<PowerUp*>(item);
+
+			powerup->ResetLifeTime();
+		}
 	}
 
 	Skill* skill = new Skill();
@@ -1147,7 +1161,7 @@ void Scene2D::UpdateProjectile(double dt)
 					EnemyIn2D *enemy = (EnemyIn2D *) *it2;
 
 					// Check if projectile collide with enemy
-					if(enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel && enemy->CollideWith(projectile))
+					if(projectile->GetActive() && enemy->GetActive() && enemy->GetCurrentLevel() == m_currentLevel && enemy->CollideWith(projectile))
 					{
 						// Enemy takes damage
 						if(enemy->TakeDamage(projectile->GetDamage()))

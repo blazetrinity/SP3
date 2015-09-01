@@ -47,6 +47,8 @@ void PlayerIn2D::Init(Vector2 position, Vector2 scale, float mass, float tileSiz
 	m_renderPlayer = true;
 	m_renderPlayerTimer = 0;
 	m_lifes = MAXLIFE;
+	MOVESPEED = 100;
+	m_activePowerUp.clear();
 }
 
 // Update player position based on player's velocity
