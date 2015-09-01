@@ -134,8 +134,6 @@ void Application::Run()
 
 		if(m_dAccumulatedTime_ThreadOne > (float)(1/60))
 		{
-			GetMouseUpdate();
-			GetKeyboardUpdate();
 			scene->Update(m_dElapsedTime);
 			m_dAccumulatedTime_ThreadOne = 0.0;
 		}
