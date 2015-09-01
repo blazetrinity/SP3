@@ -294,3 +294,20 @@ bool EnemyIn2D::TakeDamage(float damage)
 
 	return false;
 }
+
+void EnemyIn2D::ResetEnemy(AstarPathfind* path)
+{
+	SetActive(false);
+	SetPosition(GetSpawnLocation());
+	SetStrategy(EnemyIn2D::PATROL_STRATEGY, path);
+	SetCollision(true);
+
+	if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_UPDOWN || m_enemyType == EnemyIn2D::BOSS_GHOST)
+	{
+		this->m_facingNormal.Set(0, 1);
+	}
+	else if(m_enemyType == EnemyIn2D::WHITE_GHOST_PATROL_LEFTRIGHT || m_enemyType == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT)
+	{
+		this->m_facingNormal.Set(1, 0);
+	}
+}

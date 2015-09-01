@@ -529,10 +529,7 @@ void Scene2D::ResetGame()
 	{
 		EnemyIn2D* enemy = (EnemyIn2D*)*it;
 
-		enemy->SetActive(false);
-		enemy->SetPosition(enemy->GetSpawnLocation());
-		enemy->SetStrategy(EnemyIn2D::PATROL_STRATEGY, m_path);
-		enemy->SetCollision(true);
+		enemy->ResetEnemy(m_path);
 
 		if(enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_LEFTRIGHT || enemy->GetEnemyType() == EnemyIn2D::RED_GHOST_PATROL_UPDOWN)
 		{

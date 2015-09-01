@@ -90,6 +90,8 @@ public:
 	// Change Strategy
 	void ChangeStrategy(Strategy* theNewStrategy, bool bDelete=true);
 
+	void ResetEnemy(AstarPathfind* path);
+
 private:
 	// Enemy's gamelevel
 	int m_currentLevel;
