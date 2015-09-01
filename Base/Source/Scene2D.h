@@ -42,6 +42,7 @@ public:
 	void RenderBackground();
 	void Render2DMesh(Mesh *mesh, const bool enableLight, const float size=1.0f, const float x=0.0f, const float y=0.0f, const bool rotate=false);
 	void RenderUI();
+	void RenderHUD();
 	void RenderTileMap();
 
 	void UpdatePlayer(double dt);
@@ -124,12 +125,17 @@ public:
 		GEO_PAUSED,
 		GEO_GAMEOVER,
 		GEO_INSTRUCTIONS,
-		GEO_SCORE,
+		GEO_HIGHSCORE,
 		GEO_SPEED_POWER_UP,
 		GEO_FIRE_RATE_POWER_UP,
 		GEO_HEALTH_ITEM,
 		GEO_GUN_PART,
 		GEO_KEY_ITEM,
+		GEO_HEALTH,//HUD
+		GEO_LIVES,//HUD
+		GEO_HEARTS,//HUD
+		GEO_COMPLETED,//HUD
+		GEO_SCORE,//HUD
 		NUM_GEOMETRY,
 	};
 	enum TILE_ID
